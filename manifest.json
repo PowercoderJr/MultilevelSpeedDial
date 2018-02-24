@@ -1,0 +1,12 @@
+{
+    "manifest_version": 2,
+    "name": "Multilevel Speed Dial",
+    "description": "__MSG_extensionDescription__",
+    "version": "1.0",
+    "default_locale": "en",
+
+    "chrome_url_overrides":
+    {
+        "newtab": "mlsd.html"
+    }
+}
