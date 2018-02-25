@@ -1,5 +1,7 @@
 :root {
-    --borderSize: 10px;
+    --borderSize: 8px;
+    --inlineSpacing: 4px;
+    --iconSize: 16px;
 }
 
 table {
@@ -23,7 +25,6 @@ td {
     left: 0px;
     right: 0px;
     background-color: rgba(220, 220, 220, .1);
-    overflow: hidden;
     /*http://dabblet.com/gist/2775781*/
     background-clip: padding-box;
     border: var(--borderSize) solid rgba(200, 200, 200, .3);
@@ -39,4 +40,59 @@ td {
 .element:hover {
     background-color: rgba(220, 220, 220, .2);
     border-color: rgba(255, 255, 255, .5);
+}
+
+.element .elementCaption {
+    color: black;
+    text-shadow: 0px 0px 5px white;
+}
+
+.elementHeader {
+    position: absolute;
+    top: calc(var(--borderSize) * (-3.5));
+    right: 0px;
+    left: 0px;
+    height: calc(var(--borderSize) * 3);
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.elementHeader img {
+    width: var(--iconSize);
+    height: var(--iconSize);
+}
+
+.elementCaption {
+    display: inline-block;
+    width: calc(100% - var(--iconSize) - 4px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin: 0px 4px 0px 4px;
+}
+
+.element:hover .elementCaption {
+    width: calc(100% - (var(--iconSize) + var(--inlineSpacing)) * 4 - 4px * 2);
+}
+
+.elementButton {
+    display: none;
+    margin-left: var(--inlineSpacing);
+    filter: grayscale(0.75);
+}
+
+.elementButton:hover {
+    filter: grayscale(0);
+}
+
+.element:hover .elementButton {
+    display: inline-block;
+}
+
+.elementMiniature {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
