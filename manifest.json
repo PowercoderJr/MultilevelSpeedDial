@@ -5,8 +5,19 @@
     "version": "1.0",
     "default_locale": "en",
 
+    "permissions": ["storage"],
+
     "chrome_url_overrides":
     {
         "newtab": "mlsd.html"
+    },
+
+    "applications":
+    {
+        "gecko":
+        {
+            "id": "multilevelspeeddial@mozilla.org",
+            "strict_min_version": "42.0"
+        }
     }
 }
