@@ -8,7 +8,55 @@
     <script type="text/javascript" src="mlsd.js"></script>
 </head>
 <body>
-    <table id="grid" cellspacing="10px">
-    </table>
+    <div id="bg" class="fullscreenElement"></div>
+    <table id="grid" class="fullscreenElement" cellspacing="10px"></table>
+    <div id="curtain" class="fullscreenElement">
+        <div id="editElementForm">
+            <form method="dialog">
+                <fieldset>
+                    <legend id="cellAssignmentTitle"></legend>
+                    <div>
+                        <p>
+                            <label id="cellTypeLabel"></label>
+                            <br><label id="bookmarkRb"><input type="radio" name="elementType" value="bookmark" checked></label>
+                            <br><label id="folderRb"><input type="radio" name="elementType" value="folder"></label>
+                        </p>
+                        <p>
+                            <label id="generalSettingsLabel"></label>
+                            <br><label id="hideCaptionChb"><input type="checkbox" name="isCaptionHidden"></label>
+                            <br><label id="hideMiniatureChb"><input type="checkbox" name="isPreviewHidden"></label>
+                        </p>
+                    </div>
+                    <fieldset id="bookmarkSettings">
+                        <legend id="bookmarkSettingsLabel"></legend>
+                        <p>
+                            <label id="urlLabel"></label>
+                            <input type="url" name="url" style="width: 400px;" placeholder="https://www.google.com/">
+                        </p>
+                    </fieldset>
+                    <fieldset id="folderSettings" disabled>
+                        <legend id="folderSettingsLabel"></legend>
+                        <p>
+                            <label id="gridSizeLabel"></label>
+                            <input type="number" name="rows" value="3" style="width: 40px;" min="1" max="30">
+                            <label> x </label>
+                            <input type="number" name="cols" value="3" style="width: 40px;" min="1" max="30">
+                        </p>
+                        <p>
+                            <label id="bgLabel"></label>
+                            <br><label id="defaultBgRb"><input type="radio" name="bgtype" value="default" checked></label>
+                            <br><label id="colorBgLabel"><input type="radio" name="bgtype" value="solid"></label>
+                            <input type="color" name="bgcolor" value="#F9F9FA">
+                            <br><label id="imgLocalBgLabel"><input type="radio" name="bgtype" value="default"></label>
+                            <input type="file" name="bgimgLocal" accept="image/*">
+                            <br><label id="imgRemoteBgLabel"><input type="radio" name="bgtype" value="default"></label>
+                            <input type="url" name="bgimgRemote" style="width: 400px;">
+                        </p>
+                    </fieldset>
+                </fieldset>
+                <input type="submit">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

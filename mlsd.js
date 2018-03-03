@@ -27,9 +27,12 @@ const DEFAULT_BGCOLOR = "#F9F9FA";
 var Element = function(code) {
     this.type = ElementType.EMPTY;
     this.code = code;
+    this.caption = "";
+    this.icon = null;
+    this.miniature = null;
 }
 Element.prototype.whoAreYou = function() {
-    console.log("I am " + this.type + " #" + this.code + ", ")
+    console.log("I am " + this.type + " #" + this.code + ", ");
 }
 Element.prototype.generateHtml = function() {
     return '<div class="element" id="' + StrongString.ELEMENT + StrongString.SEPARATOR + this.code + '">' +
@@ -38,15 +41,18 @@ Element.prototype.generateHtml = function() {
             'Подпись подпись подпись подпись подпись подпись подпись подпись подпись подпись</label>' +
             '<img class="elementButton" src="icons/refresh.png">' +
             '<img class="elementButton" src="icons/edit.png">' +
-            '<img class="elementButton" src="icons/delete.png"></div></div>';
+            '<img class="elementButton" src="icons/delete.png"></div><div class="elementMiniature">' + 
+            '<label class="elementCode">' + this.code + '</label></div></div>';
 }
 Element.prototype.bindHtml = function() {
-    //this????
+    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
+            this.code).onclick = Element.prototype.whoAreYou.bind(this);
 }
 
-var Bookmark = function(code) {
+var Bookmark = function(code, url) {
     Element.apply(this, [code]);
     this.type = ElementType.BOOKMARK;
+    this.url = url;
 }
 Bookmark.prototype = Object.create(Element.prototype);
 Bookmark.prototype.constructor = Bookmark;
@@ -59,9 +65,9 @@ var Folder = function(code, rows, cols) {
     this.bgtype = BgType.DEFAULT;
     this.bgdata = null;
 
-    let square = rows * cols;
-    this.elements = new Array(square);
-    for (let i = 0; i < square; ++i) {
+    let amount = rows * cols;
+    this.elements = new Array(amount);
+    for (let i = 0; i < amount; ++i) {
         this.elements[i] = new Element(i + 1);
     }
 }
@@ -74,13 +80,27 @@ var currPath;
 window.onload = function() {
     currPath = "";
     browser.storage.local.get({structure: new Folder(0, 3, 3)}).then(onStructureLoaded, onStructireLoadFailed);
+
+    /*Вставка строк из файлов локализации*/
+    document.getElementById("cellAssignmentTitle").innerHTML += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
+    document.getElementById("cellTypeLabel").innerHTML += browser.i18n.getMessage("cellType") + ":";
+    document.getElementById("bookmarkRb").innerHTML += browser.i18n.getMessage("bookmark");
+    document.getElementById("folderRb").innerHTML += browser.i18n.getMessage("folder");
+    document.getElementById("generalSettingsLabel").innerHTML += browser.i18n.getMessage("generalSettings");
+    document.getElementById("hideCaptionChb").innerHTML += browser.i18n.getMessage("hideCaption");
+    document.getElementById("hideMiniatureChb").innerHTML += browser.i18n.getMessage("hideMiniature");
+    document.getElementById("bookmarkSettingsLabel").innerHTML += browser.i18n.getMessage("bookmarkSettings");
+    document.getElementById("urlLabel").innerHTML += browser.i18n.getMessage("url") + ": ";
+    document.getElementById("folderSettingsLabel").innerHTML += browser.i18n.getMessage("folderSettings") + ":";
+    document.getElementById("gridSizeLabel").innerHTML += browser.i18n.getMessage("gridSize") + ": ";
+    document.getElementById("bgLabel").innerHTML += browser.i18n.getMessage("background") + ":";
+    document.getElementById("defaultBgRb").innerHTML += browser.i18n.getMessage("default");
+    document.getElementById("colorBgLabel").innerHTML += browser.i18n.getMessage("color") + ": ";
+    document.getElementById("imgLocalBgLabel").innerHTML += browser.i18n.getMessage("imageLocal") + ": ";
+    document.getElementById("imgRemoteBgLabel").innerHTML += browser.i18n.getMessage("imageRemote") + ": ";
 }
 
 function onStructureLoaded(results) {
-    console.log("Results: ");
-    for (let key in results) {
-        console.log(results[key]);
-    }
     buildPage(results.structure);
 }
 
@@ -92,21 +112,24 @@ function buildPage(folder) {
     folder.bgtype = BgType.IMAGE;
     folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";
 
+    /*Установка фона*/
+    let bg = document.getElementById("bg");
     switch (folder.bgtype) {
         case BgType.DEFAULT:
-            document.body.style.backgroundColor = DEFAULT_BGCOLOR;
-            document.body.style.backgroundImage = "";
+            bg.style.backgroundColor = DEFAULT_BGCOLOR;
+            bg.style.backgroundImage = "";
             break;
         case BgType.SOLID:
-            document.body.style.backgroundColor = folder.bgdata;
-            document.body.style.backgroundImage = "";
+            bg.style.backgroundColor = folder.bgdata;
+            bg.style.backgroundImage = "";
             break;
         case BgType.IMAGE:
-            document.body.style.backgroundColor = "";
-            document.body.style.backgroundImage = "url('" + folder.bgdata + "')";
+            bg.style.backgroundColor = "";
+            bg.style.backgroundImage = "url('" + folder.bgdata + "')";
             break;
     }
 
+    /*Создание и размещение элементов*/
     let grid = document.getElementById("grid");
     grid.innerHTML = "";
     for (let i = 0; i < folder.rows; ++i) {
@@ -115,13 +138,20 @@ function buildPage(folder) {
             let cell = row.insertCell(j);
             let element = folder.elements[folder.cols * i + j];
             cell.innerHTML = Element.prototype.generateHtml.call(element);
-            assignJsElement(element.code); //TODO: переписать
+            Element.prototype.bindHtml.call(element);
         }
     }
-}
 
-//TODO: внести в Element
-function assignJsElement(code) {
-    var element = new Element(code);
-    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR + code).onclick = element.whoAreYou.bind(element);
+    /*Установка размера шрифта для кодов элементов*/
+    let amount = folder.rows * folder.cols;
+    let digits;
+    for (digits = 0; amount > 1; ++digits)
+        amount /= 10;
+    //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
+    let codeFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
+            folder.cols + ")) / " + folder.cols + " / " + digits + ")";
+    let codeFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " + 
+            folder.rows + ")) / " + folder.rows + ")";
+    //document.documentElement.style.setProperty("--codeFontSize", "min(" + codeFontSizeH + "," + codeFontSizeV + ")"); //TODO: min() не используется в CSS3
+    document.documentElement.style.setProperty("--codeFontSize", codeFontSizeV);
 }

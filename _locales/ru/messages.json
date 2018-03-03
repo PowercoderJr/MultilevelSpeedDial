@@ -1,6 +1,91 @@
 {
+    "extensionName": 
+    {
+    	"message": "Multilevel Speed Dial"
+    },
+
     "extensionDescription":
     {
         "message": "Добавляет визуальные закладки. Для удобства закладки можно объединять в папки. Вы можете переходить по сохранённым закладкам через меню в новой вкладке или используя комбинации клавиш с кодом закладки."
+    },
+
+    "cellAssignmentTitle":
+    {
+    	"message": "Назначение ячейки"
+    },
+
+    "cellType":
+    {
+    	"message": "Тип ячейки"
+    },
+
+    "bookmark":
+    {
+    	"message": "Закладка"
+    },
+
+    "folder":
+    {
+    	"message": "Папка"
+    },
+
+    "generalSettings":
+    {
+    	"message": "Общие настройки"
+    },
+
+    "hideCaption":
+    {
+    	"message": "Скрыть заголовок"
+    },
+
+    "hideMiniature":
+    {
+    	"message": "Скрыть миниатюру"
+    },
+
+    "bookmarkSettings":
+    {
+    	"message": "Настройки закладки"
+    },
+
+    "url":
+    {
+    	"message": "URL"
+    },
+
+    "folderSettings":
+    {
+    	"message": "Настройки папки"
+    },
+
+    "gridSize":
+    {
+    	"message": "Размер сетки"
+    },
+
+    "background":
+    {
+    	"message": "Фон"
+    },
+
+    "default":
+    {
+    	"message": "По умолчанию"
+    },
+
+    "color":
+    {
+    	"message": "Цвет"
+    },
+
+    "imageLocal":
+    {
+    	"message": "Изображение на компьютере"
+    },
+
+    "imageRemote":
+    {
+    	"message": "Изображение по URL"
     }
 }

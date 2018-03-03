@@ -1,6 +1,91 @@
 {
+    "extensionName": 
+    {
+    	"message": "Multilevel Speed Dial"
+    },
+
     "extensionDescription": 
     {
     	"message": "Adds visual bookmarks. For convenience you can unite bookmarks into folders. You can navigate through saved bookmarks by opening new tab or by using shortcut with bookmark's code."
+    },
+
+    "cellAssignmentTitle":
+    {
+    	"message": "Cell assignment"
+    },
+
+    "cellType":
+    {
+    	"message": "Cell type"
+    },
+
+    "bookmark":
+    {
+    	"message": "Bookmark"
+    },
+
+    "folder":
+    {
+    	"message": "Folder"
+    },
+
+    "generalSettings":
+    {
+    	"message": "General settings"
+    },
+
+    "hideCaption":
+    {
+    	"message": "Hide caption"
+    },
+
+    "hideMiniature":
+    {
+    	"message": "Hide miniature"
+    },
+
+    "bookmarkSettings":
+    {
+    	"message": "Bookmark settings"
+    },
+
+    "url":
+    {
+    	"message": "URL"
+    },
+
+    "folderSettings":
+    {
+    	"message": "Folder settings"
+    },
+
+    "gridSize":
+    {
+    	"message": "Grid size"
+    },
+
+    "background":
+    {
+    	"message": "Background"
+    },
+
+    "default":
+    {
+    	"message": "Default"
+    },
+
+    "color":
+    {
+    	"message": "Color"
+    },
+
+    "imageLocal":
+    {
+    	"message": "Image on computer"
+    },
+
+    "imageRemote":
+    {
+    	"message": "Image by URL"
     }
 }
