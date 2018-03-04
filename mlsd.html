@@ -8,53 +8,58 @@
     <script type="text/javascript" src="mlsd.js"></script>
 </head>
 <body>
-    <div id="bg" class="fullscreenElement"></div>
+    <div id="background" class="fullscreenElement"></div>
     <table id="grid" class="fullscreenElement" cellspacing="10px"></table>
     <div id="curtain" class="fullscreenElement">
-        <div id="editElementForm">
-            <form method="dialog">
+        <div id="assignmentFormContainer">
+            <form id="assignmentForm" method="post">
+                <input type="hidden" id="modeTf" name="mode">
                 <fieldset>
                     <legend id="cellAssignmentTitle"></legend>
                     <div>
                         <p>
-                            <label id="cellTypeLabel"></label>
-                            <br><label id="bookmarkRb"><input type="radio" name="elementType" value="bookmark" checked></label>
-                            <br><label id="folderRb"><input type="radio" name="elementType" value="folder"></label>
+                            <label id="cellCodeLabel"></label>
+                            <input type="text" id="codeTf" name="code" style="width: 50px;" readonly>
                         </p>
-                        <p>
-                            <label id="generalSettingsLabel"></label>
-                            <br><label id="hideCaptionChb"><input type="checkbox" name="isCaptionHidden"></label>
-                            <br><label id="hideMiniatureChb"><input type="checkbox" name="isPreviewHidden"></label>
-                        </p>
+                        <fieldset id="generalSettings">
+                        <legend id="generalSettingsLabel"></legend>
+                        <label id="cellTypeLabel"></label>
+                        <br><label id="bookmarkLabel"><input type="radio" id="bookmarkRb" name="elementType" value="bookmark"></label>
+                        <br><label id="folderLabel"><input type="radio" id="folderRb" name="elementType" value="folder"></label>
+                        <br>
+                        <br><label id="hideCaptionLabel"><input type="checkbox" id="hideCaptionChb" name="isCaptionHidden"></label>
+                        <br><label id="hideMiniatureLabel"><input type="checkbox" id="hideMiniatureChb" name="isPreviewHidden"></label>
+                        </fieldset>
                     </div>
                     <fieldset id="bookmarkSettings">
                         <legend id="bookmarkSettingsLabel"></legend>
                         <p>
                             <label id="urlLabel"></label>
-                            <input type="url" name="url" style="width: 400px;" placeholder="https://www.google.com/">
+                            <input type="url" id="urlTf" name="url" style="width: 400px;" placeholder="https://www.google.com/" required>
                         </p>
                     </fieldset>
                     <fieldset id="folderSettings" disabled>
                         <legend id="folderSettingsLabel"></legend>
                         <p>
                             <label id="gridSizeLabel"></label>
-                            <input type="number" name="rows" value="3" style="width: 40px;" min="1" max="30">
+                            <input type="number" id="rowsSpin" name="rows" value="3" style="width: 40px;" min="1" max="30">
                             <label> x </label>
-                            <input type="number" name="cols" value="3" style="width: 40px;" min="1" max="30">
+                            <input type="number" id="colsSpin" name="cols" value="3" style="width: 40px;" min="1" max="30">
                         </p>
                         <p>
                             <label id="bgLabel"></label>
-                            <br><label id="defaultBgRb"><input type="radio" name="bgtype" value="default" checked></label>
-                            <br><label id="colorBgLabel"><input type="radio" name="bgtype" value="solid"></label>
-                            <input type="color" name="bgcolor" value="#F9F9FA">
-                            <br><label id="imgLocalBgLabel"><input type="radio" name="bgtype" value="default"></label>
-                            <input type="file" name="bgimgLocal" accept="image/*">
-                            <br><label id="imgRemoteBgLabel"><input type="radio" name="bgtype" value="default"></label>
-                            <input type="url" name="bgimgRemote" style="width: 400px;">
+                            <br><label id="defaultBgLabel"><input type="radio" id="defaultBgRb" name="bgtype" value="DEFAULT"></label>
+                            <br><label id="colorBgLabel"><input type="radio" id="colorBgRb" name="bgtype" value="SOLID"></label>
+                            <input type="color" id="bgcolorPicker" name="bgcolor" value="#F9F9FA" disabled>
+                            <br><label id="imgLocalBgLabel"><input type="radio" id="imgLocalBgRb" name="bgtype" value="IMAGE_LOCAL"></label>
+                            <input type="file" id="bgimgPicker" name="bgimgLocal" accept="image/*" required disabled>
+                            <br><label id="imgRemoteBgLabel"><input type="radio" id="imgRemoteBgRb" name="bgtype" value="IMAGE_REMOTE"></label>
+                            <input type="url" id="bgimgUrlTf" name="bgimgRemote" style="width: 400px;" required pattern=".*\.+(png|jpg|jpeg|PNG|JPG|JPEG)" disabled>
                         </p>
                     </fieldset>
                 </fieldset>
-                <input type="submit">
+                <input type="submit" id="okBtn">
+                <input type="button" id="cancelBtn">
             </form>
         </div>
     </div>

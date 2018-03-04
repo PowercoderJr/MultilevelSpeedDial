@@ -4,6 +4,7 @@
     --inlineSpacing: 4px;
     --iconSize: 16px;
     --codeFontSize: 0px;
+    --fieldsetBlurValue: 5px;
 }
 
 .fullscreenElement {
@@ -14,8 +15,8 @@
     right: 0px;
 }
 
-#bg {
-    -webkit-filter: contrast(0.25);
+#background {
+    
 }
 
 #grid {
@@ -29,11 +30,11 @@ td {
 
 #curtain {
     background-color: rgba(0, 0, 0, .5);
-    display: flex;
+    display: none; /*none or flex*/
     justify-content: center;
 }
 
-#editElementForm {
+#assignmentFormContainer {
     position: absolute;
     width: 800px;
     top: 50vh;
@@ -41,6 +42,38 @@ td {
     background-color: var(--defColor);
     padding: 20px;
     border-radius: var(--borderSize);
+    animation-name: unbluring;
+    animation-duration: 0.5s;
+}
+
+@keyframes bluring {
+    from {
+        filter: blur(0px);
+    }
+    to {
+        filter: blur(var(--fieldsetBlurValue));
+    }
+}
+
+@keyframes unbluring {
+    from {
+        filter: blur(var(--fieldsetBlurValue));
+    }
+    to {
+        filter: blur(0px);
+    }
+}
+
+#assignmentFormContainer fieldset:disabled {
+    animation-name: bluring;
+    animation-duration: 0.25s;
+    filter: blur(var(--fieldsetBlurValue));
+}
+
+#assignmentFormContainer fieldset {
+    animation-name: unbluring;
+    animation-duration: 0.25s;
+    filter: blur(0px);
 }
 
 .element {

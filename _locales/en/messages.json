@@ -14,6 +14,11 @@
     	"message": "Cell assignment"
     },
 
+    "cellCode":
+    {
+    	"message": "Cell code"
+    },
+
     "cellType":
     {
     	"message": "Cell type"
@@ -87,5 +92,25 @@
     "imageRemote":
     {
     	"message": "Image by URL"
+    },
+
+    "ok":
+    {
+    	"message": "OK"
+    },
+
+    "cancel":
+    {
+    	"message": "Cancel"
+    },
+
+    "errMsg":
+    {
+    	"message": "Operation was interrupted due to error"
+    },
+
+    "imgUrlRequired":
+    {
+    	"message": "Expecting URL to png/jpg/jpeg image"
     }
 }

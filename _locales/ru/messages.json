@@ -14,6 +14,11 @@
     	"message": "Назначение ячейки"
     },
 
+    "cellCode":
+    {
+    	"message": "Код ячейки"
+    },
+
     "cellType":
     {
     	"message": "Тип ячейки"
@@ -87,5 +92,25 @@
     "imageRemote":
     {
     	"message": "Изображение по URL"
+    },
+
+    "ok":
+    {
+    	"message": "ОК"
+    },
+
+    "cancel":
+    {
+    	"message": "Отмена"
+    },
+
+    "errMsg":
+    {
+    	"message": "Операция прервана из-за ошибки"
+    },
+
+    "imgUrlRequired":
+    {
+    	"message": "Ожидается URL на картинку формата png/jpg/jpeg"
     }
 }
