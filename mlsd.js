@@ -44,16 +44,14 @@ Element.prototype.whoAreYou = function() {
     console.log("I am " + this.type + " #" + this.code + ", ");
     showAssignmentForm(this, AssignmentMode.CREATE);
 }
-//TODO: переписать как добавление дочерних элементов
-Element.prototype.generateHtml = function() {
-    return '<div class="element" id="' + StrongString.ELEMENT + StrongString.SEPARATOR + this.code + '">' +
-            '<div class="elementHeader"><img src="http://google.com/favicon.ico">' +
-            '<label class="elementCaption" id="' + StrongString.CAPTION + StrongString.SEPARATOR + this.code + '">' +
-            'Подпись подпись подпись подпись подпись подпись подпись подпись подпись подпись</label>' +
-            '<img class="elementButton" src="icons/refresh.png">' +
-            '<img class="elementButton" src="icons/edit.png">' +
-            '<img class="elementButton" src="icons/delete.png"></div><div class="elementMiniature">' + 
-            '<label class="elementCode">' + this.code + '</label></div></div>';
+Element.prototype.initHtml = function() {
+    return '<div class="element" id="' + StrongString.ELEMENT +
+            StrongString.SEPARATOR + this.code + '"></div>';
+}
+Element.prototype.updateHtml = function () {
+    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
+            this.code).innerHTML = '<div class="elementMiniature">' +
+            '<label class="elementCode">' + this.code + '</label></div>';
 }
 Element.prototype.bindHtml = function() {
     document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
@@ -68,9 +66,10 @@ var Bookmark = function(code, url) {
 Bookmark.prototype = Object.create(Element.prototype);
 Bookmark.prototype.constructor = Bookmark;
 
-var Folder = function(code, rows, cols, bgtype, bgdata) {
+var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
     Element.apply(this, [code]);
     this.type = ElementType.FOLDER;
+    this.caption = caption;
     this.rows = rows || 3;
     this.cols = cols || 3;
     this.bgtype = bgtype || BgType.DEFAULT;
@@ -90,11 +89,12 @@ var currPath = "";
 var rootFolder;
 window.onload = function() {
     //browser.storage.local.clear();
-    browser.storage.local.get({structure: new Folder(0)}).then(onStructureLoaded, onPromiseFailed);
+    browser.storage.local.get({structure: new Folder(0, browser.i18n.getMessage("extensionName"))}).then(onStructureLoaded, onPromiseFailed);
     browser.storage.local.get().then(function(all) {
         console.log("Stored data: ");
-        for (let key in all) 
+        for (let key in all) {
             console.log(key + " = " + all[key]);
+        }
     }, onPromiseFailed);
 
     /*Вставка строк из файлов локализации*/
@@ -109,6 +109,7 @@ window.onload = function() {
     document.getElementById("bookmarkSettingsLabel").innerHTML += browser.i18n.getMessage("bookmarkSettings");
     document.getElementById("urlLabel").innerHTML += browser.i18n.getMessage("url") + ": ";
     document.getElementById("folderSettingsLabel").innerHTML += browser.i18n.getMessage("folderSettings") + ":";
+    document.getElementById("folderNameLabel").innerHTML += browser.i18n.getMessage("folderName") + ": ";
     document.getElementById("gridSizeLabel").innerHTML += browser.i18n.getMessage("gridSize") + ": ";
     document.getElementById("bgLabel").innerHTML += browser.i18n.getMessage("background") + ":";
     document.getElementById("defaultBgLabel").innerHTML += browser.i18n.getMessage("default");
@@ -158,6 +159,18 @@ function onPromiseFailed(error) {
     console.log(browser.i18n.getMessage("errMsg") + ": " + error);
 }
 
+/*Element.prototype.hoba = function() {
+    alert("Element hoba!");
+}
+
+Bookmark.prototype.hoba = function() {
+    alert("Bookmark hoba!");
+}
+
+Folder.prototype.hoba = function() {
+    alert("Folder hoba!");
+}*/
+
 function buildPage(folder) {
     folder.bgtype = BgType.IMAGE_REMOTE;
     folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";
@@ -189,16 +202,32 @@ function buildPage(folder) {
             let cell = row.insertCell(j);
             let element = folder.elements[folder.cols * i + j];
             let html;
-            cell.innerHTML = Element.prototype.generateHtml.call(element);
-            Element.prototype.bindHtml.call(element);
+            cell.innerHTML = Element.prototype.initHtml.call(element);
+
+            //TODO: как-то не полиморфно
+            switch (element.type) {
+                case ElementType.EMPTY:
+                    Element.prototype.updateHtml.call(element);
+                    Element.prototype.bindHtml.call(element);
+                    break;
+                case ElementType.BOOKMARK:
+                    Bookmark.prototype.updateHtml.call(element);
+                    Bookmark.prototype.bindHtml.call(element);
+                    break;
+                case ElementType.FOLDER:
+                    Folder.prototype.updateHtml.call(element);
+                    Folder.prototype.bindHtml.call(element);
+                    break;
+            }
         }
     }
 
     /*Установка размера шрифта для кодов элементов*/
     let amount = folder.rows * folder.cols;
     let digits;
-    for (digits = 0; amount > 1; ++digits)
+    for (digits = 0; amount > 1; ++digits) {
         amount /= 10;
+    }
     //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
     let codeFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
             folder.cols + ")) / " + folder.cols + " / " + digits + ")";
@@ -278,17 +307,20 @@ function submitAssignmentForm() {
     //TODO: предупредить о потерях если пользователь сокращает размер сетки
     hideAssignmentForm();
     var curr = rootFolder;
-    if (currPath != "")
-    {
+    if (currPath != "") {
         let steps = currPath.split(".");
-        for (let i = 0; i < steps.length; ++i)
+        for (let i = 0; i < steps.length; ++i) {
             curr = curr.elements[steps[i] - 1];
+        }
     }
     let data = parseAssignmentForm();
-    if (data.mode == AssignmentMode.CREATE)
+    curr.elements[data.element.code - 1] = data.element;
+    /*if (data.mode == AssignmentMode.CREATE) {
         curr.elements[data.element.code - 1] = data.element;
-    else if (data.mode == AssignmentMode.EDIT)
+    }
+    else if (data.mode == AssignmentMode.EDIT) {
         ;//TODO: заменить необходимые поля
+    }*/
 
     let structure = rootFolder;
     browser.storage.local.set({structure});
@@ -304,6 +336,7 @@ function parseAssignmentForm() {
         result = new Bookmark(code, url);
     }
     else if (document.getElementById("folderRb").checked) {
+        let caption = document.getElementById("folderNameTf").value;
         let rows = parseInt(document.getElementById("rowsSpin").value);
         let cols = parseInt(document.getElementById("colsSpin").value);
 
@@ -324,7 +357,7 @@ function parseAssignmentForm() {
             bgtype = BgType.IMAGE_REMOTE;
             bgdata = document.getElementById("bgimgUrlTf").value;
         }
-        result = new Folder(code, rows, cols, bgtype, bgdata);
+        result = new Folder(code, caption, rows, cols, bgtype, bgdata);
     }
 
     result.isCaptionHidden = document.getElementById("hideCaptionChb").checked;
@@ -333,5 +366,7 @@ function parseAssignmentForm() {
 }
 
 function onCurtainClicked(event) {
-    if (areYouFirstHand.call(this, event)) hideAssignmentForm();
+    if (areYouFirstHand.call(this, event)) {
+        hideAssignmentForm();
+    }
 }

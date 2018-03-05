@@ -112,5 +112,10 @@
     "imgUrlRequired":
     {
     	"message": "Expecting URL to png/jpg/jpeg image"
+    },
+
+    "folderName":
+    {
+        "message": "Name"
     }
 }

@@ -112,5 +112,10 @@
     "imgUrlRequired":
     {
     	"message": "Ожидается URL на картинку формата png/jpg/jpeg"
+    },
+
+    "folderName":
+    {
+        "message": "Название"
     }
 }
