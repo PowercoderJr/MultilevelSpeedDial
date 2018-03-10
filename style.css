@@ -1,5 +1,4 @@
 :root {
-    --defColor: #FAFAF9;
     --borderSize: 8px;
     --inlineSpacing: 4px;
     --iconSize: 16px;
@@ -39,7 +38,7 @@ td {
     width: 800px;
     top: 50vh;
     transform: translateY(-50%);
-    background-color: var(--defColor);
+    background-color: #F9F9FA;
     padding: 20px;
     border-radius: var(--borderSize);
     animation-name: unbluring;
@@ -49,8 +48,7 @@ td {
 @keyframes bluring {
     from {
         filter: blur(0px);
-    }
-    to {
+    } to {
         filter: blur(var(--fieldsetBlurValue));
     }
 }
@@ -58,8 +56,7 @@ td {
 @keyframes unbluring {
     from {
         filter: blur(var(--fieldsetBlurValue));
-    }
-    to {
+    } to {
         filter: blur(0px);
     }
 }

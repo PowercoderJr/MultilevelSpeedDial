@@ -18,6 +18,7 @@ const StrongString = {
     SEPARATOR: "_",
     ELEMENT: "el",
     CAPTION: "cap",
+    CODE: "code",
     MINIATURE: "mture",
     MINIATURE_BACKGROUND: "mturebg"
 }
@@ -29,7 +30,7 @@ const AssignmentMode = {
 }
 Object.freeze(AssignmentMode);
 
-const DEFAULT_BGCOLOR = "#F9F9FA";
+const DEFAULT_BGCOLOR = "#B1B1B3";
 /*Окончание описания констант*/
 
 /*Описание прототипов*/
@@ -37,38 +38,57 @@ var Element = function(code) {
     this.type = ElementType.EMPTY;
     this.code = code;
 }
-Element.prototype.whoAreYou = function() {
-    console.log("I am " + this.type + " #" + this.code + ", ");
-    showAssignmentForm(this, AssignmentMode.CREATE);
+Element.prototype.onClicked = function(event) {
+    let container = document.getElementById(StrongString.ELEMENT +
+            StrongString.SEPARATOR + this.code);
+    let caption = document.getElementById(StrongString.CAPTION +
+            StrongString.SEPARATOR + this.code);
+    let code = document.getElementById(StrongString.CODE +
+            StrongString.SEPARATOR + this.code);
+
+    if (verifyTarget(event, [container, caption, code])) {
+        //TODO: как-то не полиморфно
+        switch (this.type) {
+            case ElementType.EMPTY:
+                Element.prototype.action.call(this);
+                break;
+            case ElementType.BOOKMARK:
+                Bookmark.prototype.action.call(this);
+                break;
+            case ElementType.FOLDER:
+                Folder.prototype.action.call(this);
+                break;
+        }
+    }
+}
+Element.prototype.action = function() {
+        showAssignmentForm(this, AssignmentMode.CREATE);
 }
 Element.prototype.getInitHtml = function() {
     let newDiv = document.createElement("div");
     newDiv.className = "element";
     newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
     return newDiv;
-    /*return '<div class="element" id="' + StrongString.ELEMENT +
-            StrongString.SEPARATOR + this.code + '"></div>';*/
 }
 Element.prototype.getInnerHtml = function () {
-    /*let element = document.getElementById(StrongString.ELEMENT +
-            StrongString.SEPARATOR + this.code);
-    element.innerHTML = "";*/
     let miniature = document.createElement("div");
     miniature.className = "elementMiniature";
     miniature.id = StrongString.MINIATURE + StrongString.SEPARATOR + this.code;
     let newLabel = document.createElement("label");
     newLabel.className = "elementCode";
+    newLabel.id = StrongString.CODE + StrongString.SEPARATOR + this.code;
     newLabel.innerHTML = this.code;
     miniature.appendChild(newLabel);
-    //element.appendChild(miniature);
     let df = document.createDocumentFragment();
     df.appendChild(miniature);
     return df;
 }
 Element.prototype.bindHtml = function() {
     let lookingfor = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
-    document.getElementById(lookingfor).onclick = Element.prototype.whoAreYou.bind(this);
+    document.getElementById(lookingfor).onclick =
+            Element.prototype.onClicked.bind(this);
 }
+
 
 //Abstract
 var FilledElement = function(code) {
@@ -91,6 +111,7 @@ FilledElement.prototype.getInnerHtml = function () {
     caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.code;
     caption.innerHTML = this.caption;
     header.appendChild(caption);
+    //TODO: написать обработчики кнопок 2/3
     let btn1 = document.createElement("img");
     btn1.className = "elementButton";
     btn1.src = "icons/refresh.svg";
@@ -99,10 +120,17 @@ FilledElement.prototype.getInnerHtml = function () {
     btn2.className = "elementButton";
     btn2.src = "icons/edit.svg";
     header.appendChild(btn2);
+    btn2.onclick = function() {
+        showAssignmentForm(this, AssignmentMode.EDIT);
+    }.bind(this);
     let btn3 = document.createElement("img");
     btn3.className = "elementButton";
     btn3.src = "icons/delete.svg";
     header.appendChild(btn3);
+    btn3.onclick = function() {
+        let empty = new Element(this.code);
+        overwriteElement(empty);
+    }.bind(this);
 
     let df = Element.prototype.getInnerHtml.call(this);
     df.insertBefore(header, df.children[0]);
@@ -119,6 +147,9 @@ var Bookmark = function(code, url) {
 }
 Bookmark.prototype = Object.create(FilledElement.prototype);
 Bookmark.prototype.constructor = Bookmark;
+Bookmark.prototype.action = function() {
+    alert("Здесь открывается закладка");
+}
 /*Bookmark.prototype.getInnerHtml = function () {
     document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
             this.code).innerHTML = '<div class="elementMiniature">' +
@@ -143,6 +174,9 @@ var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
 }
 Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
+Folder.prototype.action = function() {
+    alert("Здесь открывается папка");
+}
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
     
@@ -283,29 +317,10 @@ function buildPage(folder) {
         for (let j = 0; j < folder.cols; ++j) {
             let cell = row.insertCell(j);
             let element = folder.elements[folder.cols * i + j];
-            let html;
-            //cell.innerHTML = Element.prototype.getInitHtml.call(element);
+
             let elementHtml = Element.prototype.getInitHtml.call(element);
             cell.appendChild(elementHtml);
-            //alert(document.body.innerHTML);
-
-            //TODO: как-то не полиморфно
-            let inner;
-            switch (element.type) {
-                case ElementType.EMPTY:
-                    inner = Element.prototype.getInnerHtml.call(element);
-                    Element.prototype.bindHtml.call(element);
-                    break;
-                case ElementType.BOOKMARK:
-                    inner = Bookmark.prototype.getInnerHtml.call(element);
-                    Bookmark.prototype.bindHtml.call(element);
-                    break;
-                case ElementType.FOLDER:
-                    inner = Folder.prototype.getInnerHtml.call(element);
-                    Folder.prototype.bindHtml.call(element);
-                    break;
-            }
-            elementHtml.appendChild(inner);
+            overwriteElement(element);
         }
     }
 
@@ -325,9 +340,11 @@ function buildPage(folder) {
 }
 
 //https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
-function areYouFirstHand(event) {
+function verifyTarget(event, allowedTargets) {
     event = window.event || event;
-    return this === event.target;
+    return allowedTargets.some(function(curr) {
+        return event.target === curr;
+    });
 }
 
 function showAssignmentForm(element, mode) {
@@ -335,7 +352,6 @@ function showAssignmentForm(element, mode) {
     document.getElementById("codeTf").value = element.code;
 
     if (mode == AssignmentMode.CREATE) {
-        console.log("Drasti");
         document.getElementById("bookmarkSettings").disabled = false;
         document.getElementById("folderSettings").disabled = true;
         document.getElementById("bookmarkRb").checked = true;
@@ -345,8 +361,6 @@ function showAssignmentForm(element, mode) {
         document.getElementById("bgimgUrlTf").disabled = true;
     }
     else if (mode == AssignmentMode.EDIT) {
-        console.log("element in showAssignmentForm:");
-        console.log(element);
         document.getElementById("bookmarkSettings").disabled = !(document.getElementById("bookmarkRb").checked = element.type == ElementType.BOOKMARK || element.type == ElementType.EMPTY);
         document.getElementById("folderSettings").disabled = !(document.getElementById("folderRb").checked = element.type == ElementType.FOLDER);
         if (element.type == ElementType.BOOKMARK) {
@@ -357,6 +371,7 @@ function showAssignmentForm(element, mode) {
             document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = false);
         }
         else if (element.type == ElementType.FOLDER) {
+            document.getElementById("folderNameTf").value = element.caption;
             document.getElementById("rowsSpin").value = element.rows;
             document.getElementById("colsSpin").value = element.cols;
             document.getElementById("defaultBgRb").checked = element.bgtype == BgType.DEFAULT;
@@ -392,24 +407,8 @@ function hideAssignmentForm() {
 function submitAssignmentForm() {
     //TODO: предупредить о потерях если пользователь сокращает размер сетки
     hideAssignmentForm();
-    var curr = rootFolder;
-    if (currPath != "") {
-        let steps = currPath.split(".");
-        for (let i = 0; i < steps.length; ++i) {
-            curr = curr.elements[steps[i] - 1];
-        }
-    }
     let element = parseAssignmentForm();
-    curr.elements[element.code - 1] = element;
-
-    let oldElement = document.getElementById(StrongString.ELEMENT + 
-            StrongString.SEPARATOR + element.code);
-    oldElement.innerHTML = "";
-    oldElement.appendChild(element.getInnerHtml());
-
-    let structure = rootFolder;
-    browser.storage.local.set({structure});
-    
+    overwriteElement(element);
     return false;
 }
 
@@ -451,7 +450,46 @@ function parseAssignmentForm() {
 }
 
 function onCurtainClicked(event) {
-    if (areYouFirstHand.call(this, event)) {
+    if (verifyTarget(event, [document.getElementById("curtain")])) {
         hideAssignmentForm();
     }
+}
+
+function overwriteElement(element) {
+    var curr = rootFolder;
+    if (currPath != "") {
+        let steps = currPath.split(".");
+        for (let i = 0; i < steps.length; ++i) {
+            curr = curr.elements[steps[i] - 1];
+        }
+    }
+    curr.elements[element.code - 1] = element;
+
+    let oldElement = document.getElementById(StrongString.ELEMENT + 
+            StrongString.SEPARATOR + element.code);
+    let parent = oldElement.parentElement;
+    oldElement.remove();
+    let elementHtml = Element.prototype.getInitHtml.call(element);
+    parent.appendChild(elementHtml);
+
+    //TODO: как-то не полиморфно
+    let inner;
+    switch (element.type) {
+        case ElementType.EMPTY:
+            inner = Element.prototype.getInnerHtml.call(element);
+            Element.prototype.bindHtml.call(element);
+            break;
+        case ElementType.BOOKMARK:
+            inner = Bookmark.prototype.getInnerHtml.call(element);
+            Bookmark.prototype.bindHtml.call(element);
+            break;
+        case ElementType.FOLDER:
+            inner = Folder.prototype.getInnerHtml.call(element);
+            Folder.prototype.bindHtml.call(element);
+            break;
+    }
+    elementHtml.appendChild(inner);
+
+    let structure = rootFolder;
+    browser.storage.local.set({structure});
 }
