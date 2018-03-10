@@ -153,14 +153,7 @@ td {
     width: 100%;
     height: 100%;
     overflow: hidden;
-}
-
-.elementMiniatureBg {
-    position: absolute;
-    top: 1px;
-    bottom: 1px;
-    left: 1px;
-    right: 1px;
+    background-size: cover;
 }
 
 .elementCode {

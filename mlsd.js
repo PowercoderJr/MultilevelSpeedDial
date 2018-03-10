@@ -108,11 +108,6 @@ FilledElement.prototype.getInnerHtml = function () {
     df.insertBefore(header, df.children[0]);
     let mture = df.getElementById(StrongString.MINIATURE +
             StrongString.SEPARATOR + this.code);
-    let bg = document.createElement("div");
-    bg.className = "elementMiniatureBg";
-    bg.id = StrongString.MINIATURE_BACKGROUND +
-            StrongString.SEPARATOR + this.code;
-    mture.appendChild(bg);
     return df;
 }
 
@@ -151,21 +146,21 @@ Folder.prototype.constructor = Folder;
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
     
-    let mturebg = df.getElementById(StrongString.MINIATURE_BACKGROUND +
+    let mture = df.getElementById(StrongString.MINIATURE +
             StrongString.SEPARATOR + this.code);
     switch (this.bgtype) {
         case BgType.DEFAULT:
-            mturebg.style.backgroundColor = DEFAULT_BGCOLOR;
-            mturebg.style.backgroundImage = "";
+            mture.style.backgroundColor = DEFAULT_BGCOLOR;
+            mture.style.backgroundImage = "";
             break;
         case BgType.SOLID:
-            mturebg.style.backgroundColor = this.bgdata;
-            mturebg.style.backgroundImage = "";
+            mture.style.backgroundColor = this.bgdata;
+            mture.style.backgroundImage = "";
             break;
         case BgType.IMAGE_LOCAL:
         case BgType.IMAGE_REMOTE:
-            mturebg.style.backgroundColor = "";
-            mturebg.style.backgroundImage = "url('" + this.bgdata + "')";
+            mture.style.backgroundColor = "";
+            mture.style.backgroundImage = "url('" + this.bgdata + "')";
             break;
     }
     return df;
@@ -405,14 +400,16 @@ function submitAssignmentForm() {
         }
     }
     let element = parseAssignmentForm();
-    console.log("Code is " + element.code);
     curr.elements[element.code - 1] = element;
 
+    let oldElement = document.getElementById(StrongString.ELEMENT + 
+            StrongString.SEPARATOR + element.code);
+    oldElement.innerHTML = "";
+    oldElement.appendChild(element.getInnerHtml());
+
     let structure = rootFolder;
-    console.log("Structure now: ");
-    console.log(structure);
     browser.storage.local.set({structure});
-    //TODO: перезаписать innerHTML изменённого элемента
+    
     return false;
 }
 
