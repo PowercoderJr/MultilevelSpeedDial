@@ -17,7 +17,9 @@ Object.freeze(ElementType);
 const StrongString = {
     SEPARATOR: "_",
     ELEMENT: "el",
-    CAPTION: "cap"
+    CAPTION: "cap",
+    MINIATURE: "mture",
+    MINIATURE_BACKGROUND: "mturebg"
 }
 Object.freeze(StrongString);
 
@@ -25,7 +27,7 @@ const AssignmentMode = {
     CREATE: 0,
     EDIT: 1
 }
-Object.freeze(BgType);
+Object.freeze(AssignmentMode);
 
 const DEFAULT_BGCOLOR = "#F9F9FA";
 /*Окончание описания констант*/
@@ -34,42 +36,105 @@ const DEFAULT_BGCOLOR = "#F9F9FA";
 var Element = function(code) {
     this.type = ElementType.EMPTY;
     this.code = code;
-    this.caption = "";
-    this.icon = null;
-    this.miniature = null;
-    this.isCaptionHidden = false;
-    this.isMiniatureHidden = false;
 }
 Element.prototype.whoAreYou = function() {
     console.log("I am " + this.type + " #" + this.code + ", ");
     showAssignmentForm(this, AssignmentMode.CREATE);
 }
-Element.prototype.initHtml = function() {
-    return '<div class="element" id="' + StrongString.ELEMENT +
-            StrongString.SEPARATOR + this.code + '"></div>';
+Element.prototype.getInitHtml = function() {
+    let newDiv = document.createElement("div");
+    newDiv.className = "element";
+    newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
+    return newDiv;
+    /*return '<div class="element" id="' + StrongString.ELEMENT +
+            StrongString.SEPARATOR + this.code + '"></div>';*/
 }
-Element.prototype.updateHtml = function () {
-    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
-            this.code).innerHTML = '<div class="elementMiniature">' +
-            '<label class="elementCode">' + this.code + '</label></div>';
+Element.prototype.getInnerHtml = function () {
+    /*let element = document.getElementById(StrongString.ELEMENT +
+            StrongString.SEPARATOR + this.code);
+    element.innerHTML = "";*/
+    let miniature = document.createElement("div");
+    miniature.className = "elementMiniature";
+    miniature.id = StrongString.MINIATURE + StrongString.SEPARATOR + this.code;
+    let newLabel = document.createElement("label");
+    newLabel.className = "elementCode";
+    newLabel.innerHTML = this.code;
+    miniature.appendChild(newLabel);
+    //element.appendChild(miniature);
+    let df = document.createDocumentFragment();
+    df.appendChild(miniature);
+    return df;
 }
 Element.prototype.bindHtml = function() {
-    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
-            this.code).onclick = Element.prototype.whoAreYou.bind(this);
+    let lookingfor = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
+    document.getElementById(lookingfor).onclick = Element.prototype.whoAreYou.bind(this);
+}
+
+//Abstract
+var FilledElement = function(code) {
+    Element.call(this, code);
+    this.caption = "";
+    this.icon = null;
+    this.isCaptionHidden = false;
+    this.isMiniatureHidden = false;
+}
+FilledElement.prototype = Object.create(Element.prototype);
+FilledElement.prototype.constructor = FilledElement;
+FilledElement.prototype.getInnerHtml = function () {
+    let header = document.createElement("div");
+    header.className = "elementHeader";
+    let icon = document.createElement("img");
+    icon.src = this.icon;
+    header.appendChild(icon);
+    let caption = document.createElement("label");
+    caption.className = "elementCaption";
+    caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.code;
+    caption.innerHTML = this.caption;
+    header.appendChild(caption);
+    let btn1 = document.createElement("img");
+    btn1.className = "elementButton";
+    btn1.src = "icons/refresh.svg";
+    header.appendChild(btn1);
+    let btn2 = document.createElement("img");
+    btn2.className = "elementButton";
+    btn2.src = "icons/edit.svg";
+    header.appendChild(btn2);
+    let btn3 = document.createElement("img");
+    btn3.className = "elementButton";
+    btn3.src = "icons/delete.svg";
+    header.appendChild(btn3);
+
+    let df = Element.prototype.getInnerHtml.call(this);
+    df.insertBefore(header, df.children[0]);
+    let mture = df.getElementById(StrongString.MINIATURE +
+            StrongString.SEPARATOR + this.code);
+    let bg = document.createElement("div");
+    bg.className = "elementMiniatureBg";
+    bg.id = StrongString.MINIATURE_BACKGROUND +
+            StrongString.SEPARATOR + this.code;
+    mture.appendChild(bg);
+    return df;
 }
 
 var Bookmark = function(code, url) {
-    Element.apply(this, [code]);
+    FilledElement.call(this, code);
     this.type = ElementType.BOOKMARK;
     this.url = url || "https://google.com/";
+    this.miniature = null;
 }
-Bookmark.prototype = Object.create(Element.prototype);
+Bookmark.prototype = Object.create(FilledElement.prototype);
 Bookmark.prototype.constructor = Bookmark;
+/*Bookmark.prototype.getInnerHtml = function () {
+    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
+            this.code).innerHTML = '<div class="elementMiniature">' +
+            '<label class="elementCode">' + this.code + '</label></div>';
+}*/
 
 var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
-    Element.apply(this, [code]);
+    FilledElement.call(this, code);
     this.type = ElementType.FOLDER;
     this.caption = caption;
+    this.icon = "icons/folder.svg";
     this.rows = rows || 3;
     this.cols = cols || 3;
     this.bgtype = bgtype || BgType.DEFAULT;
@@ -81,8 +146,30 @@ var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
         this.elements[i] = new Element(i + 1);
     }
 }
-Folder.prototype = Object.create(Element.prototype);
+Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
+Folder.prototype.getInnerHtml = function () {
+    let df = FilledElement.prototype.getInnerHtml.call(this);
+    
+    let mturebg = df.getElementById(StrongString.MINIATURE_BACKGROUND +
+            StrongString.SEPARATOR + this.code);
+    switch (this.bgtype) {
+        case BgType.DEFAULT:
+            mturebg.style.backgroundColor = DEFAULT_BGCOLOR;
+            mturebg.style.backgroundImage = "";
+            break;
+        case BgType.SOLID:
+            mturebg.style.backgroundColor = this.bgdata;
+            mturebg.style.backgroundImage = "";
+            break;
+        case BgType.IMAGE_LOCAL:
+        case BgType.IMAGE_REMOTE:
+            mturebg.style.backgroundColor = "";
+            mturebg.style.backgroundImage = "url('" + this.bgdata + "')";
+            break;
+    }
+    return df;
+}
 /*Окончание описания прототипов*/
 
 var currPath = "";
@@ -202,23 +289,28 @@ function buildPage(folder) {
             let cell = row.insertCell(j);
             let element = folder.elements[folder.cols * i + j];
             let html;
-            cell.innerHTML = Element.prototype.initHtml.call(element);
+            //cell.innerHTML = Element.prototype.getInitHtml.call(element);
+            let elementHtml = Element.prototype.getInitHtml.call(element);
+            cell.appendChild(elementHtml);
+            //alert(document.body.innerHTML);
 
             //TODO: как-то не полиморфно
+            let inner;
             switch (element.type) {
                 case ElementType.EMPTY:
-                    Element.prototype.updateHtml.call(element);
+                    inner = Element.prototype.getInnerHtml.call(element);
                     Element.prototype.bindHtml.call(element);
                     break;
                 case ElementType.BOOKMARK:
-                    Bookmark.prototype.updateHtml.call(element);
+                    inner = Bookmark.prototype.getInnerHtml.call(element);
                     Bookmark.prototype.bindHtml.call(element);
                     break;
                 case ElementType.FOLDER:
-                    Folder.prototype.updateHtml.call(element);
+                    inner = Folder.prototype.getInnerHtml.call(element);
                     Folder.prototype.bindHtml.call(element);
                     break;
             }
+            elementHtml.appendChild(inner);
         }
     }
 
@@ -245,7 +337,6 @@ function areYouFirstHand(event) {
 
 function showAssignmentForm(element, mode) {
     document.getElementById("assignmentForm").reset();
-    document.getElementById("modeTf").value = mode;
     document.getElementById("codeTf").value = element.code;
 
     if (mode == AssignmentMode.CREATE) {
@@ -313,16 +404,13 @@ function submitAssignmentForm() {
             curr = curr.elements[steps[i] - 1];
         }
     }
-    let data = parseAssignmentForm();
-    curr.elements[data.element.code - 1] = data.element;
-    /*if (data.mode == AssignmentMode.CREATE) {
-        curr.elements[data.element.code - 1] = data.element;
-    }
-    else if (data.mode == AssignmentMode.EDIT) {
-        ;//TODO: заменить необходимые поля
-    }*/
+    let element = parseAssignmentForm();
+    console.log("Code is " + element.code);
+    curr.elements[element.code - 1] = element;
 
     let structure = rootFolder;
+    console.log("Structure now: ");
+    console.log(structure);
     browser.storage.local.set({structure});
     //TODO: перезаписать innerHTML изменённого элемента
     return false;
@@ -362,7 +450,7 @@ function parseAssignmentForm() {
 
     result.isCaptionHidden = document.getElementById("hideCaptionChb").checked;
     result.isMiniatureHidden = document.getElementById("hideMiniatureChb").checked;
-    return {element: result, mode: document.getElementById("modeTf").value};
+    return result;
 }
 
 function onCurtainClicked(event) {

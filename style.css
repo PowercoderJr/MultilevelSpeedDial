@@ -155,6 +155,14 @@ td {
     overflow: hidden;
 }
 
+.elementMiniatureBg {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 1px;
+    right: 1px;
+}
+
 .elementCode {
     height: 100%;
     display: flex;
