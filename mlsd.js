@@ -38,6 +38,9 @@ var Element = function(code) {
     this.type = ElementType.EMPTY;
     this.code = code;
 }
+Element.prototype.parseObj = function(data) {
+    return new Element(data.code);
+}
 Element.prototype.onClicked = function(event) {
     let container = document.getElementById(StrongString.ELEMENT +
             StrongString.SEPARATOR + this.code);
@@ -47,27 +50,18 @@ Element.prototype.onClicked = function(event) {
             StrongString.SEPARATOR + this.code);
 
     if (verifyTarget(event, [container, caption, code])) {
-        //TODO: как-то не полиморфно
-        switch (this.type) {
-            case ElementType.EMPTY:
-                Element.prototype.action.call(this);
-                break;
-            case ElementType.BOOKMARK:
-                Bookmark.prototype.action.call(this);
-                break;
-            case ElementType.FOLDER:
-                Folder.prototype.action.call(this);
-                break;
-        }
+        this.action(); //здесь не было полиморфизма
     }
 }
 Element.prototype.action = function() {
         showAssignmentForm(this, AssignmentMode.CREATE);
 }
-Element.prototype.getInitHtml = function() {
+Element.prototype.getInitHtml = function(code) {
+    //console.log(code + " || " + this.code + " = " + (code || this.code));
+    code = code || this.code;
     let newDiv = document.createElement("div");
     newDiv.className = "element";
-    newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
+    newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + code;
     return newDiv;
 }
 Element.prototype.getInnerHtml = function () {
@@ -88,7 +82,6 @@ Element.prototype.bindHtml = function() {
     document.getElementById(lookingfor).onclick =
             Element.prototype.onClicked.bind(this);
 }
-
 
 //Abstract
 var FilledElement = function(code) {
@@ -111,11 +104,13 @@ FilledElement.prototype.getInnerHtml = function () {
     caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.code;
     caption.innerHTML = this.caption;
     header.appendChild(caption);
-    //TODO: написать обработчики кнопок 2/3
     let btn1 = document.createElement("img");
     btn1.className = "elementButton";
     btn1.src = "icons/refresh.svg";
     header.appendChild(btn1);
+    btn1.onclick = function() {
+        restoreElement(currPath, this.code);
+    }.bind(this);
     let btn2 = document.createElement("img");
     btn2.className = "elementButton";
     btn2.src = "icons/edit.svg";
@@ -142,19 +137,19 @@ FilledElement.prototype.getInnerHtml = function () {
 var Bookmark = function(code, url) {
     FilledElement.call(this, code);
     this.type = ElementType.BOOKMARK;
-    this.url = url || "https://google.com/";
+    this.url = url || "https://google.com/"; //DEBUG
     this.miniature = null;
 }
 Bookmark.prototype = Object.create(FilledElement.prototype);
 Bookmark.prototype.constructor = Bookmark;
+Bookmark.prototype.parseObj = function(data) {
+    let result = new Bookmark(data.code, data.url);
+    result.miniature = data.miniature;
+    return result;
+}
 Bookmark.prototype.action = function() {
     alert("Здесь открывается закладка");
 }
-/*Bookmark.prototype.getInnerHtml = function () {
-    document.getElementById(StrongString.ELEMENT + StrongString.SEPARATOR +
-            this.code).innerHTML = '<div class="elementMiniature">' +
-            '<label class="elementCode">' + this.code + '</label></div>';
-}*/
 
 var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
     FilledElement.call(this, code);
@@ -174,6 +169,11 @@ var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
 }
 Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
+Folder.prototype.parseObj = function(data) {
+    let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata);
+    result.elements = data.elements;
+    return result;
+}
 Folder.prototype.action = function() {
     alert("Здесь открывается папка");
 }
@@ -199,6 +199,14 @@ Folder.prototype.getInnerHtml = function () {
     }
     return df;
 }
+
+//Ещё ENUM
+const ElementFactoryByType = {
+    [ElementType.EMPTY]: Element.prototype.parseObj,
+    [ElementType.BOOKMARK]: Bookmark.prototype.parseObj,
+    [ElementType.FOLDER]: Folder.prototype.parseObj
+}
+Object.freeze(ElementFactoryByType);
 /*Окончание описания прототипов*/
 
 var currPath = "";
@@ -275,18 +283,6 @@ function onPromiseFailed(error) {
     console.log(browser.i18n.getMessage("errMsg") + ": " + error);
 }
 
-/*Element.prototype.hoba = function() {
-    alert("Element hoba!");
-}
-
-Bookmark.prototype.hoba = function() {
-    alert("Bookmark hoba!");
-}
-
-Folder.prototype.hoba = function() {
-    alert("Folder hoba!");
-}*/
-
 function buildPage(folder) {
     folder.bgtype = BgType.IMAGE_REMOTE;
     folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";
@@ -316,11 +312,10 @@ function buildPage(folder) {
         let row = grid.insertRow(i);
         for (let j = 0; j < folder.cols; ++j) {
             let cell = row.insertCell(j);
-            let element = folder.elements[folder.cols * i + j];
-
-            let elementHtml = Element.prototype.getInitHtml.call(element);
-            cell.appendChild(elementHtml);
-            overwriteElement(element);
+            //let element = folder.elements[folder.cols * i + j];
+            let code = folder.cols * i + j + 1;
+            cell.appendChild(Element.prototype.getInitHtml(code));
+            restoreElement(currPath, code);
         }
     }
 
@@ -455,13 +450,17 @@ function onCurtainClicked(event) {
     }
 }
 
+//TODO: добавить аргумент path?
 function overwriteElement(element) {
-    var curr = rootFolder;
+    let curr = rootFolder;
     if (currPath != "") {
         let steps = currPath.split(".");
         for (let i = 0; i < steps.length; ++i) {
             curr = curr.elements[steps[i] - 1];
         }
+    }
+    if (!element.getInitHtml) {
+        element = ElementFactoryByType[element.type](element); //здесь не было полиморфизма
     }
     curr.elements[element.code - 1] = element;
 
@@ -469,27 +468,29 @@ function overwriteElement(element) {
             StrongString.SEPARATOR + element.code);
     let parent = oldElement.parentElement;
     oldElement.remove();
-    let elementHtml = Element.prototype.getInitHtml.call(element);
+    let elementHtml = element.getInitHtml();
+    elementHtml.appendChild(element.getInnerHtml());
     parent.appendChild(elementHtml);
-
-    //TODO: как-то не полиморфно
-    let inner;
-    switch (element.type) {
-        case ElementType.EMPTY:
-            inner = Element.prototype.getInnerHtml.call(element);
-            Element.prototype.bindHtml.call(element);
-            break;
-        case ElementType.BOOKMARK:
-            inner = Bookmark.prototype.getInnerHtml.call(element);
-            Bookmark.prototype.bindHtml.call(element);
-            break;
-        case ElementType.FOLDER:
-            inner = Folder.prototype.getInnerHtml.call(element);
-            Folder.prototype.bindHtml.call(element);
-            break;
-    }
-    elementHtml.appendChild(inner);
+    element.bindHtml();
 
     let structure = rootFolder;
     browser.storage.local.set({structure});
 }
+
+function restoreElement(path, code) {
+    browser.storage.local.get("structure").then(function(result) {
+        let folder = result.structure;
+        if (path != "") {
+            let steps = path.split(".");
+            for (let i = 0; i < steps.length; ++i) {
+                folder = folder.elements[steps[i] - 1];
+            }
+        }
+        let element = folder.elements[code - 1];
+        overwriteElement(element);
+    }, onPromiseFailed);    
+}
+
+/*function parsePath(path) {
+    
+}*/
