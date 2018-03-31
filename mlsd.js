@@ -10,14 +10,17 @@ Object.freeze(BgType);
 const ElementType = {
     EMPTY: 0,
     BOOKMARK: 1,
-    FOLDER: 2
+    FOLDER: 2,
+    BACKSTEP: 3
 }
 Object.freeze(ElementType);
 
 const StrongString = {
     SEPARATOR: "_",
     ELEMENT: "el",
+    HEADER: "hdr",
     CAPTION: "cap",
+    FAVICON: "fico",
     CODE: "code",
     MINIATURE: "mture",
     MINIATURE_BACKGROUND: "mturebg"
@@ -42,22 +45,29 @@ Element.prototype.parseObj = function(data) {
     return new Element(data.code);
 }
 Element.prototype.onClicked = function(event) {
-    let container = document.getElementById(StrongString.ELEMENT +
+    const container = document.getElementById(StrongString.ELEMENT +
             StrongString.SEPARATOR + this.code);
-    let caption = document.getElementById(StrongString.CAPTION +
+    const header = document.getElementById(StrongString.HEADER +
             StrongString.SEPARATOR + this.code);
-    let code = document.getElementById(StrongString.CODE +
+    const favicon = document.getElementById(StrongString.FAVICON +
+            StrongString.SEPARATOR + this.code);
+    const caption = document.getElementById(StrongString.CAPTION +
+            StrongString.SEPARATOR + this.code);
+    const code = document.getElementById(StrongString.CODE +
             StrongString.SEPARATOR + this.code);
 
-    if (verifyTarget(event, [container, caption, code])) {
+    console.log("Target is ", event.target);
+    if (verifyTarget(event, [container, header, favicon, caption, code])) {
         this.action(); //здесь не было полиморфизма
+        return true;
+    } else {
+        return false;
     }
 }
 Element.prototype.action = function() {
         showAssignmentForm(this, AssignmentMode.CREATE);
 }
 Element.prototype.getInitHtml = function(code) {
-    //console.log(code + " || " + this.code + " = " + (code || this.code));
     code = code || this.code;
     let newDiv = document.createElement("div");
     newDiv.className = "element";
@@ -71,7 +81,7 @@ Element.prototype.getInnerHtml = function () {
     let newLabel = document.createElement("label");
     newLabel.className = "elementCode";
     newLabel.id = StrongString.CODE + StrongString.SEPARATOR + this.code;
-    newLabel.innerHTML = this.code;
+    newLabel.textContent = this.code;
     miniature.appendChild(newLabel);
     let df = document.createDocumentFragment();
     df.appendChild(miniature);
@@ -93,16 +103,27 @@ var FilledElement = function(code) {
 }
 FilledElement.prototype = Object.create(Element.prototype);
 FilledElement.prototype.constructor = FilledElement;
+FilledElement.prototype.parseObj = function(data) {
+    let result = new FilledElement(data.code);
+    result.type = data.type;
+    result.caption = data.caption;
+    result.icon = data.icon;
+    result.isCaptionHidden = data.isCaptionHidden;
+    result.isMiniatureHidden = data.isMiniatureHidden;
+    return result;
+}
 FilledElement.prototype.getInnerHtml = function () {
     let header = document.createElement("div");
     header.className = "elementHeader";
+    header.id = StrongString.HEADER + StrongString.SEPARATOR + this.code;
     let icon = document.createElement("img");
+    icon.id = StrongString.FAVICON + StrongString.SEPARATOR + this.code;
     icon.src = this.icon;
     header.appendChild(icon);
     let caption = document.createElement("label");
     caption.className = "elementCaption";
     caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.code;
-    caption.innerHTML = this.caption;
+    caption.textContent = this.caption;
     header.appendChild(caption);
     let btn1 = document.createElement("img");
     btn1.className = "elementButton";
@@ -124,7 +145,7 @@ FilledElement.prototype.getInnerHtml = function () {
     header.appendChild(btn3);
     btn3.onclick = function() {
         let empty = new Element(this.code);
-        overwriteElement(empty);
+        overwriteElement(currPath, empty);
     }.bind(this);
 
     let df = Element.prototype.getInnerHtml.call(this);
@@ -144,38 +165,82 @@ Bookmark.prototype = Object.create(FilledElement.prototype);
 Bookmark.prototype.constructor = Bookmark;
 Bookmark.prototype.parseObj = function(data) {
     let result = new Bookmark(data.code, data.url);
+    //TOVERIFY
+    let superObj = FilledElement.prototype.parseObj.call(this, data);
+    Object.assign(result, superObj);
     result.miniature = data.miniature;
     return result;
 }
 Bookmark.prototype.action = function() {
-    alert("Здесь открывается закладка");
+    console.log("Здесь открывается закладка");
+}
+Bookmark.prototype.getInitHtml = function() {
+    let newA = document.createElement("a");
+    newA.className = "element";
+    newA.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
+    newA.href = this.url;
+    return newA;
+}
+Bookmark.prototype.getInnerHtml = function () {
+    let df = FilledElement.prototype.getInnerHtml.call(this);
+    let a = document.createElement("a");
+    a.href = this.url;
+    a.appendChild(df);
+    /*let mture = df.getElementById(StrongString.MINIATURE +
+            StrongString.SEPARATOR + this.code);
+    switch (this.bgtype) {
+        case BgType.DEFAULT:
+            mture.style.backgroundColor = DEFAULT_BGCOLOR;
+            mture.style.backgroundImage = "";
+            break;
+        case BgType.SOLID:
+            mture.style.backgroundColor = this.bgdata;
+            mture.style.backgroundImage = "";
+            break;
+        case BgType.IMAGE_LOCAL:
+        case BgType.IMAGE_REMOTE:
+            mture.style.backgroundColor = "";
+            mture.style.backgroundImage = "url('" + this.bgdata + "')";
+            break;
+    }*/
+    return a;
 }
 
-var Folder = function(code, caption, rows, cols, bgtype, bgdata) {
+var Folder = function(code, caption, rows = 3, cols = 3, bgtype = BgType.DEFAULT, bgdata = null) {
     FilledElement.call(this, code);
     this.type = ElementType.FOLDER;
     this.caption = caption;
     this.icon = "icons/folder.svg";
-    this.rows = rows || 3;
-    this.cols = cols || 3;
-    this.bgtype = bgtype || BgType.DEFAULT;
-    this.bgdata = bgdata || null;
+    this.rows = rows > 0 ? rows : 1;
+    this.cols = cols > 0 ? cols : 1;
+    this.bgtype = bgtype;
+    this.bgdata = bgdata;
 
     let amount = this.rows * this.cols;
     this.elements = new Array(amount);
-    for (let i = 0; i < amount; ++i) {
+    if (this.code > 0) {
+        this.elements[0] = new BackstepElement();
+    } else {
+        this.elements[0] = new Element(1);
+    }
+    for (let i = 1; i < amount; ++i) {
         this.elements[i] = new Element(i + 1);
     }
 }
 Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
 Folder.prototype.parseObj = function(data) {
+    //TOVERIFY
     let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata);
+    let superObj = FilledElement.prototype.parseObj.call(this, data);
+    Object.assign(result, superObj);
     result.elements = data.elements;
     return result;
 }
 Folder.prototype.action = function() {
-    alert("Здесь открывается папка");
+    console.log("Здесь открывается папка");
+    currPath.push(this.code);
+    buildPage(this);
 }
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
@@ -200,20 +265,42 @@ Folder.prototype.getInnerHtml = function () {
     return df;
 }
 
+var BackstepElement = function(code = 1) {
+    Element.call(this, code);
+    this.type = ElementType.BACKSTEP;
+}
+BackstepElement.prototype = Object.create(Element.prototype);
+BackstepElement.prototype.constructor = BackstepElement;
+BackstepElement.prototype.parseObj = function(data) {
+    return new BackstepElement();
+}
+BackstepElement.prototype.action = function() {
+    console.log("Здесь открывается предыдущая папка");
+    currPath.pop();
+    buildPage(getFolderByPath(currPath));
+}
+BackstepElement.prototype.getInnerHtml = function () {
+    let df = Element.prototype.getInnerHtml.call(this);
+    let label = df.getElementById(StrongString.CODE + StrongString.SEPARATOR + this.code);
+    label.textContent = "←";
+    return df;
+}
+
 //Ещё ENUM
 const ElementFactoryByType = {
     [ElementType.EMPTY]: Element.prototype.parseObj,
     [ElementType.BOOKMARK]: Bookmark.prototype.parseObj,
-    [ElementType.FOLDER]: Folder.prototype.parseObj
+    [ElementType.FOLDER]: Folder.prototype.parseObj,
+    [ElementType.BACKSTEP]: BackstepElement.prototype.parseObj
 }
 Object.freeze(ElementFactoryByType);
 /*Окончание описания прототипов*/
 
-var currPath = "";
+var currPath = [];
 var rootFolder;
 window.onload = function() {
     //browser.storage.local.clear();
-    browser.storage.local.get({structure: new Folder(0, browser.i18n.getMessage("extensionName"))}).then(onStructureLoaded, onPromiseFailed);
+    browser.storage.local.get('structure').then(onStructureLoaded, onPromiseFailed);
     browser.storage.local.get().then(function(all) {
         console.log("Stored data: ");
         for (let key in all) {
@@ -222,24 +309,24 @@ window.onload = function() {
     }, onPromiseFailed);
 
     /*Вставка строк из файлов локализации*/
-    document.getElementById("cellAssignmentTitle").innerHTML += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
-    document.getElementById("cellCodeLabel").innerHTML += browser.i18n.getMessage("cellCode") + ":";
-    document.getElementById("cellTypeLabel").innerHTML += browser.i18n.getMessage("cellType") + ":";
-    document.getElementById("bookmarkLabel").innerHTML += browser.i18n.getMessage("bookmark");
-    document.getElementById("folderLabel").innerHTML += browser.i18n.getMessage("folder");
-    document.getElementById("generalSettingsLabel").innerHTML += browser.i18n.getMessage("generalSettings");
-    document.getElementById("hideCaptionLabel").innerHTML += browser.i18n.getMessage("hideCaption");
-    document.getElementById("hideMiniatureLabel").innerHTML += browser.i18n.getMessage("hideMiniature");
-    document.getElementById("bookmarkSettingsLabel").innerHTML += browser.i18n.getMessage("bookmarkSettings");
-    document.getElementById("urlLabel").innerHTML += browser.i18n.getMessage("url") + ": ";
-    document.getElementById("folderSettingsLabel").innerHTML += browser.i18n.getMessage("folderSettings") + ":";
-    document.getElementById("folderNameLabel").innerHTML += browser.i18n.getMessage("folderName") + ": ";
-    document.getElementById("gridSizeLabel").innerHTML += browser.i18n.getMessage("gridSize") + ": ";
-    document.getElementById("bgLabel").innerHTML += browser.i18n.getMessage("background") + ":";
-    document.getElementById("defaultBgLabel").innerHTML += browser.i18n.getMessage("default");
-    document.getElementById("colorBgLabel").innerHTML += browser.i18n.getMessage("color") + ": ";
-    document.getElementById("imgLocalBgLabel").innerHTML += browser.i18n.getMessage("imageLocal") + ": ";
-    document.getElementById("imgRemoteBgLabel").innerHTML += browser.i18n.getMessage("imageRemote") + ": ";
+    document.getElementById("cellAssignmentTitle").textContent += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
+    document.getElementById("cellCodeLabel").textContent += browser.i18n.getMessage("cellCode") + ":";
+    document.getElementById("cellTypeLabel").textContent += browser.i18n.getMessage("cellType") + ":";
+    document.getElementById("bookmarkLabel").textContent += browser.i18n.getMessage("bookmark");
+    document.getElementById("folderLabel").textContent += browser.i18n.getMessage("folder");
+    document.getElementById("generalSettingsLabel").textContent += browser.i18n.getMessage("generalSettings");
+    document.getElementById("hideCaptionLabel").textContent += browser.i18n.getMessage("hideCaption");
+    document.getElementById("hideMiniatureLabel").textContent += browser.i18n.getMessage("hideMiniature");
+    document.getElementById("bookmarkSettingsLabel").textContent += browser.i18n.getMessage("bookmarkSettings");
+    document.getElementById("urlLabel").textContent += browser.i18n.getMessage("url") + ": ";
+    document.getElementById("folderSettingsLabel").textContent += browser.i18n.getMessage("folderSettings") + ":";
+    document.getElementById("folderNameLabel").textContent += browser.i18n.getMessage("folderName") + ": ";
+    document.getElementById("gridSizeLabel").textContent += browser.i18n.getMessage("gridSize") + ": ";
+    document.getElementById("bgLabel").textContent += browser.i18n.getMessage("background") + ":";
+    document.getElementById("defaultBgLabel").textContent += browser.i18n.getMessage("default");
+    document.getElementById("colorBgLabel").textContent += browser.i18n.getMessage("color") + ": ";
+    document.getElementById("imgLocalBgLabel").textContent += browser.i18n.getMessage("imageLocal") + ": ";
+    document.getElementById("imgRemoteBgLabel").textContent += browser.i18n.getMessage("imageRemote") + ": ";
     document.getElementById("okBtn").value = browser.i18n.getMessage("ok");
     document.getElementById("cancelBtn").value = browser.i18n.getMessage("cancel");
     document.getElementById("bgimgUrlTf").title = browser.i18n.getMessage("imgUrlRequired");
@@ -275,7 +362,13 @@ function onStructureLoaded(results) {
     console.log("results in onStructureLoaded:")
     console.log(results);
     console.log("-- onStructureLoaded end --");
-    rootFolder = results.structure;
+    if (results.structure) {
+        rootFolder = results.structure;
+    } else {
+        rootFolder = new Folder(-1, browser.i18n.getMessage("extensionName"));
+        let structure = rootFolder;
+        browser.storage.local.set({structure});
+    }
     buildPage(rootFolder);
 }
 
@@ -284,7 +377,7 @@ function onPromiseFailed(error) {
 }
 
 function buildPage(folder) {
-    folder.bgtype = BgType.IMAGE_REMOTE;
+    folder.bgtype = BgType.IMAGE_REMOTE; //DEBUG
     folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";
 
     /*Установка фона*/
@@ -312,7 +405,6 @@ function buildPage(folder) {
         let row = grid.insertRow(i);
         for (let j = 0; j < folder.cols; ++j) {
             let cell = row.insertCell(j);
-            //let element = folder.elements[folder.cols * i + j];
             let code = folder.cols * i + j + 1;
             cell.appendChild(Element.prototype.getInitHtml(code));
             restoreElement(currPath, code);
@@ -403,7 +495,7 @@ function submitAssignmentForm() {
     //TODO: предупредить о потерях если пользователь сокращает размер сетки
     hideAssignmentForm();
     let element = parseAssignmentForm();
-    overwriteElement(element);
+    overwriteElement(currPath, element);
     return false;
 }
 
@@ -450,19 +542,12 @@ function onCurtainClicked(event) {
     }
 }
 
-//TODO: добавить аргумент path?
-function overwriteElement(element) {
-    let curr = rootFolder;
-    if (currPath != "") {
-        let steps = currPath.split(".");
-        for (let i = 0; i < steps.length; ++i) {
-            curr = curr.elements[steps[i] - 1];
-        }
-    }
+function overwriteElement(path, element) {
+    let folder = getFolderByPath(path, rootFolder);
     if (!element.getInitHtml) {
         element = ElementFactoryByType[element.type](element); //здесь не было полиморфизма
     }
-    curr.elements[element.code - 1] = element;
+    folder.elements[element.code - 1] = element;
 
     let oldElement = document.getElementById(StrongString.ELEMENT + 
             StrongString.SEPARATOR + element.code);
@@ -479,18 +564,16 @@ function overwriteElement(element) {
 
 function restoreElement(path, code) {
     browser.storage.local.get("structure").then(function(result) {
-        let folder = result.structure;
-        if (path != "") {
-            let steps = path.split(".");
-            for (let i = 0; i < steps.length; ++i) {
-                folder = folder.elements[steps[i] - 1];
-            }
-        }
+        let folder = getFolderByPath(path, result.structure);
         let element = folder.elements[code - 1];
-        overwriteElement(element);
+        overwriteElement(path, element);
     }, onPromiseFailed);    
 }
 
-/*function parsePath(path) {
-    
-}*/
+function getFolderByPath(path, startDir) {
+    let folder = startDir || rootFolder;
+    for (let i = 0; i < path.length; ++i) {
+        folder = folder.elements[path[i] - 1];
+    }
+    return folder;
+}
