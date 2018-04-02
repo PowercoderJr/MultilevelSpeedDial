@@ -675,6 +675,7 @@ function verifyTarget(event, allowedTargets) {
 function showAssignmentForm(element, mode) {
     document.getElementById("assignmentForm").reset();
     document.getElementById("bgimgBase64").value = "";
+    document.getElementById("bgimgPicker").required = true;
     document.getElementById("codeTf").value = element.code;
 
     if (mode == AssignmentMode.CREATE) {
@@ -685,7 +686,6 @@ function showAssignmentForm(element, mode) {
         document.getElementById("bgcolorPicker").disabled = true;
         document.getElementById("bgimgPicker").disabled = true;
         document.getElementById("bgimgUrlTf").disabled = true;
-        document.getElementById("bgimgPicker").required = true;
     }
     else if (mode == AssignmentMode.EDIT) {
         document.getElementById("bookmarkSettings").disabled = !(document.getElementById("bookmarkRb").checked = element.type == ElementType.BOOKMARK || element.type == ElementType.EMPTY);
@@ -710,7 +710,7 @@ function showAssignmentForm(element, mode) {
                     document.getElementById("bgcolorPicker").value = element.bgdata;
                     break;
                 case (BgType.IMAGE_LOCAL):
-                    if (element.bgviewstr == "") {
+                    if (element.bgviewstr.length == 0) {
                         document.getElementById("bgimgPicker").required = true;
                         document.getElementById("bgimgBase64").value = "";
                     } else {
@@ -721,7 +721,7 @@ function showAssignmentForm(element, mode) {
                     }
                     break;
                 case (BgType.IMAGE_REMOTE):
-                    if (element.bgviewstr == "") {
+                    if (element.bgviewstr.length == 0) {
                         document.getElementById("bgimgUrlTf").value = "";
                         document.getElementById("bgimgUrlTf").required = true;
                         document.getElementById("bgimgBase64").value = "";
@@ -819,6 +819,7 @@ async function parseAssignmentForm() {
                 bgviewstr = document.getElementById("bgimgPicker").files[0].name;
             } else {
                 bgdata = document.getElementById("bgimgBase64").value;
+                bgviewstr = "Какой-то файл.жыпэг";
             }
         }
         else if (document.getElementById("imgRemoteBgRb").checked) {
