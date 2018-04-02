@@ -1,4 +1,10 @@
 /*Описание констант*/
+
+/**
+ * enum Тип фона
+ *
+ * @var Object  BgType
+ */
 const BgType = {
     DEFAULT: 0,
     SOLID: 1,
@@ -7,6 +13,11 @@ const BgType = {
 }
 Object.freeze(BgType);
 
+/**
+ * enum Тип элемента
+ *
+ * @var Object  ElementType
+ */
 const ElementType = {
     EMPTY: 0,
     BOOKMARK: 1,
@@ -15,6 +26,11 @@ const ElementType = {
 }
 Object.freeze(ElementType);
 
+/**
+ * enum Ключевая строка
+ *
+ * @var Object  StrongString
+ */
 const StrongString = {
     SEPARATOR: "_",
     ELEMENT: "el",
@@ -27,23 +43,53 @@ const StrongString = {
 }
 Object.freeze(StrongString);
 
+/**
+ * enum Режим назначения элемента
+ *
+ * @var Object  AssignmentMode
+ */
 const AssignmentMode = {
     CREATE: 0,
     EDIT: 1
 }
 Object.freeze(AssignmentMode);
 
+/**
+ * Цвет фона по умолчанию
+ *
+ * @var string  DEFAULT_BGCOLOR
+ */
 const DEFAULT_BGCOLOR = "#B1B1B3";
 /*Окончание описания констант*/
 
 /*Описание прототипов*/
+/**
+ * Конструктор Element
+ *
+ * @param   int     code    Код элемента
+ */
 var Element = function(code) {
     this.type = ElementType.EMPTY;
     this.code = code;
 }
+/**
+ * Парсинг элемента
+ *
+ * Воссоздаёт объект элемента по
+ * с заданным набором свойств
+ *
+ * @param   mixed   data    Набор свойств
+ * @return  Element         Возвращает новый объект
+ *                          элемента с заданными свойствами
+ */
 Element.prototype.parseObj = function(data) {
     return new Element(data.code);
 }
+/**
+ * Обработчик нажатия
+ *
+ * @param   event   event   Событие
+ */
 Element.prototype.onClicked = function(event) {
     const container = document.getElementById(StrongString.ELEMENT +
             StrongString.SEPARATOR + this.code);
@@ -64,9 +110,23 @@ Element.prototype.onClicked = function(event) {
         return false;
     }
 }
+/**
+ * Действие
+ *
+ * Реакция элемента на нажатие мыши
+ */
 Element.prototype.action = function() {
         showAssignmentForm(this, AssignmentMode.CREATE);
 }
+/**
+ * Инициализация HTML-разметки
+ *
+ * Создаёт контейнер для элемента
+ *
+ * @param   int         code    Код элемента
+ * @return  HTMLElement         Возвращает контейнер 
+ *                              в виде HTML-элемента
+ */
 Element.prototype.getInitHtml = function(code) {
     code = code || this.code;
     let newDiv = document.createElement("div");
@@ -74,6 +134,15 @@ Element.prototype.getInitHtml = function(code) {
     newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + code;
     return newDiv;
 }
+/**
+ * Генерация тела HTML-блока
+ *
+ * Генерирует тело HTML-блока на основе имеющихся свойств
+ *
+ * @return  DocumentFragment    Возвращает объект документа,
+ *                              сгенерированный в соответствии с
+ *                              типом элемента
+ */
 Element.prototype.getInnerHtml = function () {
     let miniature = document.createElement("div");
     miniature.className = "elementMiniature";
@@ -87,6 +156,16 @@ Element.prototype.getInnerHtml = function () {
     df.appendChild(miniature);
     return df;
 }
+/**
+ * Привязка к HTML-элементу
+ *
+ * Назначает обработчик события onclick для HTML-элемента
+ * с соответствующим id
+ *
+ * @param   int         code    Код элемента
+ * @return  HTMLElement         Возвращает контейнер 
+ *                              в виде HTML-элемента
+ */
 Element.prototype.bindHtml = function() {
     let lookingfor = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
     document.getElementById(lookingfor).onclick =
@@ -94,6 +173,11 @@ Element.prototype.bindHtml = function() {
 }
 
 //Abstract
+/**
+ * Конструктор заполненного элемента
+ *
+ * @param   int code    Код элемента
+ */
 var FilledElement = function(code) {
     Element.call(this, code);
     this.caption = "";
@@ -103,8 +187,11 @@ var FilledElement = function(code) {
 }
 FilledElement.prototype = Object.create(Element.prototype);
 FilledElement.prototype.constructor = FilledElement;
-//TODO: Object.assign(result, data);
+/**
+ * {@link Element.prototype.parseObj}
+ */
 FilledElement.prototype.parseObj = function(data) {
+    //TODO: Object.assign(result, data);
     let result = new FilledElement(data.code);
     result.type = data.type;
     result.caption = data.caption;
@@ -113,6 +200,9 @@ FilledElement.prototype.parseObj = function(data) {
     result.isMiniatureHidden = data.isMiniatureHidden;
     return result;
 }
+/**
+ * {@link Element.prototype.getInnerHtml}
+ */
 FilledElement.prototype.getInnerHtml = function () {
     let header = document.createElement("div");
     header.className = "elementHeader";
@@ -147,6 +237,7 @@ FilledElement.prototype.getInnerHtml = function () {
     btn3.src = "icons/delete.svg";
     header.appendChild(btn3);
     btn3.onclick = function() {
+        //TODO: подтвердить удаление
         let empty = new Element(this.code);
         overwriteElement(currPath, empty);
     }.bind(this);
@@ -158,6 +249,12 @@ FilledElement.prototype.getInnerHtml = function () {
     return df;
 }
 
+/**
+ * Конструктор элемента-закладки
+ *
+ * @param   int     code    Код элемента
+ * @param   string  url     Ссылка
+ */
 var Bookmark = function(code, url) {
     FilledElement.call(this, code);
     this.type = ElementType.BOOKMARK;
@@ -166,6 +263,9 @@ var Bookmark = function(code, url) {
 }
 Bookmark.prototype = Object.create(FilledElement.prototype);
 Bookmark.prototype.constructor = Bookmark;
+/**
+ * {@link Element.prototype.parseObj}
+ */
 Bookmark.prototype.parseObj = function(data) {
     let result = new Bookmark(data.code, data.url);
     //TOVERIFY
@@ -174,9 +274,15 @@ Bookmark.prototype.parseObj = function(data) {
     result.miniature = data.miniature;
     return result;
 }
+/**
+ * {@link Element.prototype.action}
+ */
 Bookmark.prototype.action = function() {
     console.log("Здесь открывается закладка");
 }
+/**
+ * {@link Element.prototype.getInitHtml}
+ */
 Bookmark.prototype.getInitHtml = function() {
     let newA = document.createElement("a");
     newA.className = "element";
@@ -184,6 +290,9 @@ Bookmark.prototype.getInitHtml = function() {
     newA.href = this.url;
     return newA;
 }
+/**
+ * {@link Element.prototype.getInnerHtml}
+ */
 Bookmark.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
     let a = document.createElement("a");
@@ -209,7 +318,20 @@ Bookmark.prototype.getInnerHtml = function () {
     return a;
 }
 
-var Folder = function(code, caption, rows = 3, cols = 3, bgtype = BgType.DEFAULT, bgdata = null, bgviewstr = "") {
+/**
+ * Конструктор элемента-папки
+ *
+ * @param   int     code        Код элемента
+ * @param   string  caption     Название папки
+ * @param   int     rows        Количество строк (по умолчанию 3)
+ * @param   int     cols        Количество столбцов (по умолчанию 3)
+ * @param   BgType  bgtype      Тип фона (по умолчанию стандартный)
+ * @param   string  bgdata      Данные фона (по умолчанию null)
+ * @param   string  bgviewstr   Отображаемая строка вместо данных фона
+ *                              (по умолчанию пуста)
+ */
+var Folder = function(code, caption, rows = 3, cols = 3, 
+        bgtype = BgType.DEFAULT, bgdata = null, bgviewstr = "") {
     FilledElement.call(this, code);
     this.type = ElementType.FOLDER;
     this.caption = caption;
@@ -233,6 +355,9 @@ var Folder = function(code, caption, rows = 3, cols = 3, bgtype = BgType.DEFAULT
 }
 Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
+/**
+ * {@link Element.prototype.parseObj}
+ */
 Folder.prototype.parseObj = function(data) {
     //TOVERIFY
     let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata, data.bgviewstr);
@@ -241,11 +366,17 @@ Folder.prototype.parseObj = function(data) {
     result.elements = data.elements;
     return result;
 }
+/**
+ * {@link Element.prototype.action}
+ */
 Folder.prototype.action = function() {
     console.log("Здесь открывается папка");
     currPath.push(this.code);
     buildPage(this);
 }
+/**
+ * {@link Element.prototype.getInnerHtml}
+ */
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
     
@@ -271,20 +402,34 @@ Folder.prototype.getInnerHtml = function () {
     return df;
 }
 
+/**
+ * Конструктор элемента "Шаг назад"
+ *
+ * @param   int code    Код элемента
+ */
 var BackstepElement = function(code = 1) {
     Element.call(this, code);
     this.type = ElementType.BACKSTEP;
 }
 BackstepElement.prototype = Object.create(Element.prototype);
 BackstepElement.prototype.constructor = BackstepElement;
+/**
+ * {@link Element.prototype.parseObj}
+ */
 BackstepElement.prototype.parseObj = function(data) {
     return new BackstepElement();
 }
+/**
+ * {@link Element.prototype.action}
+ */
 BackstepElement.prototype.action = function() {
     console.log("Здесь открывается предыдущая папка");
     currPath.pop();
     buildPage(getFolderByPath(currPath));
 }
+/**
+ * {@link Element.prototype.getInnerHtml}
+ */
 BackstepElement.prototype.getInnerHtml = function () {
     let df = Element.prototype.getInnerHtml.call(this);
     let label = df.getElementById(StrongString.CODE + StrongString.SEPARATOR + this.code);
@@ -293,6 +438,11 @@ BackstepElement.prototype.getInnerHtml = function () {
 }
 
 //Ещё ENUM
+/**
+ * enum Парсер элемента
+ *
+ * @var Object ElementFactoryByType
+ */
 const ElementFactoryByType = {
     [ElementType.EMPTY]: Element.prototype.parseObj,
     [ElementType.BOOKMARK]: Bookmark.prototype.parseObj,
@@ -302,7 +452,22 @@ const ElementFactoryByType = {
 Object.freeze(ElementFactoryByType);
 /*Окончание описания прототипов*/
 
+/**
+ * Текущий путь
+ *
+ * Хранит последовательность кодов элементов-папок, которая
+ * ведёт от корневой папки к текущей
+ *
+ * @var Stack   currPath
+ */
 var currPath = [];
+/**
+ * Корневая папка
+ *
+ * Содержит всю структуру элементов, определённую пользователем
+ *
+ * @var Folder  rootFolder
+ */
 var rootFolder;
 window.onload = function() {
     //browser.storage.local.clear();
@@ -364,6 +529,17 @@ window.onload = function() {
     document.getElementById("cancelBtn").onclick = hideAssignmentForm;
 }
 
+/**
+ * Инициализация корневой папки {@link rootFolder}
+ *
+ * Выполняется при успешной операции чтения структуры элементов из
+ * локального хранилища. Функция будет вызвана также в случае, если
+ * структура не была найдена в хранилище. Тогда параметр results будет
+ * пустым, а структура будет создана с параметрами по умолчанию.
+ * Вызывает функцию построения страницы папки {@link buildPage}
+ *
+ * @param   mixed   results    Результат чтения
+ */
 function onStructureLoaded(results) {
     console.log("results in onStructureLoaded:")
     console.log(results);
@@ -378,10 +554,25 @@ function onStructureLoaded(results) {
     buildPage(rootFolder);
 }
 
+/**
+ * Сообщение об ошибке Promise
+ *
+ * Печатает в консоль сообщение об ошибке, произошедшей в ходе
+ * выполнения Promise
+ *
+ * @param   string  error   Сообщение
+ */
 function onPromiseFailed(error) {
     console.log(browser.i18n.getMessage("errMsg") + ": " + error);
 }
 
+/**
+ * Построение страницы папки
+ *
+ * Генерирует и отображает страницу на основе объекта папки
+ *
+ * @param   Folder  folder  Элемент-папка
+ */
 function buildPage(folder) {
     /*folder.bgtype = BgType.IMAGE_REMOTE; //DEBUG
     folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";*/
@@ -433,11 +624,13 @@ function buildPage(folder) {
     document.documentElement.style.setProperty("--codeFontSize", codeFontSizeV);
 }
 
-/*function buildElement(path, code) {
-    let folder = getFolderByPath(path, rootFolder);
-    let element = folder.elements[code - 1];
-    overwriteElement(path, element);
-}*/
+/**
+ * Пересоздание элемента
+ *
+ * Пересоздаёт элемент и заменяет старый HTML-блок новым
+ *
+ * @param   Element element Элемент
+ */
 function rebuildElement(element) {
     element = verifyElementObject(element);
     let oldElement = document.getElementById(StrongString.ELEMENT + 
@@ -451,6 +644,18 @@ function rebuildElement(element) {
 }
 
 //https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
+/**
+ * Проверка цели события
+ *
+ * Определяет, находится ли цель события среди переданных объектов
+ *
+ * @param   event       event               Событие
+ * @param   Array       allowedTargets      Массив сверяемых объектов
+ * @return  boolean                         Возвращает true, если цель
+ *                                          события находится среди
+ *                                          сверяемых объектов, иначе
+ *                                          возвращает false.
+ */
 function verifyTarget(event, allowedTargets) {
     event = window.event || event;
     return allowedTargets.some(function(curr) {
@@ -458,6 +663,15 @@ function verifyTarget(event, allowedTargets) {
     });
 }
 
+/**
+ * Отображение формы назначения элемента
+ *
+ * Очищает или заполняет поля формы назначения элемента в соответствии
+ * с назначаемым элементом и отображает форму поверх остального UI.
+ *
+ * @param   Element         element Код элемента
+ * @param   AssignmentMode  mode    Режим назначения
+ */
 function showAssignmentForm(element, mode) {
     document.getElementById("assignmentForm").reset();
     document.getElementById("bgimgBase64").value = "";
@@ -528,11 +742,24 @@ function showAssignmentForm(element, mode) {
     document.getElementById("background").style.WebkitFilter = "contrast(0.25)";
 }
 
+/**
+ * Сокрытие формы назначения элемента
+ *
+ * Скрывает форму назначения элемента
+ */
 function hideAssignmentForm() {
     document.getElementById("curtain").style.display = "none";
     document.getElementById("background").style.WebkitFilter = "";
 }
 
+/**
+ * Публикация информации с формы назначения элемента
+ *
+ * Считывает информацию, указанную пользователем на форме
+ * назначения элемента и перезаписывает прежний элемент
+ * новым, созданным на основе указанных свойств.
+ * {@link parseAssignmentForm}
+ */
 function submitAssignmentForm() {
     //TODO: предупредить о потерях если пользователь сокращает размер сетки
     hideAssignmentForm();
@@ -543,6 +770,15 @@ function submitAssignmentForm() {
     return false;
 }
 
+/**
+ * Парсинг формы назначения элемента
+ *
+ * Считывает информацию с формы назначения элемента и
+ * записывает её в новый объект.
+ *
+ * @return  Promise Возвращает Promise, который в случае успеха
+ *          предоставляет объект со считанными свойствами элемента
+ */
 async function parseAssignmentForm() {
     let result = null;
     let code = parseInt(document.getElementById("codeTf").value);
@@ -610,12 +846,27 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * Обработчик нажатия на штору
+ *
+ * Реагирует на нажатие мыши за пределами формы назначения элемента
+ */
 function onCurtainClicked(event) {
     if (verifyTarget(event, [document.getElementById("curtain")])) {
         hideAssignmentForm();
     }
 }
 
+/**
+ * Перезапись элемента
+ *
+ * Перезаписывает элемент в хранилище по заданному пути. В случае,
+ * если путь совпадает с текущим, перестраивает HTML-представление
+ * элемента на странице.
+ *
+ * @param   Array   path    Путь
+ * @param   Element element Новый элемент
+ */
 function overwriteElement(path, element) {
     let folder = getFolderByPath(path, rootFolder);
     element = verifyElementObject(element);
@@ -637,14 +888,37 @@ function overwriteElement(path, element) {
     browser.storage.local.set({structure});
 }
 
+/**
+ * Восстановление элемента из хранилища
+ *
+ * Считывает элемент с заданным кодом из хранилища по заданному пути.
+ * В случае, если путь совпадает с текущим, перестраивает
+ * HTML-представление элемента на странице.
+ *
+ * @param   Array   path    Путь
+ * @param   Element element Новый элемент
+ */
 function restoreElement(path, code) {
     browser.storage.local.get("structure").then(function(result) {
         let folder = getFolderByPath(path, result.structure);
         let element = folder.elements[code - 1];
-        overwriteElement(path, element);
+        //overwriteElement(path, element);
+        if (path == currPath) {
+            rebuildElement(element);
+        }
     }, onPromiseFailed);
 }
 
+/**
+ * Переход по пути
+ *
+ * Проходит со стартовой папки по заданному пути и возвращает
+ * объект последней папки.
+ *
+ * @param   Array   path        Путь
+ * @param   Folder  startDir    Стартовая папка. Если не указана,
+ *                              по умолчанию берётся корневая папка.
+ */
 function getFolderByPath(path, startDir) {
     let folder = startDir || rootFolder;
     for (let i = 0; i < path.length; ++i) {
@@ -653,8 +927,20 @@ function getFolderByPath(path, startDir) {
     return folder;
 }
 
+/**
+ * Реконструирование элемента
+ *
+ * Проверяет, является ли переданный объект экземпляром Element
+ * или экземпляром его наследников. В случае, если не является -
+ * создаёт новый объект с свойствами, хранящимися в аргументе.
+ * {@link Element.prototype.parseObj}
+ *
+ * @param   Object  element Объект, который, предположительно,
+ *                          является экземпляром Element
+ */
 function verifyElementObject(element) {
-    if (!element.getInitHtml) {
+    //if (!element.getInitHtml) {
+    if (!(element instanceof Element)) {
         element = ElementFactoryByType[element.type](element);
     }
     return element;
