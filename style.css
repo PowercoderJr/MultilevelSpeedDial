@@ -6,6 +6,10 @@
     --fieldsetBlurValue: 5px;
 }
 
+body {
+    background-color: #B1B1B3;
+}
+
 .fullscreenElement {
     position: absolute;
     top: 0px;
@@ -15,7 +19,7 @@
 }
 
 #background {
-    
+    background-size: cover;    
 }
 
 #grid {
@@ -162,7 +166,7 @@ td {
     font-family: Arial;
     font-size: var(--codeFontSize);
     font-weight: 900;
-    text-shadow: 0px 0px 3px rgba(250,250,249,0.75);
+    text-shadow: 0px 0px 3px rgba(249,249,250,0.75);
     color: transparent;
 }
 

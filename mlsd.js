@@ -58,7 +58,7 @@ Element.prototype.onClicked = function(event) {
 
     console.log("Target is ", event.target);
     if (verifyTarget(event, [container, header, favicon, caption, code])) {
-        this.action(); //здесь не было полиморфизма
+        this.action();
         return true;
     } else {
         return false;
@@ -103,6 +103,7 @@ var FilledElement = function(code) {
 }
 FilledElement.prototype = Object.create(Element.prototype);
 FilledElement.prototype.constructor = FilledElement;
+//TODO: Object.assign(result, data);
 FilledElement.prototype.parseObj = function(data) {
     let result = new FilledElement(data.code);
     result.type = data.type;
@@ -123,7 +124,9 @@ FilledElement.prototype.getInnerHtml = function () {
     let caption = document.createElement("label");
     caption.className = "elementCaption";
     caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.code;
-    caption.textContent = this.caption;
+    if (!this.isCaptionHidden) {
+        caption.textContent = this.caption;
+    }
     header.appendChild(caption);
     let btn1 = document.createElement("img");
     btn1.className = "elementButton";
@@ -206,7 +209,7 @@ Bookmark.prototype.getInnerHtml = function () {
     return a;
 }
 
-var Folder = function(code, caption, rows = 3, cols = 3, bgtype = BgType.DEFAULT, bgdata = null) {
+var Folder = function(code, caption, rows = 3, cols = 3, bgtype = BgType.DEFAULT, bgdata = null, bgviewstr = "") {
     FilledElement.call(this, code);
     this.type = ElementType.FOLDER;
     this.caption = caption;
@@ -215,6 +218,7 @@ var Folder = function(code, caption, rows = 3, cols = 3, bgtype = BgType.DEFAULT
     this.cols = cols > 0 ? cols : 1;
     this.bgtype = bgtype;
     this.bgdata = bgdata;
+    this.bgviewstr = bgviewstr;
 
     let amount = this.rows * this.cols;
     this.elements = new Array(amount);
@@ -231,7 +235,7 @@ Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
 Folder.prototype.parseObj = function(data) {
     //TOVERIFY
-    let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata);
+    let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata, data.bgviewstr);
     let superObj = FilledElement.prototype.parseObj.call(this, data);
     Object.assign(result, superObj);
     result.elements = data.elements;
@@ -245,22 +249,24 @@ Folder.prototype.action = function() {
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
     
-    let mture = df.getElementById(StrongString.MINIATURE +
-            StrongString.SEPARATOR + this.code);
-    switch (this.bgtype) {
-        case BgType.DEFAULT:
-            mture.style.backgroundColor = DEFAULT_BGCOLOR;
-            mture.style.backgroundImage = "";
-            break;
-        case BgType.SOLID:
-            mture.style.backgroundColor = this.bgdata;
-            mture.style.backgroundImage = "";
-            break;
-        case BgType.IMAGE_LOCAL:
-        case BgType.IMAGE_REMOTE:
-            mture.style.backgroundColor = "";
-            mture.style.backgroundImage = "url('" + this.bgdata + "')";
-            break;
+    if (!this.isMiniatureHidden) {
+        let mture = df.getElementById(StrongString.MINIATURE +
+                StrongString.SEPARATOR + this.code);
+        switch (this.bgtype) {
+            case BgType.DEFAULT:
+                mture.style.backgroundColor = DEFAULT_BGCOLOR;
+                mture.style.backgroundImage = "";
+                break;
+            case BgType.SOLID:
+                mture.style.backgroundColor = this.bgdata;
+                mture.style.backgroundImage = "";
+                break;
+            case BgType.IMAGE_LOCAL:
+            case BgType.IMAGE_REMOTE:
+                mture.style.backgroundColor = "";
+                mture.style.backgroundImage = "url('" + this.bgdata + "')";
+                break;
+        }
     }
     return df;
 }
@@ -309,24 +315,24 @@ window.onload = function() {
     }, onPromiseFailed);
 
     /*Вставка строк из файлов локализации*/
-    document.getElementById("cellAssignmentTitle").textContent += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
-    document.getElementById("cellCodeLabel").textContent += browser.i18n.getMessage("cellCode") + ":";
-    document.getElementById("cellTypeLabel").textContent += browser.i18n.getMessage("cellType") + ":";
-    document.getElementById("bookmarkLabel").textContent += browser.i18n.getMessage("bookmark");
-    document.getElementById("folderLabel").textContent += browser.i18n.getMessage("folder");
-    document.getElementById("generalSettingsLabel").textContent += browser.i18n.getMessage("generalSettings");
-    document.getElementById("hideCaptionLabel").textContent += browser.i18n.getMessage("hideCaption");
-    document.getElementById("hideMiniatureLabel").textContent += browser.i18n.getMessage("hideMiniature");
-    document.getElementById("bookmarkSettingsLabel").textContent += browser.i18n.getMessage("bookmarkSettings");
-    document.getElementById("urlLabel").textContent += browser.i18n.getMessage("url") + ": ";
-    document.getElementById("folderSettingsLabel").textContent += browser.i18n.getMessage("folderSettings") + ":";
-    document.getElementById("folderNameLabel").textContent += browser.i18n.getMessage("folderName") + ": ";
-    document.getElementById("gridSizeLabel").textContent += browser.i18n.getMessage("gridSize") + ": ";
-    document.getElementById("bgLabel").textContent += browser.i18n.getMessage("background") + ":";
-    document.getElementById("defaultBgLabel").textContent += browser.i18n.getMessage("default");
-    document.getElementById("colorBgLabel").textContent += browser.i18n.getMessage("color") + ": ";
-    document.getElementById("imgLocalBgLabel").textContent += browser.i18n.getMessage("imageLocal") + ": ";
-    document.getElementById("imgRemoteBgLabel").textContent += browser.i18n.getMessage("imageRemote") + ": ";
+    document.getElementById("cellAssignmentTitle").innerHTML += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
+    document.getElementById("cellCodeLabel").innerHTML += browser.i18n.getMessage("cellCode") + ":";
+    document.getElementById("cellTypeLabel").innerHTML += browser.i18n.getMessage("cellType") + ":";
+    document.getElementById("bookmarkLabel").innerHTML += browser.i18n.getMessage("bookmark");
+    document.getElementById("folderLabel").innerHTML += browser.i18n.getMessage("folder");
+    document.getElementById("generalSettingsLabel").innerHTML += browser.i18n.getMessage("generalSettings");
+    document.getElementById("hideCaptionLabel").innerHTML += browser.i18n.getMessage("hideCaption");
+    document.getElementById("hideMiniatureLabel").innerHTML += browser.i18n.getMessage("hideMiniature");
+    document.getElementById("bookmarkSettingsLabel").innerHTML += browser.i18n.getMessage("bookmarkSettings");
+    document.getElementById("urlLabel").innerHTML += browser.i18n.getMessage("url") + ": ";
+    document.getElementById("folderSettingsLabel").innerHTML += browser.i18n.getMessage("folderSettings") + ":";
+    document.getElementById("folderNameLabel").innerHTML += browser.i18n.getMessage("folderName") + ": ";
+    document.getElementById("gridSizeLabel").innerHTML += browser.i18n.getMessage("gridSize") + ": ";
+    document.getElementById("bgLabel").innerHTML += browser.i18n.getMessage("background") + ":";
+    document.getElementById("defaultBgLabel").innerHTML += browser.i18n.getMessage("default");
+    document.getElementById("colorBgLabel").innerHTML += browser.i18n.getMessage("color") + ": ";
+    document.getElementById("imgLocalBgLabel").innerHTML += browser.i18n.getMessage("imageLocal") + ": ";
+    document.getElementById("imgRemoteBgLabel").innerHTML += browser.i18n.getMessage("imageRemote") + ": ";
     document.getElementById("okBtn").value = browser.i18n.getMessage("ok");
     document.getElementById("cancelBtn").value = browser.i18n.getMessage("cancel");
     document.getElementById("bgimgUrlTf").title = browser.i18n.getMessage("imgUrlRequired");
@@ -377,8 +383,8 @@ function onPromiseFailed(error) {
 }
 
 function buildPage(folder) {
-    folder.bgtype = BgType.IMAGE_REMOTE; //DEBUG
-    folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";
+    /*folder.bgtype = BgType.IMAGE_REMOTE; //DEBUG
+    folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";*/
 
     /*Установка фона*/
     let background = document.getElementById("background");
@@ -407,7 +413,8 @@ function buildPage(folder) {
             let cell = row.insertCell(j);
             let code = folder.cols * i + j + 1;
             cell.appendChild(Element.prototype.getInitHtml(code));
-            restoreElement(currPath, code);
+            //restoreElement(currPath, code);
+            rebuildElement(folder.elements[code - 1]);
         }
     }
 
@@ -426,6 +433,23 @@ function buildPage(folder) {
     document.documentElement.style.setProperty("--codeFontSize", codeFontSizeV);
 }
 
+/*function buildElement(path, code) {
+    let folder = getFolderByPath(path, rootFolder);
+    let element = folder.elements[code - 1];
+    overwriteElement(path, element);
+}*/
+function rebuildElement(element) {
+    element = verifyElementObject(element);
+    let oldElement = document.getElementById(StrongString.ELEMENT + 
+            StrongString.SEPARATOR + element.code);
+    let parent = oldElement.parentElement;
+    oldElement.remove();
+    let elementHtml = element.getInitHtml();
+    elementHtml.appendChild(element.getInnerHtml());
+    parent.appendChild(elementHtml);
+    element.bindHtml();
+}
+
 //https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
 function verifyTarget(event, allowedTargets) {
     event = window.event || event;
@@ -436,6 +460,7 @@ function verifyTarget(event, allowedTargets) {
 
 function showAssignmentForm(element, mode) {
     document.getElementById("assignmentForm").reset();
+    document.getElementById("bgimgBase64").value = "";
     document.getElementById("codeTf").value = element.code;
 
     if (mode == AssignmentMode.CREATE) {
@@ -446,6 +471,7 @@ function showAssignmentForm(element, mode) {
         document.getElementById("bgcolorPicker").disabled = true;
         document.getElementById("bgimgPicker").disabled = true;
         document.getElementById("bgimgUrlTf").disabled = true;
+        document.getElementById("bgimgPicker").required = true;
     }
     else if (mode == AssignmentMode.EDIT) {
         document.getElementById("bookmarkSettings").disabled = !(document.getElementById("bookmarkRb").checked = element.type == ElementType.BOOKMARK || element.type == ElementType.EMPTY);
@@ -470,10 +496,26 @@ function showAssignmentForm(element, mode) {
                     document.getElementById("bgcolorPicker").value = element.bgdata;
                     break;
                 case (BgType.IMAGE_LOCAL):
-                    //document.getElementById("bgimgPicker").value = element.bgdata; //SecurityError: The operation is insecure
+                    if (element.bgviewstr == "") {
+                        document.getElementById("bgimgPicker").required = true;
+                        document.getElementById("bgimgBase64").value = "";
+                    } else {
+                        //TODO: отобразить имя файла, если он был указан ранее https://stackoverflow.com/a/17949302
+                        //document.getElementById("bgimgPicker").value = element.bgviewstr; //SecurityError: The operation is insecure
+                        document.getElementById("bgimgPicker").required = false;
+                        document.getElementById("bgimgBase64").value = element.bgdata;
+                    }
                     break;
                 case (BgType.IMAGE_REMOTE):
-                    document.getElementById("bgimgUrlTf").value = element.bgdata;
+                    if (element.bgviewstr == "") {
+                        document.getElementById("bgimgUrlTf").value = "";
+                        document.getElementById("bgimgUrlTf").required = true;
+                        document.getElementById("bgimgBase64").value = "";
+                    } else {
+                        document.getElementById("bgimgUrlTf").value = element.bgviewstr;
+                        document.getElementById("bgimgUrlTf").required = false;
+                        document.getElementById("bgimgBase64").value = element.bgdata;
+                    }
                     break;
             }
         }
@@ -494,12 +536,14 @@ function hideAssignmentForm() {
 function submitAssignmentForm() {
     //TODO: предупредить о потерях если пользователь сокращает размер сетки
     hideAssignmentForm();
-    let element = parseAssignmentForm();
-    overwriteElement(currPath, element);
+    parseAssignmentForm().then(function (element) {
+        console.log(element);
+        overwriteElement(currPath, element);
+    });
     return false;
 }
 
-function parseAssignmentForm() {
+async function parseAssignmentForm() {
     let result = null;
     let code = parseInt(document.getElementById("codeTf").value);
     if (document.getElementById("bookmarkRb").checked) {
@@ -511,29 +555,59 @@ function parseAssignmentForm() {
         let rows = parseInt(document.getElementById("rowsSpin").value);
         let cols = parseInt(document.getElementById("colsSpin").value);
 
-        let bgtype, bgdata;
+        let bgtype, bgdata, bgviewstr;
         if (document.getElementById("defaultBgRb").checked) {
             bgtype = BgType.DEFAULT;
             bgdata = null;
+            bgviewstr = "";
         }
         else if (document.getElementById("colorBgRb").checked) {
             bgtype = BgType.SOLID;
             bgdata = document.getElementById("bgcolorPicker").value;
+            bgviewstr = "";
         }
         else if (document.getElementById("imgLocalBgRb").checked) {
+            //TODO: эффективно? см. также 2 функции ниже
             bgtype = BgType.IMAGE_LOCAL;
-            bgdata = document.getElementById("bgimgPicker").value;
+            const picker = document.getElementById("bgimgPicker");
+            if (picker.files.length > 0) {
+                let file = document.getElementById("bgimgPicker").files[0];
+                let reader = new FileReader();
+                reader.onloadend = function() {
+                    isLocalImageLoading = false;
+                }
+                isLocalImageLoading = true;
+                reader.readAsDataURL(file);
+                await waitForLocalImage();
+                bgdata = reader.result;
+                bgviewstr = document.getElementById("bgimgPicker").files[0].name;
+            } else {
+                bgdata = document.getElementById("bgimgBase64").value;
+            }
         }
         else if (document.getElementById("imgRemoteBgRb").checked) {
             bgtype = BgType.IMAGE_REMOTE;
-            bgdata = document.getElementById("bgimgUrlTf").value;
+            bgdata = document.getElementById("bgimgUrlTf").value; //TODO: to base64
+            bgviewstr = document.getElementById("bgimgUrlTf").value;
         }
-        result = new Folder(code, caption, rows, cols, bgtype, bgdata);
+        result = new Folder(code, caption, rows, cols, bgtype, bgdata, bgviewstr);
     }
 
     result.isCaptionHidden = document.getElementById("hideCaptionChb").checked;
     result.isMiniatureHidden = document.getElementById("hideMiniatureChb").checked;
     return result;
+}
+
+let isLocalImageLoading;
+async function waitForLocalImage() {
+    while (isLocalImageLoading) {
+        await sleep(30);
+        console.log("Z-z-z");
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function onCurtainClicked(event) {
@@ -544,19 +618,20 @@ function onCurtainClicked(event) {
 
 function overwriteElement(path, element) {
     let folder = getFolderByPath(path, rootFolder);
-    if (!element.getInitHtml) {
-        element = ElementFactoryByType[element.type](element); //здесь не было полиморфизма
-    }
+    element = verifyElementObject(element);
     folder.elements[element.code - 1] = element;
 
-    let oldElement = document.getElementById(StrongString.ELEMENT + 
+    /*let oldElement = document.getElementById(StrongString.ELEMENT + 
             StrongString.SEPARATOR + element.code);
     let parent = oldElement.parentElement;
     oldElement.remove();
     let elementHtml = element.getInitHtml();
     elementHtml.appendChild(element.getInnerHtml());
     parent.appendChild(elementHtml);
-    element.bindHtml();
+    element.bindHtml();*/
+    if (path == currPath) {
+        rebuildElement(element);
+    }
 
     let structure = rootFolder;
     browser.storage.local.set({structure});
@@ -567,7 +642,7 @@ function restoreElement(path, code) {
         let folder = getFolderByPath(path, result.structure);
         let element = folder.elements[code - 1];
         overwriteElement(path, element);
-    }, onPromiseFailed);    
+    }, onPromiseFailed);
 }
 
 function getFolderByPath(path, startDir) {
@@ -576,4 +651,11 @@ function getFolderByPath(path, startDir) {
         folder = folder.elements[path[i] - 1];
     }
     return folder;
+}
+
+function verifyElementObject(element) {
+    if (!element.getInitHtml) {
+        element = ElementFactoryByType[element.type](element);
+    }
+    return element;
 }
