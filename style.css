@@ -10,6 +10,16 @@ body {
     background-color: #B1B1B3;
 }
 
+label.doLeading {
+    line-height: 175%;
+}
+
+label.warning {
+    font-size: calc(100% - 3pt);
+    color: #a47f00;
+    display: none; /*none or initial*/
+}
+
 .fullscreenElement {
     position: absolute;
     top: 0px;

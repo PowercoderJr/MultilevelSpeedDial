@@ -237,9 +237,11 @@ FilledElement.prototype.getInnerHtml = function () {
     btn3.src = "icons/delete.svg";
     header.appendChild(btn3);
     btn3.onclick = function() {
-        //TODO: подтвердить удаление
-        let empty = new Element(this.code);
-        overwriteElement(currPath, empty);
+        if (confirm(browser.i18n.getMessage("rlyDeleteElement",
+                [this.code, this.caption]))) {
+            let empty = new Element(this.code);
+            overwriteElement(currPath, empty);
+        }
     }.bind(this);
 
     let df = Element.prototype.getInnerHtml.call(this);
@@ -268,7 +270,6 @@ Bookmark.prototype.constructor = Bookmark;
  */
 Bookmark.prototype.parseObj = function(data) {
     let result = new Bookmark(data.code, data.url);
-    //TOVERIFY
     let superObj = FilledElement.prototype.parseObj.call(this, data);
     Object.assign(result, superObj);
     result.miniature = data.miniature;
@@ -359,7 +360,6 @@ Folder.prototype.constructor = Folder;
  * {@link Element.prototype.parseObj}
  */
 Folder.prototype.parseObj = function(data) {
-    //TOVERIFY
     let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata, data.bgviewstr);
     let superObj = FilledElement.prototype.parseObj.call(this, data);
     Object.assign(result, superObj);
@@ -508,22 +508,85 @@ window.onload = function() {
     document.getElementById("curtain").onclick = onCurtainClicked;
 
     let onElementTypeChanged = function () {
-        document.getElementById("bookmarkSettings").disabled = !document.getElementById("bookmarkRb").checked;
-        document.getElementById("folderSettings").disabled = !document.getElementById("folderRb").checked;
+        document.getElementById("bookmarkSettings").disabled =
+                !document.getElementById("bookmarkRb").checked;
+        document.getElementById("folderSettings").disabled =
+                !document.getElementById("folderRb").checked;
     }
-    let radioButtons = document.getElementsByName("elementType");
-    radioButtons.forEach(function(item) {
+    let bufControls = document.getElementsByName("elementType");
+    bufControls.forEach(function(item) {
         item.oninput = onElementTypeChanged;
     });
 
     let onBgtypeChanged = function () {
-        document.getElementById("bgcolorPicker").disabled = !document.getElementById("colorBgRb").checked;
-        document.getElementById("bgimgPicker").disabled = !document.getElementById("imgLocalBgRb").checked;
-        document.getElementById("bgimgUrlTf").disabled = !document.getElementById("imgRemoteBgRb").checked;
+        document.getElementById("bgcolorPicker").disabled =
+                !document.getElementById("colorBgRb").checked;
+        document.getElementById("bgimgPicker").disabled =
+                !document.getElementById("imgLocalBgRb").checked;
+        document.getElementById("bgimgUrlTf").disabled =
+                !document.getElementById("imgRemoteBgRb").checked;
     }
-    radioButtons = document.getElementsByName("bgtype");
-    radioButtons.forEach(function(item) {
+    bufControls = document.getElementsByName("bgtype");
+    bufControls.forEach(function(item) {
         item.oninput = onBgtypeChanged;
+    });
+
+    let onGridSizeChanged = function () {
+        const oldAmount = document.getElementById("rowsOld").value *
+                document.getElementById("colsOld").value;
+        const newAmount = document.getElementById("rowsSpin").value *
+                document.getElementById("colsSpin").value;
+        if (newAmount < oldAmount) {
+            const elements = getFolderByPath(currPath, rootFolder).
+                    elements[document.getElementById("codeTf").value - 1].
+                    elements;
+            let nBookmarks = 0;
+            let nFolders = 0;
+            for (let i = newAmount; i < oldAmount; ++i) {
+                switch (elements[i].type) {
+                    case ElementType.BOOKMARK:
+                        ++nBookmarks;
+                        break;
+                    case ElementType.FOLDER:
+                        ++nFolders;
+                        break;
+                }
+            }
+
+            if (nBookmarks + nFolders > 0) {
+                let getEnding = function(number) {
+                    const locale = browser.i18n.getMessage("@@ui_locale");
+                    if (locale == "ru") {
+                        if (number % 100 != 11 && number % 10 == 1) {
+                            return browser.i18n.getMessage("endingCase1")
+                        } else if ((number % 100 < 12 || number % 100 > 14) &&
+                                number % 10 >= 2 && number % 10 <= 4) {
+                            return browser.i18n.getMessage("endingCase2")
+                        } else {
+                            return browser.i18n.getMessage("endingCase0")
+                        }
+                    } else if (locale == "en") {
+                        return number == 1 ? "" : "s";
+                    }
+                }
+                const endingBookmarks = getEnding(nBookmarks);
+                const endingFolders = getEnding(nFolders);
+                document.getElementById("elemsWillBeLostLabel").textContent = 
+                        browser.i18n.getMessage("elemsWillBeLost", [newAmount,
+                        nBookmarks, endingBookmarks, nFolders, endingFolders]);
+                document.getElementById("elemsWillBeLostLabel").style.display = "initial";
+            } else {
+                document.getElementById("elemsWillBeLostLabel").textContent = "";
+                document.getElementById("elemsWillBeLostLabel").style.display = "none";
+            }
+        } else {
+            document.getElementById("elemsWillBeLostLabel").textContent = "";
+            document.getElementById("elemsWillBeLostLabel").style.display = "none";
+        }
+    }
+    bufControls = document.getElementsByName("gridSize");
+    bufControls.forEach(function(item) {
+        item.oninput = onGridSizeChanged;
     });
 
     document.getElementById("cancelBtn").onclick = hideAssignmentForm;
@@ -677,6 +740,8 @@ function showAssignmentForm(element, mode) {
     document.getElementById("bgimgBase64").value = "";
     document.getElementById("bgimgPicker").required = true;
     document.getElementById("codeTf").value = element.code;
+    document.getElementById("elemsWillBeLostLabel").textContent = "";
+    document.getElementById("elemsWillBeLostLabel").style.display = "none";
 
     if (mode == AssignmentMode.CREATE) {
         document.getElementById("bookmarkSettings").disabled = false;
@@ -701,6 +766,8 @@ function showAssignmentForm(element, mode) {
             document.getElementById("folderNameTf").value = element.caption;
             document.getElementById("rowsSpin").value = element.rows;
             document.getElementById("colsSpin").value = element.cols;
+            document.getElementById("rowsOld").value = element.rows;
+            document.getElementById("colsOld").value = element.cols;
             document.getElementById("defaultBgRb").checked = element.bgtype == BgType.DEFAULT;
             document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = element.bgtype == BgType.SOLID);
             document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgType.IMAGE_LOCAL);
@@ -761,9 +828,9 @@ function hideAssignmentForm() {
  * {@link parseAssignmentForm}
  */
 function submitAssignmentForm() {
-    //TODO: предупредить о потерях если пользователь сокращает размер сетки
+    //TODO: parseAssignmentForm(>true<), если режим - редактирование
     hideAssignmentForm();
-    parseAssignmentForm().then(function (element) {
+    parseAssignmentForm(true).then(function (element) {
         console.log(element);
         overwriteElement(currPath, element);
     });
@@ -776,10 +843,13 @@ function submitAssignmentForm() {
  * Считывает информацию с формы назначения элемента и
  * записывает её в новый объект.
  *
- * @return  Promise Возвращает Promise, который в случае успеха
- *          предоставляет объект со считанными свойствами элемента
+ * @param   boolean copyElems   Копировать ли в новый объект структуру элементов
+ *                              (актуально, если редактируется элемент-папка)
+ * @return  Promise             Возвращает Promise, который в случае успеха
+ *                              предоставляет объект со считанными свойствами элемента
  */
-async function parseAssignmentForm() {
+async function parseAssignmentForm(copyElems) {
+    //TODO: предупредить о потерях если пользователь сокращает размер сетки
     let result = null;
     let code = parseInt(document.getElementById("codeTf").value);
     if (document.getElementById("bookmarkRb").checked) {
@@ -803,19 +873,12 @@ async function parseAssignmentForm() {
             bgviewstr = "";
         }
         else if (document.getElementById("imgLocalBgRb").checked) {
-            //TODO: эффективно? см. также 2 функции ниже
             bgtype = BgType.IMAGE_LOCAL;
             const picker = document.getElementById("bgimgPicker");
             if (picker.files.length > 0) {
                 let file = document.getElementById("bgimgPicker").files[0];
-                let reader = new FileReader();
-                reader.onloadend = function() {
-                    isLocalImageLoading = false;
-                }
-                isLocalImageLoading = true;
-                reader.readAsDataURL(file);
-                await waitForLocalImage();
-                bgdata = reader.result;
+                await readFile(file).then(function(data) {bgdata = data;},
+                        onPromiseFailed);
                 bgviewstr = document.getElementById("bgimgPicker").files[0].name;
             } else {
                 bgdata = document.getElementById("bgimgBase64").value;
@@ -828,6 +891,16 @@ async function parseAssignmentForm() {
             bgviewstr = document.getElementById("bgimgUrlTf").value;
         }
         result = new Folder(code, caption, rows, cols, bgtype, bgdata, bgviewstr);
+        if (copyElems) {
+            let src = getFolderByPath(currPath, rootFolder).elements[code - 1];
+            if (src.type == ElementType.FOLDER) {
+                //TODO?: сейчас сохраняется нумерация, предусмотреть сохранение положения
+                const bound = Math.min(src.elements.length, rows * cols);
+                for (let i = 0; i < bound; ++i) {
+                    result.elements[i] = src.elements[i];
+                }
+            }
+        }
     }
 
     result.isCaptionHidden = document.getElementById("hideCaptionChb").checked;
@@ -835,16 +908,29 @@ async function parseAssignmentForm() {
     return result;
 }
 
-let isLocalImageLoading;
-async function waitForLocalImage() {
-    while (isLocalImageLoading) {
-        await sleep(30);
-        console.log("Z-z-z");
-    }
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+/**
+ * Загрузка файла
+ *
+ * Считывает файл с компьютера
+ * 
+ * @param   File    file    Выбранный файл
+ * @return  Promise         Возвращает Promise, который в случае успеха
+ *                          предоставляет считанную информацию в виде
+ *                          строки base64; в случае неудачи - сообщение
+ *                          об ошибке.
+ */
+function readFile(file) {
+    return new Promise((resolve, reject) => {    
+        let reader = new FileReader();
+        reader.onloadend = function() {
+            if (reader.result) {
+                resolve(reader.result);
+            } else {
+                reject(browser.i18n.getMessage("unableToLoadImg"));
+            }
+        }
+        reader.readAsDataURL(file);
+    });
 }
 
 /**

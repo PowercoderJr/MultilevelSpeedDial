@@ -69,6 +69,26 @@
     	"message": "Grid size"
     },
 
+    "elemsWillBeLost":
+    {
+        "message": "Content of cells with code bigger than $1 will be irretrievably lost ($2 bookmark$3, $4 folder$5)"
+    },
+
+    "endingCase0":
+    {
+        "message": "s"
+    },
+
+    "endingCase1":
+    {
+        "message": ""
+    },
+
+    "endingCase2":
+    {
+        "message": "s"
+    },
+
     "background":
     {
     	"message": "Background"
@@ -117,5 +137,15 @@
     "folderName":
     {
         "message": "Name"
+    },
+
+    "rlyDeleteElement":
+    {
+        "message": "Do you really want to delete element №$1 ($2)"
+    },
+
+    "unableToLoadImg":
+    {
+        "message": "Unable to load image"
     }
 }

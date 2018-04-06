@@ -66,12 +66,32 @@
 
     "gridSize":
     {
-    	"message": "Размер сетки"
+        "message": "Размер сетки"
+    },
+
+    "elemsWillBeLost":
+    {
+        "message": "Содержимое ячеек с кодом больше $1 будет безвозвратно утеряно ($2 заклад$3, $4 пап$5)"
+    },
+
+    "endingCase0":
+    {
+        "message": "ок"
+    },
+
+    "endingCase1":
+    {
+        "message": "ка"
+    },
+
+    "endingCase2":
+    {
+        "message": "ки"
     },
 
     "background":
     {
-    	"message": "Фон"
+        "message": "Фон"
     },
 
     "default":
@@ -117,5 +137,15 @@
     "folderName":
     {
         "message": "Название"
+    },
+
+    "rlyDeleteElement":
+    {
+        "message": "Вы действительно хотите удалить элемент №$1 ($2)"
+    },
+
+    "unableToLoadImg":
+    {
+        "message": "Не удалось загрузить изображение"
     }
 }
