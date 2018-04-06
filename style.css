@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #B1B1B3;
+    background-color: #F9F9FA;
 }
 
 label.doLeading {
@@ -178,9 +178,11 @@ td {
     font-weight: 900;
     text-shadow: 0px 0px 3px rgba(249,249,250,0.75);
     color: transparent;
+    -webkit-text-stroke: 2px rgba(0,0,0,0.75); /*Non-standard*/
 }
 
 .element:hover .elementCode {
     background-color: transparent;
     text-shadow: 0px 0px 3px rgba(255,255,255,0.1);
+    -webkit-text-stroke: 2px rgba(0,0,0,0.1); /*Non-standard*/
 }

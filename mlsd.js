@@ -59,7 +59,7 @@ Object.freeze(AssignmentMode);
  *
  * @var string  DEFAULT_BGCOLOR
  */
-const DEFAULT_BGCOLOR = "#B1B1B3";
+const DEFAULT_BGCOLOR = "#F9F9FA";
 /*Окончание описания констант*/
 
 /*Описание прототипов*/
