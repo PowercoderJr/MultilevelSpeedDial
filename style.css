@@ -1,23 +1,38 @@
+@import 'photon.css';
+
 :root {
     --borderSize: 8px;
     --inlineSpacing: 4px;
     --iconSize: 16px;
-    --codeFontSize: 0px;
+    --numberFontSize: 0px;
     --fieldsetBlurValue: 5px;
 }
 
 body {
-    background-color: #F9F9FA;
+    background-color: var(--grey-10);
 }
 
-label.doLeading {
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+.doLeading {
     line-height: 175%;
 }
 
-label.warning {
-    font-size: calc(100% - 3pt);
-    color: #a47f00;
+.warning {
+    font-size: 75%;
+    height: 20px;
+    background-color: var(--yellow-50);
     display: none; /*none or initial*/
+    padding: 6px 2px 3px 2px;
+}
+
+.warning::before {
+    content: url('icons/photon/warning-16.svg');
+    position: relative;
+    margin: 0px 2px 0px 2px;
+    top: 2px;
 }
 
 .fullscreenElement {
@@ -42,7 +57,7 @@ td {
 }
 
 #curtain {
-    background-color: rgba(0, 0, 0, .5);
+    background-color: var(--grey-90-a60);
     display: none; /*none or flex*/
     justify-content: center;
 }
@@ -52,11 +67,12 @@ td {
     width: 800px;
     top: 50vh;
     transform: translateY(-50%);
-    background-color: #F9F9FA;
+    background-color: var(--grey-10);
     padding: 20px;
     border-radius: var(--borderSize);
     animation-name: unbluring;
     animation-duration: 0.5s;
+    -moz-user-select: none;
 }
 
 @keyframes bluring {
@@ -95,6 +111,8 @@ td {
     left: 0px;
     right: 0px;
     background-color: rgba(120, 120, 120, .2);
+    text-decoration: none;
+    -moz-user-select: none;
     /*http://dabblet.com/gist/2775781*/
     background-clip: padding-box;
     border: var(--borderSize) solid rgba(170, 170, 170, .3);
@@ -168,21 +186,20 @@ td {
     background-size: cover;
 }
 
-.elementCode {
+.elementNumber {
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: Arial;
-    font-size: var(--codeFontSize);
+    font-size: var(--numberFontSize);
     font-weight: 900;
-    text-shadow: 0px 0px 3px rgba(249,249,250,0.75);
+    text-shadow: 0px 0px 3px var(--grey-10);
     color: transparent;
-    -webkit-text-stroke: 2px rgba(0,0,0,0.75); /*Non-standard*/
+    -webkit-text-stroke: 2px black; /*Non-standard*/
+    opacity: 0.75;
 }
 
-.element:hover .elementCode {
-    background-color: transparent;
-    text-shadow: 0px 0px 3px rgba(255,255,255,0.1);
-    -webkit-text-stroke: 2px rgba(0,0,0,0.1); /*Non-standard*/
+.element:hover .elementNumber {
+    opacity: 0.1;
 }

@@ -18,8 +18,8 @@
                     <legend id="cellAssignmentTitle"></legend>
                     <div>
                         <p>
-                            <label id="cellCodeLabel"></label>
-                            <input type="text" id="codeTf" name="code" style="width: 50px;" readonly>
+                            <label id="cellNumberLabel"></label>
+                            <input type="text" id="numberTf" name="number" style="width: 50px;" readonly>
                         </p>
                         <fieldset id="generalSettings">
                         <legend id="generalSettingsLabel"></legend>
@@ -45,9 +45,9 @@
                             <input type="text" id="folderNameTf" name="folderName" size="80" required>
                             <p>
                                 <label id="gridSizeLabel"></label>
-                                <input type="number" id="rowsSpin" name="gridSize" value="3" style="width: 40px;" min="1" max="30">
+                                <input type="number" id="rowsSpin" name="gridSize" value="3" style="width: 20px;" min="1" max="30" required>
                                 <label> x </label>
-                                <input type="number" id="colsSpin" name="gridSize" value="3" style="width: 40px;" min="1" max="30">
+                                <input type="number" id="colsSpin" name="gridSize" value="3" style="width: 20px;" min="1" max="30" required>
                                 <input type="hidden" id="rowsOld">
                                 <input type="hidden" id="colsOld">
                                 <label id="elemsWillBeLostLabel" class="warning"></label>

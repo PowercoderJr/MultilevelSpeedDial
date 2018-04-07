@@ -6,7 +6,7 @@
 
     "extensionDescription": 
     {
-    	"message": "Adds visual bookmarks. For convenience you can unite bookmarks into folders. You can navigate through saved bookmarks by opening new tab or by using shortcut with bookmark's code."
+    	"message": "Adds visual bookmarks. For convenience you can unite bookmarks into folders. You can navigate through saved bookmarks by opening new tab or by using shortcut with bookmark's number."
     },
 
     "cellAssignmentTitle":
@@ -14,9 +14,9 @@
     	"message": "Cell assignment"
     },
 
-    "cellCode":
+    "cellNumber":
     {
-    	"message": "Cell code"
+    	"message": "Cell number"
     },
 
     "cellType":
@@ -71,7 +71,7 @@
 
     "elemsWillBeLost":
     {
-        "message": "Content of cells with code bigger than $1 will be irretrievably lost ($2 bookmark$3, $4 folder$5)"
+        "message": "Content of cells with number bigger than $1 will be irretrievably lost ($2 bookmark$3, $4 folder$5)"
     },
 
     "endingCase0":

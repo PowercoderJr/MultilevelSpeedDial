@@ -1,6 +1,93 @@
 /*Описание констант*/
 
 /**
+ * enum Photon Colors JS Variables v3.0.1 
+ *
+ * Набор констант цветов, доступен по адресу:
+ * https://firefoxux.github.io/design-tokens/photon-colors/photon-colors.js
+ *
+ * @var Object  PhotonColors
+ */
+const PhotonColors = {
+    MAGENTA_50: '#ff1ad9',
+    MAGENTA_60: '#ed00b5',
+    MAGENTA_70: '#b5007f',
+    MAGENTA_80: '#7d004f',
+    MAGENTA_90: '#440027',
+
+    PURPLE_50: '#9400ff',
+    PURPLE_60: '#8000d7',
+    PURPLE_70: '#6200a4',
+    PURPLE_80: '#440071',
+    PURPLE_90: '#25003e',
+
+    BLUE_40: '#45a1ff',
+    BLUE_50: '#0a84ff',
+    BLUE_50_A30: '#0a84ff4c',
+    BLUE_60: '#0060df',
+    BLUE_70: '#003eaa',
+    BLUE_80: '#002275',
+    BLUE_90: '#000f40',
+
+    TEAL_50: '#00feff',
+    TEAL_60: '#00c8d7',
+    TEAL_70: '#008ea4',
+    TEAL_80: '#005a71',
+    TEAL_90: '#002d3e',
+
+    GREEN_50: '#30e60b',
+    GREEN_60: '#12bc00',
+    GREEN_70: '#058b00',
+    GREEN_80: '#006504',
+    GREEN_90: '#003706',
+
+    YELLOW_50: '#ffe900',
+    YELLOW_60: '#d7b600',
+    YELLOW_70: '#a47f00',
+    YELLOW_80: '#715100',
+    YELLOW_90: '#3e2800',
+
+    RED_50: '#ff0039',
+    RED_60: '#d70022',
+    RED_70: '#a4000f',
+    RED_80: '#5a0002',
+    RED_90: '#3e0200',
+
+    ORANGE_50: '#ff9400',
+    ORANGE_60: '#d76e00',
+    ORANGE_70: '#a44900',
+    ORANGE_80: '#712b00',
+    ORANGE_90: '#3e1300',
+
+    GREY_10: '#f9f9fa',
+    GREY_20: '#ededf0',
+    GREY_30: '#d7d7db',
+    GREY_40: '#b1b1b3',
+    GREY_50: '#737373',
+    GREY_60: '#4a4a4f',
+    GREY_70: '#38383d',
+    GREY_80: '#2a2a2e',
+    GREY_90: '#0c0c0d',
+    GREY_90_A05: '#0c0c0d0c',
+    GREY_90_A10: '#0c0c0d19',
+    GREY_90_A20: '#0c0c0d33',
+    GREY_90_A30: '#0c0c0d4c',
+    GREY_90_A40: '#0c0c0d66',
+    GREY_90_A50: '#0c0c0d7f',
+    GREY_90_A60: '#0c0c0d99',
+    GREY_90_A70: '#0c0c0db2',
+    GREY_90_A80: '#0c0c0dcc',
+    GREY_90_A90: '#0c0c0de5',
+
+    INK_70: '#363959',
+    INK_80: '#202340',
+    INK_90: '#0f1126',
+
+    WHITE_100: '#ffffff'
+};
+Object.freeze(PhotonColors);
+
+/**
  * enum Тип фона
  *
  * @var Object  BgType
@@ -37,7 +124,7 @@ const StrongString = {
     HEADER: "hdr",
     CAPTION: "cap",
     FAVICON: "fico",
-    CODE: "code",
+    NUMBER: "number",
     MINIATURE: "mture",
     MINIATURE_BACKGROUND: "mturebg"
 }
@@ -59,18 +146,18 @@ Object.freeze(AssignmentMode);
  *
  * @var string  DEFAULT_BGCOLOR
  */
-const DEFAULT_BGCOLOR = "#F9F9FA";
+const DEFAULT_BGCOLOR = PhotonColors.GREY_10;
 /*Окончание описания констант*/
 
 /*Описание прототипов*/
 /**
  * Конструктор Element
  *
- * @param   int     code    Код элемента
+ * @param   int number  Номер элемента
  */
-var Element = function(code) {
+var Element = function(number) {
     this.type = ElementType.EMPTY;
-    this.code = code;
+    this.number = number;
 }
 /**
  * Парсинг элемента
@@ -83,7 +170,7 @@ var Element = function(code) {
  *                          элемента с заданными свойствами
  */
 Element.prototype.parseObj = function(data) {
-    return new Element(data.code);
+    return new Element(data.number);
 }
 /**
  * Обработчик нажатия
@@ -92,18 +179,18 @@ Element.prototype.parseObj = function(data) {
  */
 Element.prototype.onClicked = function(event) {
     const container = document.getElementById(StrongString.ELEMENT +
-            StrongString.SEPARATOR + this.code);
+            StrongString.SEPARATOR + this.number);
     const header = document.getElementById(StrongString.HEADER +
-            StrongString.SEPARATOR + this.code);
+            StrongString.SEPARATOR + this.number);
     const favicon = document.getElementById(StrongString.FAVICON +
-            StrongString.SEPARATOR + this.code);
+            StrongString.SEPARATOR + this.number);
     const caption = document.getElementById(StrongString.CAPTION +
-            StrongString.SEPARATOR + this.code);
-    const code = document.getElementById(StrongString.CODE +
-            StrongString.SEPARATOR + this.code);
+            StrongString.SEPARATOR + this.number);
+    const number = document.getElementById(StrongString.NUMBER +
+            StrongString.SEPARATOR + this.number);
 
     console.log("Target is ", event.target);
-    if (verifyTarget(event, [container, header, favicon, caption, code])) {
+    if (verifyTarget(event, [container, header, favicon, caption, number])) {
         this.action();
         return true;
     } else {
@@ -123,15 +210,15 @@ Element.prototype.action = function() {
  *
  * Создаёт контейнер для элемента
  *
- * @param   int         code    Код элемента
+ * @param   int         number  Номер элемента
  * @return  HTMLElement         Возвращает контейнер 
  *                              в виде HTML-элемента
  */
-Element.prototype.getInitHtml = function(code) {
-    code = code || this.code;
+Element.prototype.getInitHtml = function(number) {
+    number = number || this.number;
     let newDiv = document.createElement("div");
     newDiv.className = "element";
-    newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + code;
+    newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + number;
     return newDiv;
 }
 /**
@@ -146,11 +233,11 @@ Element.prototype.getInitHtml = function(code) {
 Element.prototype.getInnerHtml = function () {
     let miniature = document.createElement("div");
     miniature.className = "elementMiniature";
-    miniature.id = StrongString.MINIATURE + StrongString.SEPARATOR + this.code;
+    miniature.id = StrongString.MINIATURE + StrongString.SEPARATOR + this.number;
     let newLabel = document.createElement("label");
-    newLabel.className = "elementCode";
-    newLabel.id = StrongString.CODE + StrongString.SEPARATOR + this.code;
-    newLabel.textContent = this.code;
+    newLabel.className = "elementNumber";
+    newLabel.id = StrongString.NUMBER + StrongString.SEPARATOR + this.number;
+    newLabel.textContent = this.number;
     miniature.appendChild(newLabel);
     let df = document.createDocumentFragment();
     df.appendChild(miniature);
@@ -162,12 +249,12 @@ Element.prototype.getInnerHtml = function () {
  * Назначает обработчик события onclick для HTML-элемента
  * с соответствующим id
  *
- * @param   int         code    Код элемента
+ * @param   int         number  Номер элемента
  * @return  HTMLElement         Возвращает контейнер 
  *                              в виде HTML-элемента
  */
 Element.prototype.bindHtml = function() {
-    let lookingfor = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
+    let lookingfor = StrongString.ELEMENT + StrongString.SEPARATOR + this.number;
     document.getElementById(lookingfor).onclick =
             Element.prototype.onClicked.bind(this);
 }
@@ -176,10 +263,10 @@ Element.prototype.bindHtml = function() {
 /**
  * Конструктор заполненного элемента
  *
- * @param   int code    Код элемента
+ * @param   int number  Номер элемента
  */
-var FilledElement = function(code) {
-    Element.call(this, code);
+var FilledElement = function(number) {
+    Element.call(this, number);
     this.caption = "";
     this.icon = null;
     this.isCaptionHidden = false;
@@ -192,7 +279,7 @@ FilledElement.prototype.constructor = FilledElement;
  */
 FilledElement.prototype.parseObj = function(data) {
     //TODO: Object.assign(result, data);
-    let result = new FilledElement(data.code);
+    let result = new FilledElement(data.number);
     result.type = data.type;
     result.caption = data.caption;
     result.icon = data.icon;
@@ -206,14 +293,14 @@ FilledElement.prototype.parseObj = function(data) {
 FilledElement.prototype.getInnerHtml = function () {
     let header = document.createElement("div");
     header.className = "elementHeader";
-    header.id = StrongString.HEADER + StrongString.SEPARATOR + this.code;
+    header.id = StrongString.HEADER + StrongString.SEPARATOR + this.number;
     let icon = document.createElement("img");
-    icon.id = StrongString.FAVICON + StrongString.SEPARATOR + this.code;
+    icon.id = StrongString.FAVICON + StrongString.SEPARATOR + this.number;
     icon.src = this.icon;
     header.appendChild(icon);
     let caption = document.createElement("label");
     caption.className = "elementCaption";
-    caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.code;
+    caption.id = StrongString.CAPTION + StrongString.SEPARATOR + this.number;
     if (!this.isCaptionHidden) {
         caption.textContent = this.caption;
     }
@@ -223,7 +310,7 @@ FilledElement.prototype.getInnerHtml = function () {
     btn1.src = "icons/refresh.svg";
     header.appendChild(btn1);
     btn1.onclick = function() {
-        restoreElement(currPath, this.code);
+        restoreElement(currPath, this.number);
     }.bind(this);
     let btn2 = document.createElement("img");
     btn2.className = "elementButton";
@@ -238,8 +325,8 @@ FilledElement.prototype.getInnerHtml = function () {
     header.appendChild(btn3);
     btn3.onclick = function() {
         if (confirm(browser.i18n.getMessage("rlyDeleteElement",
-                [this.code, this.caption]))) {
-            let empty = new Element(this.code);
+                [this.number, this.caption]))) {
+            let empty = new Element(this.number);
             overwriteElement(currPath, empty);
         }
     }.bind(this);
@@ -247,18 +334,18 @@ FilledElement.prototype.getInnerHtml = function () {
     let df = Element.prototype.getInnerHtml.call(this);
     df.insertBefore(header, df.children[0]);
     let mture = df.getElementById(StrongString.MINIATURE +
-            StrongString.SEPARATOR + this.code);
+            StrongString.SEPARATOR + this.number);
     return df;
 }
 
 /**
  * Конструктор элемента-закладки
  *
- * @param   int     code    Код элемента
+ * @param   int     number  Номер элемента
  * @param   string  url     Ссылка
  */
-var Bookmark = function(code, url) {
-    FilledElement.call(this, code);
+var Bookmark = function(number, url) {
+    FilledElement.call(this, number);
     this.type = ElementType.BOOKMARK;
     this.url = url || "https://google.com/"; //DEBUG
     this.miniature = null;
@@ -269,7 +356,7 @@ Bookmark.prototype.constructor = Bookmark;
  * {@link Element.prototype.parseObj}
  */
 Bookmark.prototype.parseObj = function(data) {
-    let result = new Bookmark(data.code, data.url);
+    let result = new Bookmark(data.number, data.url);
     let superObj = FilledElement.prototype.parseObj.call(this, data);
     Object.assign(result, superObj);
     result.miniature = data.miniature;
@@ -287,7 +374,7 @@ Bookmark.prototype.action = function() {
 Bookmark.prototype.getInitHtml = function() {
     let newA = document.createElement("a");
     newA.className = "element";
-    newA.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.code;
+    newA.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.number;
     newA.href = this.url;
     return newA;
 }
@@ -296,11 +383,8 @@ Bookmark.prototype.getInitHtml = function() {
  */
 Bookmark.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
-    let a = document.createElement("a");
-    a.href = this.url;
-    a.appendChild(df);
     /*let mture = df.getElementById(StrongString.MINIATURE +
-            StrongString.SEPARATOR + this.code);
+            StrongString.SEPARATOR + this.number);
     switch (this.bgtype) {
         case BgType.DEFAULT:
             mture.style.backgroundColor = DEFAULT_BGCOLOR;
@@ -316,13 +400,13 @@ Bookmark.prototype.getInnerHtml = function () {
             mture.style.backgroundImage = "url('" + this.bgdata + "')";
             break;
     }*/
-    return a;
+    return df;
 }
 
 /**
  * Конструктор элемента-папки
  *
- * @param   int     code        Код элемента
+ * @param   int     number      Номер элемента
  * @param   string  caption     Название папки
  * @param   int     rows        Количество строк (по умолчанию 3)
  * @param   int     cols        Количество столбцов (по умолчанию 3)
@@ -331,9 +415,9 @@ Bookmark.prototype.getInnerHtml = function () {
  * @param   string  bgviewstr   Отображаемая строка вместо данных фона
  *                              (по умолчанию пуста)
  */
-var Folder = function(code, caption, rows = 3, cols = 3, 
+var Folder = function(number, caption, rows = 3, cols = 3, 
         bgtype = BgType.DEFAULT, bgdata = null, bgviewstr = "") {
-    FilledElement.call(this, code);
+    FilledElement.call(this, number);
     this.type = ElementType.FOLDER;
     this.caption = caption;
     this.icon = "icons/folder.svg";
@@ -345,7 +429,7 @@ var Folder = function(code, caption, rows = 3, cols = 3,
 
     let amount = this.rows * this.cols;
     this.elements = new Array(amount);
-    if (this.code > 0) {
+    if (this.number > 0) {
         this.elements[0] = new BackstepElement();
     } else {
         this.elements[0] = new Element(1);
@@ -360,7 +444,7 @@ Folder.prototype.constructor = Folder;
  * {@link Element.prototype.parseObj}
  */
 Folder.prototype.parseObj = function(data) {
-    let result = new Folder(data.code, data.caption, data.rows, data.cols, data.bgtype, data.bgdata, data.bgviewstr);
+    let result = new Folder(data.number, data.caption, data.rows, data.cols, data.bgtype, data.bgdata, data.bgviewstr);
     let superObj = FilledElement.prototype.parseObj.call(this, data);
     Object.assign(result, superObj);
     result.elements = data.elements;
@@ -371,7 +455,7 @@ Folder.prototype.parseObj = function(data) {
  */
 Folder.prototype.action = function() {
     console.log("Здесь открывается папка");
-    currPath.push(this.code);
+    currPath.push(this.number);
     buildPage(this);
 }
 /**
@@ -382,7 +466,7 @@ Folder.prototype.getInnerHtml = function () {
     
     if (!this.isMiniatureHidden) {
         let mture = df.getElementById(StrongString.MINIATURE +
-                StrongString.SEPARATOR + this.code);
+                StrongString.SEPARATOR + this.number);
         switch (this.bgtype) {
             case BgType.DEFAULT:
                 mture.style.backgroundColor = DEFAULT_BGCOLOR;
@@ -405,10 +489,10 @@ Folder.prototype.getInnerHtml = function () {
 /**
  * Конструктор элемента "Шаг назад"
  *
- * @param   int code    Код элемента
+ * @param   int number  Номер элемента
  */
-var BackstepElement = function(code = 1) {
-    Element.call(this, code);
+var BackstepElement = function(number = 1) {
+    Element.call(this, number);
     this.type = ElementType.BACKSTEP;
 }
 BackstepElement.prototype = Object.create(Element.prototype);
@@ -432,7 +516,7 @@ BackstepElement.prototype.action = function() {
  */
 BackstepElement.prototype.getInnerHtml = function () {
     let df = Element.prototype.getInnerHtml.call(this);
-    let label = df.getElementById(StrongString.CODE + StrongString.SEPARATOR + this.code);
+    let label = df.getElementById(StrongString.NUMBER + StrongString.SEPARATOR + this.number);
     label.textContent = "←";
     return df;
 }
@@ -455,7 +539,7 @@ Object.freeze(ElementFactoryByType);
 /**
  * Текущий путь
  *
- * Хранит последовательность кодов элементов-папок, которая
+ * Хранит последовательность номеров элементов-папок, которая
  * ведёт от корневой папки к текущей
  *
  * @var Stack   currPath
@@ -481,7 +565,7 @@ window.onload = function() {
 
     /*Вставка строк из файлов локализации*/
     document.getElementById("cellAssignmentTitle").innerHTML += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
-    document.getElementById("cellCodeLabel").innerHTML += browser.i18n.getMessage("cellCode") + ":";
+    document.getElementById("cellNumberLabel").innerHTML += browser.i18n.getMessage("cellNumber") + ":";
     document.getElementById("cellTypeLabel").innerHTML += browser.i18n.getMessage("cellType") + ":";
     document.getElementById("bookmarkLabel").innerHTML += browser.i18n.getMessage("bookmark");
     document.getElementById("folderLabel").innerHTML += browser.i18n.getMessage("folder");
@@ -538,7 +622,7 @@ window.onload = function() {
                 document.getElementById("colsSpin").value;
         if (newAmount < oldAmount) {
             const elements = getFolderByPath(currPath, rootFolder).
-                    elements[document.getElementById("codeTf").value - 1].
+                    elements[document.getElementById("numberTf").value - 1].
                     elements;
             let nBookmarks = 0;
             let nFolders = 0;
@@ -554,19 +638,19 @@ window.onload = function() {
             }
 
             if (nBookmarks + nFolders > 0) {
-                let getEnding = function(number) {
+                let getEnding = function(n) {
                     const locale = browser.i18n.getMessage("@@ui_locale");
                     if (locale == "ru") {
-                        if (number % 100 != 11 && number % 10 == 1) {
+                        if (n % 100 != 11 && n % 10 == 1) {
                             return browser.i18n.getMessage("endingCase1")
-                        } else if ((number % 100 < 12 || number % 100 > 14) &&
-                                number % 10 >= 2 && number % 10 <= 4) {
+                        } else if ((n % 100 < 12 || n % 100 > 14) &&
+                                n % 10 >= 2 && n % 10 <= 4) {
                             return browser.i18n.getMessage("endingCase2")
                         } else {
                             return browser.i18n.getMessage("endingCase0")
                         }
                     } else if (locale == "en") {
-                        return number == 1 ? "" : "s";
+                        return n == 1 ? "" : "s";
                     }
                 }
                 const endingBookmarks = getEnding(nBookmarks);
@@ -665,26 +749,26 @@ function buildPage(folder) {
         let row = grid.insertRow(i);
         for (let j = 0; j < folder.cols; ++j) {
             let cell = row.insertCell(j);
-            let code = folder.cols * i + j + 1;
-            cell.appendChild(Element.prototype.getInitHtml(code));
-            //restoreElement(currPath, code);
-            rebuildElement(folder.elements[code - 1]);
+            let number = folder.cols * i + j + 1;
+            cell.appendChild(Element.prototype.getInitHtml(number));
+            //restoreElement(currPath, number);
+            rebuildElement(folder.elements[number - 1]);
         }
     }
 
-    /*Установка размера шрифта для кодов элементов*/
+    /*Установка размера шрифта для номеров элементов*/
     let amount = folder.rows * folder.cols;
     let digits;
     for (digits = 0; amount > 1; ++digits) {
         amount /= 10;
     }
     //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
-    let codeFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
+    let numberFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
             folder.cols + ")) / " + folder.cols + " / " + digits + ")";
-    let codeFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " + 
+    let numberFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " + 
             folder.rows + ")) / " + folder.rows + ")";
-    //document.documentElement.style.setProperty("--codeFontSize", "min(" + codeFontSizeH + "," + codeFontSizeV + ")"); //TODO: min() не используется в CSS3 - ref #4
-    document.documentElement.style.setProperty("--codeFontSize", codeFontSizeV);
+    //document.documentElement.style.setProperty("--numberFontSize", "min(" + numberFontSizeH + "," + numberFontSizeV + ")"); //TODO: min() не используется в CSS3 - ref #4
+    document.documentElement.style.setProperty("--numberFontSize", numberFontSizeV);
 }
 
 /**
@@ -697,7 +781,7 @@ function buildPage(folder) {
 function rebuildElement(element) {
     element = verifyElementObject(element);
     let oldElement = document.getElementById(StrongString.ELEMENT + 
-            StrongString.SEPARATOR + element.code);
+            StrongString.SEPARATOR + element.number);
     let parent = oldElement.parentElement;
     oldElement.remove();
     let elementHtml = element.getInitHtml();
@@ -732,14 +816,15 @@ function verifyTarget(event, allowedTargets) {
  * Очищает или заполняет поля формы назначения элемента в соответствии
  * с назначаемым элементом и отображает форму поверх остального UI.
  *
- * @param   Element         element Код элемента
+ * @param   Element         element Номер элемента
  * @param   AssignmentMode  mode    Режим назначения
  */
 function showAssignmentForm(element, mode) {
+    window.getSelection().removeAllRanges();
     document.getElementById("assignmentForm").reset();
     document.getElementById("bgimgBase64").value = "";
     document.getElementById("bgimgPicker").required = true;
-    document.getElementById("codeTf").value = element.code;
+    document.getElementById("numberTf").value = element.number;
     document.getElementById("elemsWillBeLostLabel").textContent = "";
     document.getElementById("elemsWillBeLostLabel").style.display = "none";
 
@@ -851,10 +936,10 @@ function submitAssignmentForm() {
 async function parseAssignmentForm(copyElems) {
     //TODO: предупредить о потерях если пользователь сокращает размер сетки
     let result = null;
-    let code = parseInt(document.getElementById("codeTf").value);
+    let number = parseInt(document.getElementById("numberTf").value);
     if (document.getElementById("bookmarkRb").checked) {
         let url = document.getElementById("urlTf").value;
-        result = new Bookmark(code, url);
+        result = new Bookmark(number, url);
     }
     else if (document.getElementById("folderRb").checked) {
         let caption = document.getElementById("folderNameTf").value;
@@ -877,6 +962,7 @@ async function parseAssignmentForm(copyElems) {
             const picker = document.getElementById("bgimgPicker");
             if (picker.files.length > 0) {
                 let file = document.getElementById("bgimgPicker").files[0];
+                //TODO: добавить индикатор
                 await readFile(file).then(function(data) {bgdata = data;},
                         onPromiseFailed);
                 bgviewstr = document.getElementById("bgimgPicker").files[0].name;
@@ -890,9 +976,9 @@ async function parseAssignmentForm(copyElems) {
             bgdata = document.getElementById("bgimgUrlTf").value; //TODO: to base64
             bgviewstr = document.getElementById("bgimgUrlTf").value;
         }
-        result = new Folder(code, caption, rows, cols, bgtype, bgdata, bgviewstr);
+        result = new Folder(number, caption, rows, cols, bgtype, bgdata, bgviewstr);
         if (copyElems) {
-            let src = getFolderByPath(currPath, rootFolder).elements[code - 1];
+            let src = getFolderByPath(currPath, rootFolder).elements[number - 1];
             if (src.type == ElementType.FOLDER) {
                 //TODO?: сейчас сохраняется нумерация, предусмотреть сохранение положения
                 const bound = Math.min(src.elements.length, rows * cols);
@@ -957,10 +1043,10 @@ function onCurtainClicked(event) {
 function overwriteElement(path, element) {
     let folder = getFolderByPath(path, rootFolder);
     element = verifyElementObject(element);
-    folder.elements[element.code - 1] = element;
+    folder.elements[element.number - 1] = element;
 
     /*let oldElement = document.getElementById(StrongString.ELEMENT + 
-            StrongString.SEPARATOR + element.code);
+            StrongString.SEPARATOR + element.number);
     let parent = oldElement.parentElement;
     oldElement.remove();
     let elementHtml = element.getInitHtml();
@@ -978,17 +1064,17 @@ function overwriteElement(path, element) {
 /**
  * Восстановление элемента из хранилища
  *
- * Считывает элемент с заданным кодом из хранилища по заданному пути.
+ * Считывает элемент с заданным номером из хранилища по заданному пути.
  * В случае, если путь совпадает с текущим, перестраивает
  * HTML-представление элемента на странице.
  *
  * @param   Array   path    Путь
  * @param   Element element Новый элемент
  */
-function restoreElement(path, code) {
+function restoreElement(path, number) {
     browser.storage.local.get("structure").then(function(result) {
         let folder = getFolderByPath(path, result.structure);
-        let element = folder.elements[code - 1];
+        let element = folder.elements[number - 1];
         //overwriteElement(path, element);
         if (path == currPath) {
             rebuildElement(element);
