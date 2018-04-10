@@ -8,9 +8,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="42"
+   height="48.000000px"
    id="svg97"
-   width="48"
+   width="48.000000px"
    version="1.1"
    sodipodi:docname="folder.svg"
    inkscape:version="0.92.1 r15371">
@@ -22,7 +22,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -45,9 +44,7 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     showguides="true"
-     inkscape:guide-bbox="true" />
+     inkscape:current-layer="layer1" />
   <defs
      id="defs3">
     <radialGradient
@@ -205,7 +202,7 @@
        x1="18.112709"
        x2="15.514889"
        xlink:href="#linearGradient3096"
-       y1="31.36775"
+       y1="31.367750"
        y2="6.1802502" />
     <linearGradient
        gradientUnits="userSpaceOnUse"
@@ -220,7 +217,7 @@
        cy="41.591846"
        fx="24.35099"
        fy="41.591846"
-       gradientTransform="matrix(1,0,0,0.242494,0,31.50606)"
+       gradientTransform="matrix(1.000000,0.000000,0.000000,0.242494,1.565588e-16,31.50606)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9812"
        r="19.136078"
@@ -228,14 +225,14 @@
   </defs>
   <g
      id="layer1"
-     transform="translate(0.64718248,-6)">
+     transform="translate(0.64718248)">
     <g
        id="g6707"
        style="display:inline"
        transform="matrix(0.02262383,0,0,0.02086758,43.38343,36.36962)" />
     <g
        id="g3826"
-       transform="matrix(1.1564605,0,0,1.1564605,-3.8246428,0.8574521)">
+       transform="matrix(1.1564605,0,0,1.1564605,-3.8965519,-2.1627329)">
       <path
          inkscape:connector-curvature="0"
          style="fill:url(#radialGradient238);fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient3104);stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -349,6 +346,5 @@
     </g>
   </g>
   <g
-     id="layer2"
-     transform="translate(0,-6)" />
+     id="layer2" />
 </svg>

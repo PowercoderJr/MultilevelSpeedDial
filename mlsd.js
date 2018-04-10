@@ -348,6 +348,8 @@ var Bookmark = function(number, url) {
     FilledElement.call(this, number);
     this.type = ElementType.BOOKMARK;
     this.url = url || "https://google.com/"; //DEBUG
+    this.icon = "http://google.com/favicon.ico" //DEBUG
+    this.caption = "Google";
     this.miniature = null;
 }
 Bookmark.prototype = Object.create(FilledElement.prototype);
@@ -827,6 +829,7 @@ function showAssignmentForm(element, mode) {
     document.getElementById("numberTf").value = element.number;
     document.getElementById("elemsWillBeLostLabel").textContent = "";
     document.getElementById("elemsWillBeLostLabel").style.display = "none";
+    document.getElementById("imgLocalBgSpinner").style.display = "none";
 
     if (mode == AssignmentMode.CREATE) {
         document.getElementById("bookmarkSettings").disabled = false;
@@ -934,7 +937,6 @@ function submitAssignmentForm() {
  *                              предоставляет объект со считанными свойствами элемента
  */
 async function parseAssignmentForm(copyElems) {
-    //TODO: предупредить о потерях если пользователь сокращает размер сетки
     let result = null;
     let number = parseInt(document.getElementById("numberTf").value);
     if (document.getElementById("bookmarkRb").checked) {
@@ -961,8 +963,8 @@ async function parseAssignmentForm(copyElems) {
             bgtype = BgType.IMAGE_LOCAL;
             const picker = document.getElementById("bgimgPicker");
             if (picker.files.length > 0) {
-                let file = document.getElementById("bgimgPicker").files[0];
-                //TODO: добавить индикатор
+                let file = document.getElementById("bgimgPicker").files[0];                
+                document.getElementById("imgLocalBgSpinner").style.display = "initial";
                 await readFile(file).then(function(data) {bgdata = data;},
                         onPromiseFailed);
                 bgviewstr = document.getElementById("bgimgPicker").files[0].name;
@@ -980,7 +982,6 @@ async function parseAssignmentForm(copyElems) {
         if (copyElems) {
             let src = getFolderByPath(currPath, rootFolder).elements[number - 1];
             if (src.type == ElementType.FOLDER) {
-                //TODO?: сейчас сохраняется нумерация, предусмотреть сохранение положения
                 const bound = Math.min(src.elements.length, rows * cols);
                 for (let i = 0; i < bound; ++i) {
                     result.elements[i] = src.elements[i];
@@ -1009,6 +1010,7 @@ function readFile(file) {
     return new Promise((resolve, reject) => {    
         let reader = new FileReader();
         reader.onloadend = function() {
+            document.getElementById("imgLocalBgSpinner").style.display = "none";
             if (reader.result) {
                 resolve(reader.result);
             } else {

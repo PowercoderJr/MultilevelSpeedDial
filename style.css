@@ -1,5 +1,10 @@
 @import 'photon.css';
 
+@font-face {
+    font-family: 'Fira Sans Heavy';
+    src: url('fonts/FiraSans-Heavy.ttf');
+}
+
 :root {
     --borderSize: 8px;
     --inlineSpacing: 4px;
@@ -17,7 +22,7 @@ input[type='number'] {
 }
 
 .doLeading {
-    line-height: 175%;
+    line-height: 180%;
 }
 
 .warning {
@@ -130,11 +135,6 @@ td {
     border-color: rgba(255, 255, 255, .5);
 }
 
-.element .elementCaption {
-    color: black;
-    text-shadow: 0px 0px 5px white;
-}
-
 .elementHeader {
     position: absolute;
     top: calc(var(--borderSize) * (-3.5));
@@ -148,17 +148,24 @@ td {
 }
 
 .elementHeader img {
-    width: var(--iconSize);
+    /*width: var(--iconSize);*/
     height: var(--iconSize);
 }
 
 .elementCaption {
     display: inline-block;
-    width: calc(100% - var(--iconSize) - 4px);
+    width: calc(100% - var(--iconSize) - 8px);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     margin: 0px 4px 0px 4px;
+    position: relative;
+    top: 4px;
+}
+
+.element .elementCaption {
+    color: black;
+    text-shadow: 0px 0px 5px white;
 }
 
 .element:hover .elementCaption {
@@ -168,6 +175,7 @@ td {
 .elementButton {
     display: none;
     margin-left: var(--inlineSpacing);
+    cursor: pointer;
     filter: grayscale(0.75);
 }
 
@@ -191,9 +199,8 @@ td {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: Arial;
+    font-family: 'Fira Sans Heavy';
     font-size: var(--numberFontSize);
-    font-weight: 900;
     text-shadow: 0px 0px 3px var(--grey-10);
     color: transparent;
     -webkit-text-stroke: 2px black; /*Non-standard*/
@@ -202,4 +209,22 @@ td {
 
 .element:hover .elementNumber {
     opacity: 0.1;
+}
+
+#bgcolorPicker {
+    height: 24px;
+    position: relative;
+    top: 4px;
+}
+
+#imgLocalBgSpinner {
+    height: 25px;
+    position: relative;
+    top: 7px;
+    display: none; /*none or initial*/
+}
+
+#assignmentFormButtons {
+    margin-top: 3px;
+    margin-left: 2px;
 }
