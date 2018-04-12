@@ -764,13 +764,23 @@ function buildPage(folder) {
     for (digits = 0; amount > 1; ++digits) {
         amount /= 10;
     }
+
+    window.onresize = function() {
+        let numberHTML = document.getElementById(StrongString.NUMBER
+                + StrongString.SEPARATOR + "1");
+        let size = Math.min(numberHTML.offsetWidth * 0.9 / digits,
+                numberHTML.offsetHeight);
+        document.documentElement.style.setProperty("--numberFontSize", size + "px");
+    }
+
     //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
-    let numberFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
+    /*let numberFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
             folder.cols + ")) / " + folder.cols + " / " + digits + ")";
     let numberFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " + 
             folder.rows + ")) / " + folder.rows + ")";
     //document.documentElement.style.setProperty("--numberFontSize", "min(" + numberFontSizeH + "," + numberFontSizeV + ")"); //TODO: min() не используется в CSS3 - ref #4
-    document.documentElement.style.setProperty("--numberFontSize", numberFontSizeV);
+    document.documentElement.style.setProperty("--numberFontSize", numberFontSizeH);*/
+    window.onresize();
 }
 
 /**
