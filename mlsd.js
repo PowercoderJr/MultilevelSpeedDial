@@ -93,9 +93,13 @@ Object.freeze(PhotonColors);
  * @var Object  BgType
  */
 const BgType = {
+    //По умолчанию
     DEFAULT: 0,
+    //Сплошной цвет
     SOLID: 1,
+    //Изображение с компьютера
     IMAGE_LOCAL: 2,
+    //Удалённое изображение
     IMAGE_REMOTE: 3
 }
 Object.freeze(BgType);
@@ -106,27 +110,37 @@ Object.freeze(BgType);
  * @var Object  ElementType
  */
 const ElementType = {
+    //Пустой
     EMPTY: 0,
+    //Закладка
     BOOKMARK: 1,
+    //Папка
     FOLDER: 2,
+    //Шаг на уровень вверх
     BACKSTEP: 3
 }
 Object.freeze(ElementType);
 
 /**
- * enum Ключевая строка
+ * enum Ключевая строка для поиска DOM-элементов по id
  *
  * @var Object  StrongString
  */
 const StrongString = {
+    //Разделитель
     SEPARATOR: "_",
+    //Элемент
     ELEMENT: "el",
+    //Заголовок элемента
     HEADER: "hdr",
+    //Название элемента
     CAPTION: "cap",
+    //Иконка элемента
     FAVICON: "fico",
+    //Номер элемента
     NUMBER: "number",
-    MINIATURE: "mture",
-    MINIATURE_BACKGROUND: "mturebg"
+    //Миниатюра (превью) элемента
+    MINIATURE: "mture"
 }
 Object.freeze(StrongString);
 
@@ -136,7 +150,9 @@ Object.freeze(StrongString);
  * @var Object  AssignmentMode
  */
 const AssignmentMode = {
+    //Создание
     CREATE: 0,
+    //Редактирование
     EDIT: 1
 }
 Object.freeze(AssignmentMode);
@@ -162,8 +178,7 @@ var Element = function(number) {
 /**
  * Парсинг элемента
  *
- * Воссоздаёт объект элемента по
- * с заданным набором свойств
+ * Воссоздаёт объект элемента по заданному набору свойств
  *
  * @param   mixed   data    Набор свойств
  * @return  Element         Возвращает новый объект
@@ -275,7 +290,14 @@ var FilledElement = function(number) {
 FilledElement.prototype = Object.create(Element.prototype);
 FilledElement.prototype.constructor = FilledElement;
 /**
+ * Парсинг элемента
+ *
+ * Воссоздаёт объект элемента по заданному набору свойств
  * {@link Element.prototype.parseObj}
+ *
+ * @param   mixed   data    Набор свойств
+ * @return  Element         Возвращает новый объект
+ *                          элемента с заданными свойствами
  */
 FilledElement.prototype.parseObj = function(data) {
     //TODO: Object.assign(result, data);
@@ -287,8 +309,16 @@ FilledElement.prototype.parseObj = function(data) {
     result.isMiniatureHidden = data.isMiniatureHidden;
     return result;
 }
+
 /**
+ * Генерация тела HTML-блока
+ *
+ * Генерирует тело HTML-блока на основе имеющихся свойств
  * {@link Element.prototype.getInnerHtml}
+ *
+ * @return  DocumentFragment    Возвращает объект документа,
+ *                              сгенерированный в соответствии с
+ *                              типом элемента
  */
 FilledElement.prototype.getInnerHtml = function () {
     let header = document.createElement("div");
@@ -310,7 +340,7 @@ FilledElement.prototype.getInnerHtml = function () {
     btn1.src = "icons/refresh.svg";
     header.appendChild(btn1);
     btn1.onclick = function() {
-        restoreElement(currPath, this.number);
+        this.refresh();
     }.bind(this);
     let btn2 = document.createElement("img");
     btn2.className = "elementButton";
@@ -337,6 +367,12 @@ FilledElement.prototype.getInnerHtml = function () {
             StrongString.SEPARATOR + this.number);
     return df;
 }
+/**
+ * Обновление элемента
+ */
+FilledElement.prototype.refresh = function() {
+    restoreElement(currPath, this.number);
+}
 
 /**
  * Конструктор элемента-закладки
@@ -347,15 +383,22 @@ FilledElement.prototype.getInnerHtml = function () {
 var Bookmark = function(number, url) {
     FilledElement.call(this, number);
     this.type = ElementType.BOOKMARK;
-    this.url = url || "https://google.com/"; //DEBUG
-    this.icon = "http://google.com/favicon.ico" //DEBUG
-    this.caption = "Google";
+    this.url = url;
+    this.icon = null;
+    this.caption = null;
     this.miniature = null;
 }
 Bookmark.prototype = Object.create(FilledElement.prototype);
 Bookmark.prototype.constructor = Bookmark;
 /**
+ * Парсинг элемента
+ *
+ * Воссоздаёт объект элемента по заданному набору свойств
  * {@link Element.prototype.parseObj}
+ *
+ * @param   mixed   data    Набор свойств
+ * @return  Element         Возвращает новый объект
+ *                          элемента с заданными свойствами
  */
 Bookmark.prototype.parseObj = function(data) {
     let result = new Bookmark(data.number, data.url);
@@ -365,13 +408,23 @@ Bookmark.prototype.parseObj = function(data) {
     return result;
 }
 /**
+ * Действие
+ *
+ * Реакция элемента на нажатие мыши
  * {@link Element.prototype.action}
  */
 Bookmark.prototype.action = function() {
     console.log("Здесь открывается закладка");
 }
 /**
+ * Инициализация HTML-разметки
+ *
+ * Создаёт контейнер для элемента
  * {@link Element.prototype.getInitHtml}
+ *
+ * @param   int         number  Номер элемента
+ * @return  HTMLElement         Возвращает контейнер 
+ *                              в виде HTML-элемента
  */
 Bookmark.prototype.getInitHtml = function() {
     let newA = document.createElement("a");
@@ -381,28 +434,42 @@ Bookmark.prototype.getInitHtml = function() {
     return newA;
 }
 /**
+ * Генерация тела HTML-блока
+ *
+ * Генерирует тело HTML-блока на основе имеющихся свойств 
  * {@link Element.prototype.getInnerHtml}
+ *
+ * @return  DocumentFragment    Возвращает объект документа,
+ *                              сгенерированный в соответствии с
+ *                              типом элемента
  */
 Bookmark.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
-    /*let mture = df.getElementById(StrongString.MINIATURE +
-            StrongString.SEPARATOR + this.number);
-    switch (this.bgtype) {
-        case BgType.DEFAULT:
-            mture.style.backgroundColor = DEFAULT_BGCOLOR;
-            mture.style.backgroundImage = "";
-            break;
-        case BgType.SOLID:
-            mture.style.backgroundColor = this.bgdata;
-            mture.style.backgroundImage = "";
-            break;
-        case BgType.IMAGE_LOCAL:
-        case BgType.IMAGE_REMOTE:
-            mture.style.backgroundColor = "";
-            mture.style.backgroundImage = "url('" + this.bgdata + "')";
-            break;
-    }*/
+    df.getElementById(StrongString.CAPTION +
+            StrongString.SEPARATOR + this.number).
+            textContent = this.caption;
+    df.getElementById(StrongString.FAVICON +
+            StrongString.SEPARATOR + this.number).src = this.icon;
+    df.getElementById(StrongString.MINIATURE +
+            StrongString.SEPARATOR + this.number).style.
+            backgroundImage = "url('" + this.miniature + "')";
     return df;
+}
+/**
+ * Обновление элемента
+ *
+ * {@link FilledElement.prototype.refresh}
+ */
+Bookmark.prototype.refresh = function() {
+    FilledElement.prototype.refresh.call(this);
+    getPagePreviewInfo(this.url).then(function(data) {
+        this.caption = data.title;
+        this.icon = data.favicon;
+        this.miniature = data.screenshot;
+        overwriteElement(currPath, this);
+        //getFolderByPath(currPath).elements[this.number - 1] = this;
+        rebuildElement(this);
+    }.bind(this), onPromiseFailed);
 }
 
 /**
@@ -443,7 +510,14 @@ var Folder = function(number, caption, rows = 3, cols = 3,
 Folder.prototype = Object.create(FilledElement.prototype);
 Folder.prototype.constructor = Folder;
 /**
+ * Парсинг элемента
+ *
+ * Воссоздаёт объект элемента по заданному набору свойств
  * {@link Element.prototype.parseObj}
+ *
+ * @param   mixed   data    Набор свойств
+ * @return  Element         Возвращает новый объект
+ *                          элемента с заданными свойствами
  */
 Folder.prototype.parseObj = function(data) {
     let result = new Folder(data.number, data.caption, data.rows, data.cols, data.bgtype, data.bgdata, data.bgviewstr);
@@ -453,6 +527,9 @@ Folder.prototype.parseObj = function(data) {
     return result;
 }
 /**
+ * Действие
+ *
+ * Реакция элемента на нажатие мыши
  * {@link Element.prototype.action}
  */
 Folder.prototype.action = function() {
@@ -461,7 +538,14 @@ Folder.prototype.action = function() {
     buildPage(this);
 }
 /**
+ * Генерация тела HTML-блока
+ *
+ * Генерирует тело HTML-блока на основе имеющихся свойств
  * {@link Element.prototype.getInnerHtml}
+ *
+ * @return  DocumentFragment    Возвращает объект документа,
+ *                              сгенерированный в соответствии с
+ *                              типом элемента
  */
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
@@ -500,12 +584,22 @@ var BackstepElement = function(number = 1) {
 BackstepElement.prototype = Object.create(Element.prototype);
 BackstepElement.prototype.constructor = BackstepElement;
 /**
+ * Парсинг элемента
+ *
+ * Воссоздаёт объект элемента по заданному набору свойств
  * {@link Element.prototype.parseObj}
+ *
+ * @param   mixed   data    Набор свойств
+ * @return  Element         Возвращает новый объект
+ *                          элемента с заданными свойствами
  */
 BackstepElement.prototype.parseObj = function(data) {
     return new BackstepElement();
 }
 /**
+ * Действие
+ *
+ * Реакция элемента на нажатие мыши
  * {@link Element.prototype.action}
  */
 BackstepElement.prototype.action = function() {
@@ -514,7 +608,14 @@ BackstepElement.prototype.action = function() {
     buildPage(getFolderByPath(currPath));
 }
 /**
+ * Генерация тела HTML-блока
+ *
+ * Генерирует тело HTML-блока на основе имеющихся свойств
  * {@link Element.prototype.getInnerHtml}
+ *
+ * @return  DocumentFragment    Возвращает объект документа,
+ *                              сгенерированный в соответствии с
+ *                              типом элемента
  */
 BackstepElement.prototype.getInnerHtml = function () {
     let df = Element.prototype.getInnerHtml.call(this);
@@ -558,7 +659,7 @@ var rootFolder;
 window.onload = function() {
     //browser.storage.local.clear();
     browser.storage.local.get('structure').then(onStructureLoaded, onPromiseFailed);
-    browser.storage.local.get().then(function(all) {
+    browser.storage.local.get().then(function(all) { //DEBUG
         console.log("Stored data: ");
         for (let key in all) {
             console.log(key + " = " + all[key]);
@@ -723,9 +824,6 @@ function onPromiseFailed(error) {
  * @param   Folder  folder  Элемент-папка
  */
 function buildPage(folder) {
-    /*folder.bgtype = BgType.IMAGE_REMOTE; //DEBUG
-    folder.bgdata = "https://pp.userapi.com/c621515/v621515823/7470c/gUhs_I6VmrM.jpg";*/
-
     /*Установка фона*/
     let background = document.getElementById("background");
     switch (folder.bgtype) {
@@ -925,14 +1023,17 @@ function hideAssignmentForm() {
  * новым, созданным на основе указанных свойств.
  * {@link parseAssignmentForm}
  */
-function submitAssignmentForm() {
+function submitAssignmentForm(event) {
+    event.preventDefault();
     //TODO: parseAssignmentForm(>true<), если режим - редактирование
     hideAssignmentForm();
     parseAssignmentForm(true).then(function (element) {
         console.log(element);
         overwriteElement(currPath, element);
+        if (element instanceof Bookmark) {
+            element.refresh();
+        }
     });
-    return false;
 }
 
 /**
@@ -1021,13 +1122,47 @@ function readFile(file) {
         let reader = new FileReader();
         reader.onloadend = function() {
             document.getElementById("imgLocalBgSpinner").style.display = "none";
-            if (reader.result) {
+            if (resolve && reader.result) {
                 resolve(reader.result);
-            } else {
+            } else if (reject) {
                 reject(browser.i18n.getMessage("unableToLoadImg"));
             }
         }
         reader.readAsDataURL(file);
+    });
+}
+
+/**
+ * Получение информации об удалённой странице для превью
+ *
+ * Открывает url в новой вкладке, дожидается загрузки
+ * страницы и записывает её название (title), 
+ *
+ * @param   boolean copyElems   Копировать ли в новый объект структуру элементов
+ *                              (актуально, если редактируется элемент-папка)
+ * @return  Promise             Возвращает Promise, который в случае успеха
+ *                              предоставляет объект со считанными свойствами элемента
+ */
+function getPagePreviewInfo(url) {
+    return new Promise((resolve, reject) => {
+        let result;
+        browser.tabs.create({url: url, active: false}).then(function(tab) {
+            //TODO: hide() на данный момент является эксперементальной функцией, стоит ли дождаться релиза?
+            //browser.tabs.hide(tab.id);
+            let handler = function(tabId, changeInfo, tabInfo) {
+                if (tabId == tab.id && changeInfo.status && changeInfo.status == "complete") {
+                    browser.tabs.get(tabId).then(function(updatedTab) {
+                        browser.tabs.captureTab(updatedTab.id).then(function(base64img) {
+                            //TODO: передавать иконку в виде строки base64
+                            resolve({title: updatedTab.title, favicon: updatedTab.favIconUrl, screenshot: base64img});
+                            browser.tabs.remove(updatedTab.id);
+                            browser.tabs.onUpdated.removeListener(handler);
+                        }, reject);
+                    }, reject);
+                }
+            }
+            browser.tabs.onUpdated.addListener(handler);
+        }, reject);
     });
 }
 
@@ -1054,17 +1189,8 @@ function onCurtainClicked(event) {
  */
 function overwriteElement(path, element) {
     let folder = getFolderByPath(path, rootFolder);
-    element = verifyElementObject(element);
+    //WARN: element = verifyElementObject(element);
     folder.elements[element.number - 1] = element;
-
-    /*let oldElement = document.getElementById(StrongString.ELEMENT + 
-            StrongString.SEPARATOR + element.number);
-    let parent = oldElement.parentElement;
-    oldElement.remove();
-    let elementHtml = element.getInitHtml();
-    elementHtml.appendChild(element.getInnerHtml());
-    parent.appendChild(elementHtml);
-    element.bindHtml();*/
     if (path == currPath) {
         rebuildElement(element);
     }
@@ -1087,7 +1213,11 @@ function restoreElement(path, number) {
     browser.storage.local.get("structure").then(function(result) {
         let folder = getFolderByPath(path, result.structure);
         let element = folder.elements[number - 1];
-        //overwriteElement(path, element);
+
+        let folderFromStructure = getFolderByPath(path, rootFolder);
+        //WARN: element = verifyElementObject(element);
+        folderFromStructure.elements[element.number - 1] = element;
+
         if (path == currPath) {
             rebuildElement(element);
         }

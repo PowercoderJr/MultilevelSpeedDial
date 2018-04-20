@@ -192,6 +192,7 @@ td {
     height: 100%;
     overflow: hidden;
     background-size: cover;
+    background-position: center top;
 }
 
 .elementNumber {
