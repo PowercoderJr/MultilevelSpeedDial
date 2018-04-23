@@ -10,6 +10,7 @@
     --inlineSpacing: 4px;
     --iconSize: 16px;
     --numberFontSize: 0px;
+    --assignmentFormScale: 1;
     --fieldsetBlurValue: 5px;
 }
 
@@ -49,12 +50,12 @@ input[type='number'] {
 }
 
 #background {
-    background-size: cover;    
+    background-size: cover;
 }
 
 #grid {
-    width: calc(100vw);
-    height: calc(100vh);
+    width: 100vw;
+    height: 100vh;
 }
 
 td {
@@ -65,19 +66,18 @@ td {
     background-color: var(--grey-90-a60);
     display: none; /*none or flex*/
     justify-content: center;
+    align-items: center;
 }
 
 #assignmentFormContainer {
     position: absolute;
-    width: 800px;
-    top: 50vh;
-    transform: translateY(-50%);
     background-color: var(--grey-10);
     padding: 20px;
-    border-radius: var(--borderSize);
+    border-radius: 2px;
     animation-name: unbluring;
     animation-duration: 0.5s;
     -moz-user-select: none;
+    -moz-transform: scale(var(--assignmentFormScale));
 }
 
 @keyframes bluring {
@@ -106,6 +106,10 @@ td {
     animation-name: unbluring;
     animation-duration: 0.25s;
     filter: blur(0px);
+}
+
+#assignmentForm {
+    white-space: nowrap;
 }
 
 .element {

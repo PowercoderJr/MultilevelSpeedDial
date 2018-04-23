@@ -1,7 +1,7 @@
 /*Описание констант*/
 
 /**
- * enum Photon Colors JS Variables v3.0.1 
+ * enum Photon Colors JS Variables v3.0.1
  *
  * Набор констант цветов, доступен по адресу:
  * https://firefoxux.github.io/design-tokens/photon-colors/photon-colors.js
@@ -226,7 +226,7 @@ Element.prototype.action = function() {
  * Создаёт контейнер для элемента
  *
  * @param   int         number  Номер элемента
- * @return  HTMLElement         Возвращает контейнер 
+ * @return  HTMLElement         Возвращает контейнер
  *                              в виде HTML-элемента
  */
 Element.prototype.getInitHtml = function(number) {
@@ -265,7 +265,7 @@ Element.prototype.getInnerHtml = function () {
  * с соответствующим id
  *
  * @param   int         number  Номер элемента
- * @return  HTMLElement         Возвращает контейнер 
+ * @return  HTMLElement         Возвращает контейнер
  *                              в виде HTML-элемента
  */
 Element.prototype.bindHtml = function() {
@@ -423,7 +423,7 @@ Bookmark.prototype.action = function() {
  * {@link Element.prototype.getInitHtml}
  *
  * @param   int         number  Номер элемента
- * @return  HTMLElement         Возвращает контейнер 
+ * @return  HTMLElement         Возвращает контейнер
  *                              в виде HTML-элемента
  */
 Bookmark.prototype.getInitHtml = function() {
@@ -436,7 +436,7 @@ Bookmark.prototype.getInitHtml = function() {
 /**
  * Генерация тела HTML-блока
  *
- * Генерирует тело HTML-блока на основе имеющихся свойств 
+ * Генерирует тело HTML-блока на основе имеющихся свойств
  * {@link Element.prototype.getInnerHtml}
  *
  * @return  DocumentFragment    Возвращает объект документа,
@@ -468,7 +468,7 @@ Bookmark.prototype.refresh = function() {
         this.miniature = data.screenshot;
         overwriteElement(currPath, this);
         //getFolderByPath(currPath).elements[this.number - 1] = this;
-        rebuildElement(this);
+        //rebuildElement(this);
     }.bind(this), onPromiseFailed);
 }
 
@@ -484,7 +484,7 @@ Bookmark.prototype.refresh = function() {
  * @param   string  bgviewstr   Отображаемая строка вместо данных фона
  *                              (по умолчанию пуста)
  */
-var Folder = function(number, caption, rows = 3, cols = 3, 
+var Folder = function(number, caption, rows = 3, cols = 3,
         bgtype = BgType.DEFAULT, bgdata = null, bgviewstr = "") {
     FilledElement.call(this, number);
     this.type = ElementType.FOLDER;
@@ -549,7 +549,7 @@ Folder.prototype.action = function() {
  */
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
-    
+
     if (!this.isMiniatureHidden) {
         let mture = df.getElementById(StrongString.MINIATURE +
                 StrongString.SEPARATOR + this.number);
@@ -758,7 +758,7 @@ window.onload = function() {
                 }
                 const endingBookmarks = getEnding(nBookmarks);
                 const endingFolders = getEnding(nFolders);
-                document.getElementById("elemsWillBeLostLabel").textContent = 
+                document.getElementById("elemsWillBeLostLabel").textContent =
                         browser.i18n.getMessage("elemsWillBeLost", [newAmount,
                         nBookmarks, endingBookmarks, nFolders, endingFolders]);
                 document.getElementById("elemsWillBeLostLabel").style.display = "initial";
@@ -864,17 +864,33 @@ function buildPage(folder) {
     }
 
     window.onresize = function() {
+        //TODO?: возможно ли перенести в CSS?
         let numberHTML = document.getElementById(StrongString.NUMBER
                 + StrongString.SEPARATOR + "1");
-        let size = Math.min(numberHTML.offsetWidth * 0.9 / digits,
+        let numberFontSize = Math.min(numberHTML.offsetWidth * 0.9 / digits,
                 numberHTML.offsetHeight);
-        document.documentElement.style.setProperty("--numberFontSize", size + "px");
+        document.documentElement.style.setProperty("--numberFontSize",
+                numberFontSize + "px");
+        //console.log(document.getElementById("assignmentForm"));
+
+        const afWidth = 800;
+        const afHeight = 770;
+        const afMinScale = 0.75
+        let afScale = Math.min(window.innerWidth / afWidth,
+                window.innerHeight / afHeight);
+        if (afScale > 1) {
+            afScale = 1;
+        } else if (afScale < afMinScale) {
+            afScale = afMinScale;
+        }
+        document.documentElement.style.setProperty("--assignmentFormScale",
+                afScale);
     }
 
     //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
-    /*let numberFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " + 
+    /*let numberFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " +
             folder.cols + ")) / " + folder.cols + " / " + digits + ")";
-    let numberFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " + 
+    let numberFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " +
             folder.rows + ")) / " + folder.rows + ")";
     //document.documentElement.style.setProperty("--numberFontSize", "min(" + numberFontSizeH + "," + numberFontSizeV + ")"); //TODO: min() не используется в CSS3 - ref #4
     document.documentElement.style.setProperty("--numberFontSize", numberFontSizeH);*/
@@ -890,7 +906,7 @@ function buildPage(folder) {
  */
 function rebuildElement(element) {
     element = verifyElementObject(element);
-    let oldElement = document.getElementById(StrongString.ELEMENT + 
+    let oldElement = document.getElementById(StrongString.ELEMENT +
             StrongString.SEPARATOR + element.number);
     let parent = oldElement.parentElement;
     oldElement.remove();
@@ -1074,7 +1090,7 @@ async function parseAssignmentForm(copyElems) {
             bgtype = BgType.IMAGE_LOCAL;
             const picker = document.getElementById("bgimgPicker");
             if (picker.files.length > 0) {
-                let file = document.getElementById("bgimgPicker").files[0];                
+                let file = document.getElementById("bgimgPicker").files[0];
                 document.getElementById("imgLocalBgSpinner").style.display = "initial";
                 await readFile(file).then(function(data) {bgdata = data;},
                         onPromiseFailed);
@@ -1110,7 +1126,7 @@ async function parseAssignmentForm(copyElems) {
  * Загрузка файла
  *
  * Считывает файл с компьютера
- * 
+ *
  * @param   File    file    Выбранный файл
  * @return  Promise         Возвращает Promise, который в случае успеха
  *                          предоставляет считанную информацию в виде
@@ -1118,7 +1134,7 @@ async function parseAssignmentForm(copyElems) {
  *                          об ошибке.
  */
 function readFile(file) {
-    return new Promise((resolve, reject) => {    
+    return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.onloadend = function() {
             document.getElementById("imgLocalBgSpinner").style.display = "none";
@@ -1136,7 +1152,7 @@ function readFile(file) {
  * Получение информации об удалённой странице для превью
  *
  * Открывает url в новой вкладке, дожидается загрузки
- * страницы и записывает её название (title), 
+ * страницы и записывает её название (title),
  *
  * @param   boolean copyElems   Копировать ли в новый объект структуру элементов
  *                              (актуально, если редактируется элемент-папка)
