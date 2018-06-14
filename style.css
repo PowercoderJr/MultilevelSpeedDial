@@ -74,13 +74,13 @@ td {
     background-color: var(--grey-10);
     padding: 20px;
     border-radius: 2px;
-    animation-name: unbluring;
-    animation-duration: 0.5s;
+    /*animation-name: unbluring;
+    animation-duration: 0.5s;*/
     -moz-user-select: none;
     -moz-transform: scale(var(--assignmentFormScale));
 }
 
-@keyframes bluring {
+/*@keyframes bluring {
     from {
         filter: blur(0px);
     } to {
@@ -106,6 +106,10 @@ td {
     animation-name: unbluring;
     animation-duration: 0.25s;
     filter: blur(0px);
+}*/
+
+#assignmentForm fieldset:disabled {
+    opacity: 0.4;
 }
 
 #assignmentForm {

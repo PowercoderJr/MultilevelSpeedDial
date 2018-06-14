@@ -445,14 +445,18 @@ Bookmark.prototype.getInitHtml = function() {
  */
 Bookmark.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
-    df.getElementById(StrongString.CAPTION +
-            StrongString.SEPARATOR + this.number).
-            textContent = this.caption;
+    if (!this.isCaptionHidden) {
+        df.getElementById(StrongString.CAPTION +
+                StrongString.SEPARATOR + this.number).
+                textContent = this.caption;
+    }
     df.getElementById(StrongString.FAVICON +
             StrongString.SEPARATOR + this.number).src = this.icon;
-    df.getElementById(StrongString.MINIATURE +
-            StrongString.SEPARATOR + this.number).style.
-            backgroundImage = "url('" + this.miniature + "')";
+    if (!this.isMiniatureHidden) {
+        df.getElementById(StrongString.MINIATURE +
+                StrongString.SEPARATOR + this.number).style.
+                backgroundImage = "url('" + this.miniature + "')";
+    }
     return df;
 }
 /**
@@ -873,18 +877,7 @@ function buildPage(folder) {
                 numberFontSize + "px");
         //console.log(document.getElementById("assignmentForm"));
 
-        const afWidth = 800;
-        const afHeight = 770;
-        const afMinScale = 0.75
-        let afScale = Math.min(window.innerWidth / afWidth,
-                window.innerHeight / afHeight);
-        if (afScale > 1) {
-            afScale = 1;
-        } else if (afScale < afMinScale) {
-            afScale = afMinScale;
-        }
-        document.documentElement.style.setProperty("--assignmentFormScale",
-                afScale);
+        scaleAssignmentForm();
     }
 
     //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
@@ -1019,6 +1012,29 @@ function showAssignmentForm(element, mode) {
 
     document.getElementById("curtain").style.display = "flex";
     document.getElementById("background").style.WebkitFilter = "contrast(0.25)";
+    scaleAssignmentForm();
+}
+
+/**
+ * Масштабирование формы назначения элемента
+ *
+ * Проверяет, умещается ли форма назначения элемента в окно. При необходимости
+ * уменьшает или увеличивает её. Показатель масштабирования находится в
+ * диапазоне от 75% до 100%.
+ */
+ function scaleAssignmentForm() {
+    let afContainer = document.getElementById("assignmentFormContainer");
+    const afMinScale = 0.75;
+    const afMaxScale = 1;
+    let afScale = Math.min(window.innerWidth / (afContainer.offsetWidth + 8),
+            window.innerHeight / (afContainer.offsetHeight + 8));
+    if (afScale > afMaxScale) {
+        afScale = afMaxScale;
+    } else if (afScale < afMinScale) {
+        afScale = afMinScale;
+    }
+    document.documentElement.style.setProperty("--assignmentFormScale",
+            afScale);
 }
 
 /**
