@@ -12,6 +12,12 @@
         "newtab": "mlsd.html"
     },
 
+    "content_scripts": [
+    {
+        "matches": ["<all_urls>"],
+        "js": ["kbd_navigation.js"]
+    }],
+
     "applications":
     {
         "gecko":
