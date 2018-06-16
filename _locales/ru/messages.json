@@ -147,5 +147,10 @@
     "unableToLoadImg":
     {
         "message": "Не удалось загрузить изображение"
+    },
+
+    "unableToGetPageInfo":
+    {
+        "message": "Не удалось получить информацию о странице"
     }
 }

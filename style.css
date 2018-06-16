@@ -126,6 +126,7 @@ td {
     background-color: rgba(120, 120, 120, .2);
     text-decoration: none;
     -moz-user-select: none;
+    cursor: default;
     /*http://dabblet.com/gist/2775781*/
     background-clip: padding-box;
     border: var(--borderSize) solid rgba(170, 170, 170, .3);

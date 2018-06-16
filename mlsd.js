@@ -279,13 +279,6 @@ export function buildPage(folder) {
         scaleAssignmentForm();
     }
 
-    //Множитель borderSize = (лишнийОтступСетки + границыЭлемента)
-    /*let numberFontSizeH = "calc((100vw - var(--borderSize) * (1 + (1 + 1) * " +
-            folder.cols + ")) / " + folder.cols + " / " + digits + ")";
-    let numberFontSizeV = "calc((100vh - var(--borderSize) * (1 + (4 + 1) * " +
-            folder.rows + ")) / " + folder.rows + ")";
-    //document.documentElement.style.setProperty("--numberFontSize", "min(" + numberFontSizeH + "," + numberFontSizeV + ")"); //TODO: min() не используется в CSS3 - ref #4
-    document.documentElement.style.setProperty("--numberFontSize", numberFontSizeH);*/
     window.onresize();
 }
 
@@ -348,6 +341,7 @@ export function showAssignmentForm(element, mode) {
     document.getElementById("imgLocalBgSpinner").style.display = "none";
 
     if (mode == AssignmentMode.CREATE) {
+        document.getElementById("modeTf").value = AssignmentMode.CREATE;
         document.getElementById("bookmarkSettings").disabled = false;
         document.getElementById("folderSettings").disabled = true;
         document.getElementById("bookmarkRb").checked = true;
@@ -357,6 +351,7 @@ export function showAssignmentForm(element, mode) {
         document.getElementById("bgimgUrlTf").disabled = true;
     }
     else if (mode == AssignmentMode.EDIT) {
+        document.getElementById("modeTf").value = AssignmentMode.EDIT;
         document.getElementById("bookmarkSettings").disabled = !(document.getElementById("bookmarkRb").checked = element.type == ElementType.BOOKMARK || element.type == ElementType.EMPTY);
         document.getElementById("folderSettings").disabled = !(document.getElementById("folderRb").checked = element.type == ElementType.FOLDER);
         if (element.type == ElementType.BOOKMARK) {
@@ -456,9 +451,8 @@ function hideAssignmentForm() {
  */
 function submitAssignmentForm(event) {
     event.preventDefault();
-    //TODO: parseAssignmentForm(>true<), если режим - редактирование
     hideAssignmentForm();
-    parseAssignmentForm(true).then(function (element) {
+    parseAssignmentForm(+document.getElementById("modeTf").value == AssignmentMode.EDIT).then(function (element) {
         console.log(element);
         overwriteElement(currPath, element);
         if (element instanceof Bookmark) {
@@ -479,6 +473,7 @@ function submitAssignmentForm(event) {
  *                              предоставляет объект со считанными свойствами элемента
  */
 async function parseAssignmentForm(copyElems) {
+    console.log("copyElems = ", copyElems);
     let result = null;
     let number = parseInt(document.getElementById("numberTf").value);
     if (document.getElementById("bookmarkRb").checked) {
@@ -517,7 +512,8 @@ async function parseAssignmentForm(copyElems) {
         }
         else if (document.getElementById("imgRemoteBgRb").checked) {
             bgtype = BgType.IMAGE_REMOTE;
-            bgdata = document.getElementById("bgimgUrlTf").value; //TODO: to base64
+            await remoteImageToBase64(document.getElementById("bgimgUrlTf").value).
+                    then(function(data) {bgdata = data;}, onPromiseFailed);
             bgviewstr = document.getElementById("bgimgUrlTf").value;
         }
         result = new Folder(number, caption, rows, cols, bgtype, bgdata, bgviewstr);
@@ -580,15 +576,33 @@ export function getPagePreviewInfo(url) {
         browser.tabs.create({url: url, active: false}).then(function(tab) {
             //TODO: hide() на данный момент является эксперементальной функцией, стоит ли дождаться релиза?
             //browser.tabs.hide(tab.id);
+            let handledOnce = false;
             let handler = function(tabId, changeInfo, tabInfo) {
-                if (tabId == tab.id && changeInfo.status && changeInfo.status == "complete") {
+                if (!handledOnce && tabId == tab.id && changeInfo.status && changeInfo.status == "complete") {
+                    handledOnce = true;
                     browser.tabs.get(tabId).then(function(updatedTab) {
+                        console.log("Then 1");
+                        let pageInfo = {title: updatedTab.title, favicon: null, screenshot: null};
                         browser.tabs.captureTab(updatedTab.id).then(function(base64img) {
-                            //TODO: передавать иконку в виде строки base64
-                            resolve({title: updatedTab.title, favicon: updatedTab.favIconUrl, screenshot: base64img});
-                            browser.tabs.remove(updatedTab.id);
-                            browser.tabs.onUpdated.removeListener(handler);
-                        }, reject);
+                            console.log("Then 2");
+                            pageInfo.screenshot = base64img;
+                        }, reject).then(function() {
+                            console.log("Then 3");
+                            remoteImageToBase64(updatedTab.favIconUrl).then(function(base64ico) {
+                                console.log("Then 4");
+                                pageInfo.favicon = base64ico;
+                            }, reject).then(function() {
+                                console.log("Then 5");
+                                browser.tabs.remove(updatedTab.id);
+                                browser.tabs.onUpdated.removeListener(handler);
+
+                                if (pageInfo.screenshot !== null && pageInfo.favicon !== null) {
+                                    resolve(pageInfo);
+                                } else {
+                                    reject(browser.i18n.getMessage("unableToGetPageInfo"));
+                                }
+                            }, function() {reject(browser.i18n.getMessage("unableToGetPageInfo"));});
+                        }, function() {reject(browser.i18n.getMessage("unableToGetPageInfo"));});
                     }, reject);
                 }
             }
@@ -664,6 +678,7 @@ export function restoreElement(path, number) {
  * @param   Array   path        Путь
  * @param   Folder  startDir    Стартовая папка. Если не указана,
  *                              по умолчанию берётся корневая папка.
+ * @return  Folder              Целевая папка
  */
 export function getFolderByPath(path, startDir) {
     let folder = startDir || rootFolder;
@@ -683,6 +698,8 @@ export function getFolderByPath(path, startDir) {
  *
  * @param   Object  element Объект, который, предположительно,
  *                          является экземпляром Element
+ * @return  Element         Экземпляр Element'а или его
+ *                          наследника
  */
 function verifyElementObject(element) {
     //if (!element.getInitHtml) {
@@ -690,4 +707,44 @@ function verifyElementObject(element) {
         element = ElementFactoryByType[element.type](element);
     }
     return element;
+}
+
+/**
+ * Преобрание изображения в формат base64
+ *
+ * @param   HTMLImageElement    img Изображение
+ * @return  string                  Изображение, представленное base64-кодом
+ */
+function getBase64Image(img) {
+    console.log(img);
+    let canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL("image/png");
+}
+
+/**
+ * Преобразование удалённого изображения в формат base64
+ *
+ * @param   string  url Адрес изображения
+ * @return  Promise     Возвращает Promise, который в случае успеха
+ *                      предоставляет исходное изображение в виде
+ *                      строки base64; в случае неудачи - сообщение
+ *                      об ошибке.
+ */
+function remoteImageToBase64(url) {
+    return new Promise((resolve, reject) => {
+        let tmpImg = document.createElement("img");
+        tmpImg.onload = function() {
+            let base64result = getBase64Image(tmpImg);
+            resolve(base64result);
+        };
+
+        tmpImg.onerror = function() {
+            reject(browser.i18n.getMessage("unableToLoadImg"));
+        };
+        tmpImg.src = url;
+    });
 }

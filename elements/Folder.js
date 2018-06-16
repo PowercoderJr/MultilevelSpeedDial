@@ -1,5 +1,5 @@
 import * as StrongString from '../strong-string.js';
-import {currPath, buildPage} from '../mlsd.js';
+import {currPath, buildPage, DEFAULT_BGCOLOR} from '../mlsd.js';
 
 import {ElementType} from './Element.js';
 import Element from './Element.js';

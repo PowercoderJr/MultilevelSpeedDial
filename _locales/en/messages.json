@@ -147,5 +147,10 @@
     "unableToLoadImg":
     {
         "message": "Unable to load image"
+    },
+
+    "unableToGetPageInfo":
+    {
+        "message": "Unable to get page info"
     }
 }

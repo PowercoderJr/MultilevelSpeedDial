@@ -33,13 +33,15 @@ export default FilledElement;
  *                          элемента с заданными свойствами
  */
 FilledElement.prototype.parseObj = function(data) {
-    //TODO: Object.assign(result, data);
     let result = new FilledElement(data.number);
+    let superObj = Element.prototype.parseObj.call(this, data);
+    Object.assign(result, superObj);
     result.type = data.type;
     result.caption = data.caption;
     result.icon = data.icon;
     result.isCaptionHidden = data.isCaptionHidden;
     result.isMiniatureHidden = data.isMiniatureHidden;
+
     return result;
 }
 
