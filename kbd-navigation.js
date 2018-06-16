@@ -36,7 +36,7 @@ window.onkeypress = function(event) {
         if (event.key === "Backspace" && pathString.length > 0) {
             pathString = pathString.substring(0, pathString.length - 1)
         } else {
-            newPathString = pathString + event.key;
+            let newPathString = pathString + event.key;
             if (newPathString.match(/^([1-9]\d*\/?)*$/) !== null) {
                 isUiShown = true;
                 curtain.style.display = "flex";

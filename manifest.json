@@ -15,7 +15,7 @@
     "content_scripts": [
     {
         "matches": ["<all_urls>"],
-        "js": ["kbd_navigation.js"]
+        "js": ["kbd-navigation.js"]
     }],
 
     "applications":
