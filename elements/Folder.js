@@ -1,11 +1,19 @@
+import * as PhotonColors from '../photon-colors.js';
 import * as StrongString from '../strong-string.js';
-import {currPath, buildPage, DEFAULT_BGCOLOR} from '../mlsd.js';
+
+import {currPath, buildPage} from '../mlsd.js';
 
 import {ElementType} from './Element.js';
 import Element from './Element.js';
 import FilledElement from './FilledElement.js';
 import BackstepElement from './BackstepElement.js';
 
+/**
+ * Цвет фона по умолчанию
+ *
+ * @var string  DEFAULT_BGCOLOR
+ */
+export const DEFAULT_BGCOLOR = PhotonColors.GREY_10;
 
 /**
  * enum Тип фона

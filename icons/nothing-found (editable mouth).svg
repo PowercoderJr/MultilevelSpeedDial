@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20"
+   height="20"
+   viewBox="0 0 20 20"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="nothing-found (editable mouth).svg"
+   inkscape:version="0.92.1 r15371">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     id="namedview6"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="29.5"
+     inkscape:cx="-0.46909118"
+     inkscape:cy="6.8516711"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2">
+    <sodipodi:guide
+       position="10,22.474576"
+       orientation="1,0"
+       id="guide12"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="10.59322,11"
+       orientation="0,1"
+       id="guide14"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="8,10.627119"
+       orientation="1,0"
+       id="guide16"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="12,10.661017"
+       orientation="1,0"
+       id="guide18"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="8.6,12.042373"
+       orientation="1,0"
+       id="guide24"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="8.3983051,10.4"
+       orientation="0,1"
+       id="guide26"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="12.6,9"
+       orientation="1,0"
+       id="guide45"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="10.342935,9.5"
+       orientation="0,1"
+       id="guide109"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="10.378889,5.5"
+       orientation="0,1"
+       id="guide111"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="4,11.649285"
+       orientation="1,0"
+       id="guide4618"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,255,0)" />
+    <sodipodi:guide
+       position="3.955004,16"
+       orientation="0,1"
+       id="guide4620"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,255,0)" />
+    <sodipodi:guide
+       position="16,11.241799"
+       orientation="1,0"
+       id="guide4624"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,255,0)" />
+    <sodipodi:guide
+       position="10.30698,4"
+       orientation="0,1"
+       id="guide4626"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,255,0)" />
+  </sodipodi:namedview>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Стекло"
+     style="display:inline">
+    <circle
+       style="fill:#00ffe6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="path4645"
+       cx="10"
+       cy="10"
+       r="6" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Остальное"
+     style="display:inline">
+    <path
+       d="m 19.707,18.314617 -4.822,-4.822 a 6.019,6.019 0 1 0 -1.414,1.414 l 4.822,4.822 a 1,1 0 0 0 1.414,-1.414 z M 10,14.021617 a 4,4 0 1 1 4,-4 4,4 0 0 1 -4,4 z"
+       id="path2"
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:1" />
+    <circle
+       style="fill:#ffffff;fill-rule:evenodd;fill-opacity:1"
+       id="path105"
+       cx="12"
+       cy="9.021616"
+       r="0.60000002" />
+    <circle
+       style="fill:#ffffff;fill-rule:evenodd;fill-opacity:1"
+       id="path107"
+       cx="8"
+       cy="9.021616"
+       r="0.60000002" />
+    <circle
+       style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path113"
+       d="M 8.1206148,11.837576 A 2,2 0 0 1 10,10.521616 a 2,2 0 0 1 1.879385,1.31596"
+       sodipodi:type="arc"
+       sodipodi:open="true"
+       sodipodi:start="3.4906585"
+       sodipodi:end="5.9341195"
+       sodipodi:ry="2"
+       sodipodi:rx="2"
+       sodipodi:cy="12.521616"
+       sodipodi:cx="10" />
+  </g>
+</svg>

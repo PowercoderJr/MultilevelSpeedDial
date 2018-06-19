@@ -152,5 +152,10 @@
     "unableToGetPageInfo":
     {
         "message": "Unable to get page info"
+    },
+
+    "elementIsNotFound":
+    {
+        "message": "There is nothing at this address"
     }
 }

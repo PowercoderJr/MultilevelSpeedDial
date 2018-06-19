@@ -1,0 +1,65 @@
+@import 'photon-colors.css';
+
+@font-face {
+    font-family: 'Fira Sans Heavy';
+    src: url('fonts/FiraSans-Heavy.ttf');
+}
+
+@font-face {
+    font-family: 'Fira Sans';
+    src: url('fonts/FiraSans-Regular.ttf');
+}
+
+
+#navCurtain {
+	position: fixed;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	display: none;
+	justify-content: center;
+	align-items: center;
+}
+
+#previewRect {
+	min-width: 700px;
+	max-width: 90%;
+	height: auto; /*200px*/
+	overflow: hidden;
+	background-color: var(--grey-90-a90);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#addressLabel {
+	font-family: 'Fira Sans Heavy';
+    font-size: 40pt;
+    text-shadow: 0px 0px 3px var(--white-100);
+    color: transparent;
+    -webkit-text-stroke: 2px black; /*Non-standard*/
+}
+
+#miniature {
+	width: 550px;
+	height: 200px;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#iconPlusCaption {
+	margin: 8px;
+}
+
+#iconImg {
+	height: 20px;
+}
+
+#captionLabel {
+	font-family: 'Fira Sans';
+    font-size: 16pt;
+    color: var(--grey-10);
+}

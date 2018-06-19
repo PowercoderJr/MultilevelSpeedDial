@@ -152,5 +152,10 @@
     "unableToGetPageInfo":
     {
         "message": "Не удалось получить информацию о странице"
+    },
+
+    "elementIsNotFound":
+    {
+        "message": "По этому адресу ничего нет"
     }
 }

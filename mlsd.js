@@ -1,10 +1,10 @@
-import * as PhotonColors from './photon-colors.js';
+//import * as PhotonColors from './photon-colors.js';
 import * as StrongString from './strong-string.js';
 
 import {ElementType} from './elements/Element.js';
 import Element from './elements/Element.js';
 import Bookmark from './elements/Bookmark.js';
-import {BgType} from './elements/Folder.js';
+import {BgType, DEFAULT_BGCOLOR} from './elements/Folder.js';
 import Folder from './elements/Folder.js';
 import BackstepElement from './elements/BackstepElement.js';
 
@@ -33,13 +33,6 @@ export const ElementFactoryByType = {
     [ElementType.BACKSTEP]: BackstepElement.prototype.parseObj
 }
 Object.freeze(ElementFactoryByType);
-
-/**
- * Цвет фона по умолчанию
- *
- * @var string  DEFAULT_BGCOLOR
- */
-export const DEFAULT_BGCOLOR = PhotonColors.GREY_10;
 
 /**
  * Текущий путь
