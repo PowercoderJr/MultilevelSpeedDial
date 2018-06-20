@@ -5,7 +5,7 @@
     "version": "1.0",
     "default_locale": "en",
 
-    "permissions": ["storage", "tabs", "<all_urls>"],
+    "permissions": ["storage", "tabs", "activeTab", "<all_urls>"],
 
     "chrome_url_overrides":
     {
@@ -25,5 +25,11 @@
             "id": "multilevelspeeddial@mozilla.org",
             "strict_min_version": "42.0"
         }
-    }
+    },
+
+    "web_accessible_resources": [
+        "kbd-navigation.css",
+        "icons/nothing-found.svg",
+        "icons/hidden-miniature-placeholder.svg"
+    ]
 }

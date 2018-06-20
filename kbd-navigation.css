@@ -59,6 +59,7 @@
 }
 
 #captionLabel {
+	margin-left: 8px;
 	font-family: 'Fira Sans';
     font-size: 16pt;
     color: var(--grey-10);

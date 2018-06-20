@@ -1,8 +1,39 @@
-import * as PhotonColors from './photon-colors.js';
+/*Представь, что это импорты*/
 
-import {buildPage} from './mlsd.js';
-import {ElementType} from './elements/Element.js';
-import {BgType, DEFAULT_BGCOLOR} from './elements/Folder.js';
+//import * as PhotonColors from './photon-colors.js';
+const PhotonColors = {
+    YELLOW_50: '#ffe900',
+    PURPLE_50: '#9400ff',
+    GREY_10: '#f9f9fa'
+}
+
+//import {ElementType} from './elements/Element.js';
+const ElementType = {
+    //Пустой
+    EMPTY: 0,
+    //Закладка
+    BOOKMARK: 1,
+    //Папка
+    FOLDER: 2,
+    //Шаг на уровень вверх
+    BACKSTEP: 3
+}
+Object.freeze(ElementType);
+
+//import {DEFAULT_BGCOLOR, BgType} from './elements/Folder.js';
+const DEFAULT_BGCOLOR = PhotonColors.GREY_10;
+const BgType = {
+    //По умолчанию
+    DEFAULT: 0,
+    //Сплошной цвет
+    SOLID: 1,
+    //Изображение с компьютера
+    IMAGE_LOCAL: 2,
+    //Удалённое изображение
+    IMAGE_REMOTE: 3
+}
+Object.freeze(BgType);
+/*Импорты закончились*/
 
 let inputMode = false;
 let isPreviewShown = false;
@@ -10,6 +41,7 @@ let pathString;
 
 let navCurtain = document.createElement("div");
 navCurtain.id = "navCurtain";
+
 
 let previewRect = document.createElement("div");
 previewRect.id = "previewRect";
@@ -20,20 +52,20 @@ addressLabel.id = "addressLabel";
 let miniature = document.createElement("div");
 miniature.id = "miniature";
 
+let iconPlusCaption = document.createElement("div");
+iconPlusCaption.id = "iconPlusCaption";
+
 let iconImg = document.createElement("img");
 iconImg.id = "iconImg";
 
 let captionLabel = document.createElement("label");
 captionLabel.id = "captionLabel";
 
-let iconPlusCaption = document.createElement("div");
-iconPlusCaption.id = "iconPlusCaption";
-
 window.addEventListener("load", function() {
     let cssLink = document.createElement("link");
     cssLink.setAttribute("rel", "stylesheet");
     cssLink.setAttribute("type", "text/css");
-    cssLink.setAttribute("href", "kbd-navigation.css");
+    cssLink.setAttribute("href", browser.extension.getURL("kbd-navigation.css"));
     document.head.appendChild(cssLink);
 
     previewRect.appendChild(addressLabel);
@@ -196,7 +228,7 @@ function fillPreview(element) {
             if (element.isMiniatureHidden) {
                 miniature.style.backgroundColor = PhotonColors.PURPLE_50;
                 miniature.style.backgroundImage =
-                        "url(icons/hidden-miniature-placeholder.svg)";
+                        "url('" + browser.extension.getURL("icons/hidden-miniature-placeholder.svg") + "'')";
                 miniature.style.backgroundSize = "200px";
             } else {
                 switch (element.bgtype) {
@@ -229,7 +261,7 @@ function fillPreview(element) {
             if (element.isMiniatureHidden) {
                 miniature.style.backgroundColor = PhotonColors.PURPLE_50;
                 miniature.style.backgroundImage =
-                        "url(icons/hidden-miniature-placeholder.svg)";
+                        "url('" + browser.extension.getURL("icons/hidden-miniature-placeholder.svg") + "')";
                 miniature.style.backgroundSize = "200px";
             } else {
                 miniature.style.backgroundColor = "";
@@ -246,7 +278,7 @@ function fillPreview(element) {
             break;
         default:
             miniature.style.backgroundColor = PhotonColors.YELLOW_50;
-            miniature.style.backgroundImage = "url(icons/nothing-found.svg)";
+            miniature.style.backgroundImage = "url('" + browser.extension.getURL("icons/nothing-found.svg") + "')";
             miniature.style.backgroundSize = "150px";
             iconImg.src = "";
             captionLabel.textContent = browser.i18n.getMessage("elementIsNotFound");
