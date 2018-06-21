@@ -22,6 +22,18 @@ export const AssignmentMode = {
 Object.freeze(AssignmentMode);
 
 /**
+ * Команды для обмена между скриптами
+ *
+ * @var enum    Commands
+ */
+export const Commands = {
+    GOTO_URL: 0,
+    GOTO_FOLDER: 1,
+    BUILD_FOLDER_PAGE: 2
+}
+Object.freeze(Commands);
+
+/**
  * enum Парсер элемента
  *
  * @var Object ElementFactoryByType
@@ -267,7 +279,6 @@ export function buildPage(folder) {
                 numberHTML.offsetHeight);
         document.documentElement.style.setProperty("--numberFontSize",
                 numberFontSize + "px");
-        //console.log(document.getElementById("assignmentForm"));
 
         scaleAssignmentForm();
     }
@@ -445,8 +456,8 @@ function hideAssignmentForm() {
 function submitAssignmentForm(event) {
     event.preventDefault();
     hideAssignmentForm();
-    parseAssignmentForm(+document.getElementById("modeTf").value == AssignmentMode.EDIT).then(function (element) {
-        console.log(element);
+    parseAssignmentForm(+document.getElementById("modeTf").value ==
+            AssignmentMode.EDIT).then(function (element) {
         overwriteElement(currPath, element);
         if (element instanceof Bookmark) {
             element.refresh();
@@ -466,7 +477,6 @@ function submitAssignmentForm(event) {
  *                              предоставляет объект со считанными свойствами элемента
  */
 async function parseAssignmentForm(copyElems) {
-    console.log("copyElems = ", copyElems);
     let result = null;
     let number = parseInt(document.getElementById("numberTf").value);
     if (document.getElementById("bookmarkRb").checked) {
@@ -558,7 +568,8 @@ function readFile(file) {
  * Получение информации об удалённой странице для превью
  *
  * Открывает url в новой вкладке, дожидается загрузки
- * страницы и записывает её название (title),
+ * страницы и записывает её название (title), иконку (icon)
+ * и скриншот (screenshot).
  *
  * @param   boolean copyElems   Копировать ли в новый объект структуру элементов
  *                              (актуально, если редактируется элемент-папка)
@@ -706,7 +717,6 @@ function verifyElementObject(element) {
  * @return  string                  Изображение, представленное base64-кодом
  */
 function getBase64Image(img) {
-    console.log(img);
     let canvas = document.createElement("canvas");
     canvas.width = img.width;
     canvas.height = img.height;
@@ -738,3 +748,21 @@ function remoteImageToBase64(url) {
         tmpImg.src = url;
     });
 }
+
+browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+    switch (msg.command) {
+        case Commands.BUILD_FOLDER_PAGE:
+            if ((typeof msg.path).toLowerCase() === "string") {
+                msg.path = msg.path.split("/");
+            }
+            msg.path = msg.path.filter(item => item != "");
+            
+            let folder = msg.folder || getFolderByPath(msg.path);
+            currPath = msg.path;
+            buildPage(folder);
+            break;
+        default:
+            console.log("Поступила какая-то команда, но мы её проигнорируем");
+            break;
+    }
+});

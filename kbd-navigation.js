@@ -33,6 +33,14 @@ const BgType = {
     IMAGE_REMOTE: 3
 }
 Object.freeze(BgType);
+
+//import {Commands} from './mlsd.js';
+const Commands = {
+    GOTO_URL: 0,
+    GOTO_FOLDER: 1,
+    BUILD_FOLDER_PAGE: 2
+}
+Object.freeze(Commands);
 /*Импорты закончились*/
 
 /**
@@ -41,6 +49,13 @@ Object.freeze(BgType);
  * @var boolean inputMode
  */
 let inputMode = false;
+
+/**
+ * Флаг новой вкладки
+ *
+ * @var boolean isNewTabNeeded
+ */
+let isNewTabNeeded = false;
 
 /**
  * Флаг отображения превью
@@ -115,6 +130,13 @@ let captionLabel = document.createElement("label");
 captionLabel.id = "captionLabel";
 
 /**
+ * Флаг - инициализирован ли пользовательский интерфейс
+ *
+ * @var boolean  hasUiBeenInited
+ */
+let hasUiBeenInited = false;
+
+/**
  * Корневая папка
  *
  * @var Folder  rootFolder
@@ -132,6 +154,18 @@ window.addEventListener("load", function() {
     browser.storage.local.get('structure').
             then(onStructureLoaded, onStructureLoadFailed);
 
+    initUI();
+});
+
+/**
+ * Инициализация объектов для отображения превью
+ *
+ * Собирает все объекты (фоновый div, label адреса, image для превью,
+ * image для иконки), добавляет их на штору, а штору - на страницу.
+ * Также подключает для них таблицы стилей. Устанавливает флаг hasUiBeenInited
+ * {@link hasUiBeenInited}
+ */
+function initUI() {
     let cssLink = document.createElement("link");
     cssLink.setAttribute("rel", "stylesheet");
     cssLink.setAttribute("type", "text/css");
@@ -146,20 +180,25 @@ window.addEventListener("load", function() {
     previewRect.appendChild(iconPlusCaption);
     navCurtain.appendChild(previewRect);
     document.body.appendChild(navCurtain);
-});
+
+    hasUiBeenInited = true;
+}
 
 window.addEventListener("keydown", function(event) {
     if (event.key === "Control" && !inputMode) {
         browser.storage.local.get('structure').
                 then(onStructureLoaded, onStructureLoadFailed);
         inputMode = true;
+        isNewTabNeeded = false;
         pathString = "";
         target = null;
+    } else if (event.key === "Shift" && inputMode) {
+        isNewTabNeeded = true;
     }
 });
 
 window.addEventListener("keypress", function(event) {
-    console.log(event);
+    //console.log(event);
     if (inputMode) {
         if (event.key === "Backspace" && pathString.length > 0) {
             pathString = pathString.substring(0, pathString.length - 1);
@@ -182,15 +221,29 @@ window.addEventListener("keypress", function(event) {
                     }
                 }
             } else {
-                let newPathString = pathString +
-                        (event.key === ' ' ? '/' : event.key);
-                if (newPathString.match(
-                        /^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/) !== null) {
-                    if (!isPreviewShown) {
-                        switchNavUI(true);
+                const digitRegExp = /^(Digit|Numpad|)(\d)$/;
+                let appendix;
+                if (event.code.match(digitRegExp) !== null) {
+                    appendix = event.code.replace(digitRegExp, "$2")
+                } else if (event.key === '/' || event.key === ' ') {
+                    appendix = '/';
+                } else {
+                    appendix = null;
+                }
+
+                if (appendix !== null) {
+                    let newPathString = pathString + appendix;
+                    const pathRegExp = /^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/;
+                    if (newPathString.match(pathRegExp) !== null) {
+                        if (!hasUiBeenInited) {
+                            initUI();
+                        }
+                        if (!isPreviewShown) {
+                            switchNavUI(true);
+                        }
+                        pathString = newPathString;
+                        addressLabel.textContent = newPathString;
                     }
-                    pathString = newPathString;
-                    addressLabel.textContent = newPathString;
                 }
             }
         }
@@ -208,6 +261,26 @@ window.addEventListener("keyup", function(event) {
     if (event.key === "Control") {
         inputMode = false;
         switchNavUI(false);
+
+        if (target) {
+            switch (target.type) {
+                case ElementType.BOOKMARK:
+                    browser.runtime.sendMessage({
+                        command: Commands.GOTO_URL,
+                        url: target.url,
+                        newTab: isNewTabNeeded
+                    });
+                    break;
+                case ElementType.FOLDER:
+                    browser.runtime.sendMessage({
+                        command: Commands.GOTO_FOLDER,
+                        folder: target,
+                        path: pathString,
+                        newTab: isNewTabNeeded
+                    });
+                    break;
+            }
+        }
     }
 });
 
@@ -249,9 +322,6 @@ function isNumber(str) {
  * @param   mixed   results    Результат чтения
  */
 function onStructureLoaded(results) {
-    console.log("results in onStructureLoaded:")
-    console.log(results);
-    console.log("-- onStructureLoaded end --");
     if (results.structure) {
         rootFolder = results.structure;
     } else {

@@ -5,7 +5,7 @@
     "version": "1.0",
     "default_locale": "en",
 
-    "permissions": ["storage", "tabs", "activeTab", "<all_urls>"],
+    "permissions": ["storage", "tabs", "<all_urls>"],
 
     "chrome_url_overrides":
     {
@@ -17,6 +17,11 @@
         "matches": ["<all_urls>"],
         "js": ["kbd-navigation.js"]
     }],
+
+    "background":
+    {
+        "scripts": ["background.js"]
+    },
 
     "applications":
     {
