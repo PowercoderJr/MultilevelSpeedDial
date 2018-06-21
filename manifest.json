@@ -29,7 +29,10 @@
 
     "web_accessible_resources": [
         "kbd-navigation.css",
+        "icons/folder.svg",
         "icons/nothing-found.svg",
-        "icons/hidden-miniature-placeholder.svg"
+        "icons/hidden-miniature-placeholder.svg",
+        "fonts/FiraSans-Regular.ttf",
+        "fonts/FiraSans-Heavy.ttf"
     ]
 }

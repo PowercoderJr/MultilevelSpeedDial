@@ -35,37 +35,108 @@ const BgType = {
 Object.freeze(BgType);
 /*Импорты закончились*/
 
+/**
+ * Флаг режима ввода
+ *
+ * @var boolean inputMode
+ */
 let inputMode = false;
+
+/**
+ * Флаг отображения превью
+ *
+ * @var boolean isPreviewShown
+ */
 let isPreviewShown = false;
+
+/**
+ * Путь, введённый с клавиатуры
+ *
+ * @var string pathString
+ */
 let pathString;
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement navCurtain
+ */
 let navCurtain = document.createElement("div");
 navCurtain.id = "navCurtain";
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement previewRect
+ */
 
 let previewRect = document.createElement("div");
 previewRect.id = "previewRect";
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement addressLabel
+ */
+
 let addressLabel = document.createElement("label");
 addressLabel.id = "addressLabel";
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement miniature
+ */
 let miniature = document.createElement("div");
 miniature.id = "miniature";
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement iconPlusCaption
+ */
 let iconPlusCaption = document.createElement("div");
 iconPlusCaption.id = "iconPlusCaption";
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement iconImg
+ */
 let iconImg = document.createElement("img");
 iconImg.id = "iconImg";
 
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement captionLabel
+ */
 let captionLabel = document.createElement("label");
 captionLabel.id = "captionLabel";
 
+/**
+ * Корневая папка
+ *
+ * @var Folder  rootFolder
+ */
+let rootFolder;
+
+/**
+ * Элемент, к которому ведёт заданный пользователем путь
+ *
+ * @var Element target
+ */
+let target;
+
 window.addEventListener("load", function() {
+    browser.storage.local.get('structure').
+            then(onStructureLoaded, onStructureLoadFailed);
+
     let cssLink = document.createElement("link");
     cssLink.setAttribute("rel", "stylesheet");
     cssLink.setAttribute("type", "text/css");
-    cssLink.setAttribute("href", browser.extension.getURL("kbd-navigation.css"));
+    cssLink.setAttribute("href",
+            browser.extension.getURL("kbd-navigation.css"));
     document.head.appendChild(cssLink);
 
     previewRect.appendChild(addressLabel);
@@ -77,18 +148,17 @@ window.addEventListener("load", function() {
     document.body.appendChild(navCurtain);
 });
 
-let rootFolder;
-
-window.onkeydown = function(event) {
+window.addEventListener("keydown", function(event) {
     if (event.key === "Control" && !inputMode) {
         browser.storage.local.get('structure').
                 then(onStructureLoaded, onStructureLoadFailed);
         inputMode = true;
         pathString = "";
+        target = null;
     }
-}
+});
 
-window.onkeypress = function(event) {
+window.addEventListener("keypress", function(event) {
     console.log(event);
     if (inputMode) {
         if (event.key === "Backspace" && pathString.length > 0) {
@@ -98,32 +168,48 @@ window.onkeypress = function(event) {
                 switchNavUI(false);
             }
         } else {
-            let newPathString = pathString +
-                    (event.key === ' ' ? '/' : event.key);
-            if (newPathString.
-                    match(/^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/) !== null) {
-                if (!isPreviewShown) {
-                    switchNavUI(true);
+            if ((event.key === "+" || event.key === "-") && isPreviewShown) {
+                if (pathString[pathString.length - 1] === '/') {
+                    pathString = pathString + "1";
+                } else {
+                    let slashIndex = pathString.lastIndexOf('/');
+                    let pathTail = pathString.substring(0, slashIndex + 1);
+                    let targetNumber = +pathString.substring(slashIndex + 1);
+                    if (event.key === "+" && targetNumber < 999) {
+                        pathString = pathTail + (targetNumber + 1);
+                    } else if (event.key === "-" && targetNumber > 1) {
+                        pathString = pathTail + (targetNumber - 1);
+                    }
                 }
-                pathString = newPathString;
-                addressLabel.textContent = newPathString;
+            } else {
+                let newPathString = pathString +
+                        (event.key === ' ' ? '/' : event.key);
+                if (newPathString.match(
+                        /^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/) !== null) {
+                    if (!isPreviewShown) {
+                        switchNavUI(true);
+                    }
+                    pathString = newPathString;
+                    addressLabel.textContent = newPathString;
+                }
             }
         }
-        let target = getElementByPath(pathString);
+        addressLabel.textContent = pathString;
+        target = getElementByPath(pathString);
         fillPreview(target);
     }
 
     if (isPreviewShown) {
         event.preventDefault();
     }
-}
+});
 
-window.onkeyup = function(event) {
+window.addEventListener("keyup", function(event) {
     if (event.key === "Control") {
         inputMode = false;
         switchNavUI(false);
     }
-}
+});
 
 /**
  * Отобразить/скрыть интерфейс навигации
@@ -228,7 +314,8 @@ function fillPreview(element) {
             if (element.isMiniatureHidden) {
                 miniature.style.backgroundColor = PhotonColors.PURPLE_50;
                 miniature.style.backgroundImage =
-                        "url('" + browser.extension.getURL("icons/hidden-miniature-placeholder.svg") + "'')";
+                        "url('" + browser.extension.getURL(
+                            "icons/hidden-miniature-placeholder.svg") + "')";
                 miniature.style.backgroundSize = "200px";
             } else {
                 switch (element.bgtype) {
@@ -249,7 +336,7 @@ function fillPreview(element) {
                 }
                 miniature.style.backgroundSize = "cover";
             }
-            iconImg.src = element.icon;
+            iconImg.src = browser.extension.getURL("icons/folder.svg");
             if (element.isCaptionHidden) {
                 captionLabel.textContent = "";
             } else {
@@ -261,7 +348,8 @@ function fillPreview(element) {
             if (element.isMiniatureHidden) {
                 miniature.style.backgroundColor = PhotonColors.PURPLE_50;
                 miniature.style.backgroundImage =
-                        "url('" + browser.extension.getURL("icons/hidden-miniature-placeholder.svg") + "')";
+                        "url('" + browser.extension.getURL(
+                            "icons/hidden-miniature-placeholder.svg") + "')";
                 miniature.style.backgroundSize = "200px";
             } else {
                 miniature.style.backgroundColor = "";
@@ -278,10 +366,13 @@ function fillPreview(element) {
             break;
         default:
             miniature.style.backgroundColor = PhotonColors.YELLOW_50;
-            miniature.style.backgroundImage = "url('" + browser.extension.getURL("icons/nothing-found.svg") + "')";
+            miniature.style.backgroundImage = "url('" +
+                    browser.extension.getURL(
+                        "icons/nothing-found.svg") + "')";
             miniature.style.backgroundSize = "150px";
             iconImg.src = "";
-            captionLabel.textContent = browser.i18n.getMessage("elementIsNotFound");
+            captionLabel.textContent = browser.i18n.
+                    getMessage("elementIsNotFound");
             break;
     }
 }

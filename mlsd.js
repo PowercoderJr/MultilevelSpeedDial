@@ -519,6 +519,8 @@ async function parseAssignmentForm(copyElems) {
                 }
             }
         }
+    } else {
+        throw -1;
     }
 
     result.isCaptionHidden = document.getElementById("hideCaptionChb").checked;
@@ -574,18 +576,13 @@ export function getPagePreviewInfo(url) {
                 if (!handledOnce && tabId == tab.id && changeInfo.status && changeInfo.status == "complete") {
                     handledOnce = true;
                     browser.tabs.get(tabId).then(function(updatedTab) {
-                        console.log("Then 1");
                         let pageInfo = {title: updatedTab.title, favicon: null, screenshot: null};
                         browser.tabs.captureTab(updatedTab.id).then(function(base64img) {
-                            console.log("Then 2");
                             pageInfo.screenshot = base64img;
                         }, reject).then(function() {
-                            console.log("Then 3");
                             remoteImageToBase64(updatedTab.favIconUrl).then(function(base64ico) {
-                                console.log("Then 4");
                                 pageInfo.favicon = base64ico;
                             }, reject).then(function() {
-                                console.log("Then 5");
                                 browser.tabs.remove(updatedTab.id);
                                 browser.tabs.onUpdated.removeListener(handler);
 

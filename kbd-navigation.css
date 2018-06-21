@@ -10,7 +10,6 @@
     src: url('fonts/FiraSans-Regular.ttf');
 }
 
-
 #navCurtain {
 	position: fixed;
 	top: 0px;
@@ -32,6 +31,11 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+}
+
+#addressLabel, #captionLabel {
+	text-decoration: none;
+	font-weight: normal;
 }
 
 #addressLabel {
@@ -56,6 +60,10 @@
 
 #iconImg {
 	height: 20px;
+}
+
+#iconImg[src=''] {
+	display: none;
 }
 
 #captionLabel {
