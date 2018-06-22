@@ -5,7 +5,7 @@
     "version": "1.0",
     "default_locale": "en",
 
-    "permissions": ["storage", "tabs", "<all_urls>"],
+    "permissions": ["storage", "history", "tabs", "<all_urls>"],
 
     "chrome_url_overrides":
     {
@@ -30,6 +30,12 @@
             "id": "multilevelspeeddial@mozilla.org",
             "strict_min_version": "42.0"
         }
+    },
+
+    "options_ui":
+    {
+        "page": "options.html",
+        "browser_style": true
     },
 
     "web_accessible_resources": [

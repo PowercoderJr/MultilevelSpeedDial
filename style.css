@@ -1,4 +1,4 @@
-@import 'photon.css';
+@import 'folder-form.css';
 
 @font-face {
     font-family: 'Fira Sans Heavy';
@@ -16,29 +16,6 @@
 
 body {
     background-color: var(--grey-10);
-}
-
-input[type='number'] {
-    -moz-appearance: textfield;
-}
-
-.doLeading {
-    line-height: 180%;
-}
-
-.warning {
-    font-size: 75%;
-    height: 20px;
-    background-color: var(--yellow-50);
-    display: none; /*none or initial*/
-    padding: 6px 2px 3px 2px;
-}
-
-.warning::before {
-    content: url('icons/photon/warning-16.svg');
-    position: relative;
-    margin: 0px 2px 0px 2px;
-    top: 2px;
 }
 
 .fullscreenElement {
@@ -219,22 +196,4 @@ td {
 
 .element:hover .elementNumber {
     opacity: 0.1;
-}
-
-#bgcolorPicker {
-    height: 24px;
-    position: relative;
-    top: 4px;
-}
-
-#imgLocalBgSpinner {
-    height: 25px;
-    position: relative;
-    top: 7px;
-    display: none; /*none or initial*/
-}
-
-#assignmentFormButtons {
-    margin-top: 3px;
-    margin-left: 2px;
 }

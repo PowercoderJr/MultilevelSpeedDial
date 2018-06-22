@@ -36,7 +36,9 @@
                         <legend id="bookmarkSettingsLabel"></legend>
                         <p>
                             <label id="urlLabel"></label>
-                            <input type="url" id="urlTf" name="url" size="80" placeholder="https://www.google.com/" required>
+                            <input type="url" id="urlTf" name="url" size="80" placeholder="https://www.google.com/" list="urlSuggectionsDL" autocomplete="off" required>
+                            <datalist id="urlSuggectionsDL">
+                            </datalist>
                         </p>
                     </fieldset>
                     <fieldset id="folderSettings" disabled>
@@ -68,7 +70,7 @@
                         </p>
                     </fieldset>
                 </fieldset>
-                <div id="assignmentFormButtons">
+                <div id="controlButtons">
                     <input type="submit" id="okBtn">
                     <input type="button" id="cancelBtn">
                 </div>

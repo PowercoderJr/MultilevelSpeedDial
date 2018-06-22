@@ -70,7 +70,7 @@ window.onload = function() {
     browser.storage.local.get().then(function(all) { //DEBUG
         console.log("Stored data: ");
         for (let key in all) {
-            console.log(key + " = " + all[key]);
+            console.log(key, " = ", all[key]);
         }
     }, onPromiseFailed);
 
@@ -184,6 +184,25 @@ window.onload = function() {
         item.oninput = onGridSizeChanged;
     });
 
+    document.getElementById("urlTf").oninput = function() {
+        let urlSugDL = document.getElementById("urlSuggectionsDL");
+        let urlTf = document.getElementById("urlTf");
+
+        urlSugDL.innerHTML = "";
+        browser.history.search({
+            text: urlTf.value,
+            startTime: 0,
+            maxResults: 20
+        }).then(function(results) {
+            urlSugDL.innerHTML = "";
+            for (let item of results) {
+                let option = document.createElement("option");
+                option.value = item.url;
+                urlSugDL.appendChild(option);
+            }
+        }, onPromiseFailed);
+    }
+
     document.getElementById("cancelBtn").onclick = hideAssignmentForm;
 }
 
@@ -199,9 +218,9 @@ window.onload = function() {
  * @param   mixed   results    Результат чтения
  */
 function onStructureLoaded(results) {
-    console.log("results in onStructureLoaded:")
+    /*console.log("results in onStructureLoaded:")
     console.log(results);
-    console.log("-- onStructureLoaded end --");
+    console.log("-- onStructureLoaded end --");*/
     if (results.structure) {
         rootFolder = results.structure;
     } else {

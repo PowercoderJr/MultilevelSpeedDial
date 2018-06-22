@@ -11,36 +11,39 @@
 }
 
 #navCurtain {
-	position: fixed;
-	top: 0px;
-	bottom: 0px;
-	left: 0px;
-	right: 0px;
-	display: none;
-	justify-content: center;
-	align-items: center;
-	z-index: 9999;
+    all: initial;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
 
 #previewRect {
-	min-width: 700px;
-	max-width: 90%;
-	height: auto; /*200px*/
-	overflow: hidden;
-	background-color: var(--grey-90-a90);
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+    all: initial;
+    min-width: 700px;
+    max-width: 90%;
+    height: auto; /*200px*/
+    overflow: hidden;
+    background-color: var(--grey-90-a90);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 #addressLabel, #captionLabel {
-	text-decoration: none;
-	font-weight: normal;
+    all: initial;
+    text-decoration: none;
+    font-weight: normal;
 }
 
 #addressLabel {
-	font-family: 'Fira Sans Heavy';
+    font-family: 'Fira Sans Heavy';
     font-size: 40pt;
     text-shadow: 0px 0px 3px var(--white-100);
     color: transparent;
@@ -48,28 +51,31 @@
 }
 
 #miniature {
-	width: 550px;
-	height: 200px;
+    all: initial;
+    width: 550px;
+    height: 200px;
     background-position: center top;
     background-repeat: no-repeat;
     background-size: cover;
 }
 
 #iconPlusCaption {
-	margin: 8px;
+    all: initial;
+    margin: 8px;
 }
 
 #iconImg {
-	height: 20px;
+    all: initial;
+    height: 20px;
 }
 
 #iconImg[src=''] {
-	display: none;
+    display: none;
 }
 
 #captionLabel {
-	margin-left: 8px;
-	font-family: 'Fira Sans';
+    margin-left: 8px;
+    font-family: 'Fira Sans';
     font-size: 16pt;
     color: var(--grey-10);
 }
