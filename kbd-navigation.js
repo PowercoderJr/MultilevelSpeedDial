@@ -258,7 +258,7 @@ window.addEventListener("keypress", function(event) {
 });
 
 window.addEventListener("keyup", function(event) {
-    if (event.key === "Control") {
+    if (event.key === "Control" && inputMode) {
         inputMode = false;
         switchNavUI(false);
 

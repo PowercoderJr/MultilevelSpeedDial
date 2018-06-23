@@ -63,10 +63,26 @@ export let currPath = [];
  *
  * @var Folder  rootFolder
  */
-var rootFolder;
+let rootFolder;
+
+/**
+ * Настройки
+ *
+ * Содержит информацию о пользовательских настройках расширения
+ *
+ * @var Object  settings
+ */
+let settings;
+
 window.onload = function() {
     //browser.storage.local.clear();
-    browser.storage.local.get('structure').then(onStructureLoaded, onPromiseFailed);
+    browser.storage.local.get(['structure', 'settings']).then(function(results) {
+        onStorageCheckedOut(results);
+        buildPage(rootFolder);
+        if (settings.doPageFocus) {
+            window.focus();
+        }
+    }, onPromiseFailed);
     browser.storage.local.get().then(function(all) { //DEBUG
         console.log("Stored data: ");
         for (let key in all) {
@@ -75,24 +91,18 @@ window.onload = function() {
     }, onPromiseFailed);
 
     /*Вставка строк из файлов локализации*/
-    document.getElementById("cellAssignmentTitle").innerHTML += browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
-    document.getElementById("cellNumberLabel").innerHTML += browser.i18n.getMessage("cellNumber") + ":";
-    document.getElementById("cellTypeLabel").innerHTML += browser.i18n.getMessage("cellType") + ":";
+    document.getElementById("cellAssignmentTitle").textContent = browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
+    document.getElementById("cellNumberLabel").textContent = browser.i18n.getMessage("cellNumber") + ":";
+    document.getElementById("cellTypeLabel").textContent = browser.i18n.getMessage("cellType") + ":";
     document.getElementById("bookmarkLabel").innerHTML += browser.i18n.getMessage("bookmark");
     document.getElementById("folderLabel").innerHTML += browser.i18n.getMessage("folder");
-    document.getElementById("generalSettingsLabel").innerHTML += browser.i18n.getMessage("generalSettings");
+    document.getElementById("generalSettingsLabel").textContent = browser.i18n.getMessage("generalSettings");
     document.getElementById("hideCaptionLabel").innerHTML += browser.i18n.getMessage("hideCaption");
     document.getElementById("hideMiniatureLabel").innerHTML += browser.i18n.getMessage("hideMiniature");
-    document.getElementById("bookmarkSettingsLabel").innerHTML += browser.i18n.getMessage("bookmarkSettings");
+    document.getElementById("bookmarkSettingsLabel").textContent = browser.i18n.getMessage("bookmarkSettings");
     document.getElementById("urlLabel").innerHTML += browser.i18n.getMessage("url") + ": ";
     document.getElementById("folderSettingsLabel").innerHTML += browser.i18n.getMessage("folderSettings") + ":";
     document.getElementById("folderNameLabel").innerHTML += browser.i18n.getMessage("folderName") + ": ";
-    document.getElementById("gridSizeLabel").innerHTML += browser.i18n.getMessage("gridSize") + ": ";
-    document.getElementById("bgLabel").innerHTML += browser.i18n.getMessage("background") + ":";
-    document.getElementById("defaultBgLabel").innerHTML += browser.i18n.getMessage("default");
-    document.getElementById("colorBgLabel").innerHTML += browser.i18n.getMessage("color") + ": ";
-    document.getElementById("imgLocalBgLabel").innerHTML += browser.i18n.getMessage("imageLocal") + ": ";
-    document.getElementById("imgRemoteBgLabel").innerHTML += browser.i18n.getMessage("imageRemote") + ": ";
     document.getElementById("okBtn").value = browser.i18n.getMessage("ok");
     document.getElementById("cancelBtn").value = browser.i18n.getMessage("cancel");
     document.getElementById("bgimgUrlTf").title = browser.i18n.getMessage("imgUrlRequired");
@@ -113,6 +123,49 @@ window.onload = function() {
         item.oninput = onElementTypeChanged;
     });
 
+    initFolderForm();
+
+    document.getElementById("urlTf").oninput = function() {
+        let urlSugDL = document.getElementById("urlSuggectionsDL");
+        let urlTf = document.getElementById("urlTf");
+
+        urlSugDL.innerHTML = "";
+        browser.history.search({
+            text: urlTf.value,
+            startTime: 0,
+            maxResults: 20
+        }).then(function(results) {
+            urlSugDL.innerHTML = "";
+            for (let item of results) {
+                let option = document.createElement("option");
+                option.value = item.url;
+                urlSugDL.appendChild(option);
+            }
+        }, onPromiseFailed);
+    }
+
+    document.getElementById("cancelBtn").onclick = hideAssignmentForm;
+}
+
+/**
+ * Инициализация элементов формы настроек папки
+ *
+ * Получает локализированные подписи для элементов формы и помещает их
+ * в соответствующие лейблы, назначает обработчики событий. Если в функцию
+ * передан параметр folder, проверка целостности структуры будет выполняться
+ * относительно этой папки, иначе - относительно вычисленной папки (currPath/
+ * <номер_элемента_который_редактируется>)
+ *
+ * @param   Folder  folder  Папка
+ */
+export function initFolderForm(folder) {
+    document.getElementById("gridSizeLabel").textContent = browser.i18n.getMessage("gridSize") + ": ";
+    document.getElementById("bgLabel").innerHTML += browser.i18n.getMessage("background") + ":";
+    document.getElementById("defaultBgLabel").innerHTML += browser.i18n.getMessage("default");
+    document.getElementById("colorBgLabel").innerHTML += browser.i18n.getMessage("color") + ": ";
+    document.getElementById("imgLocalBgLabel").innerHTML += browser.i18n.getMessage("imageLocal") + ": ";
+    document.getElementById("imgRemoteBgLabel").innerHTML += browser.i18n.getMessage("imageRemote") + ": ";
+
     let onBgtypeChanged = function () {
         document.getElementById("bgcolorPicker").disabled =
                 !document.getElementById("colorBgRb").checked;
@@ -121,7 +174,7 @@ window.onload = function() {
         document.getElementById("bgimgUrlTf").disabled =
                 !document.getElementById("imgRemoteBgRb").checked;
     }
-    bufControls = document.getElementsByName("bgtype");
+    let bufControls = document.getElementsByName("bgtype");
     bufControls.forEach(function(item) {
         item.oninput = onBgtypeChanged;
     });
@@ -132,9 +185,14 @@ window.onload = function() {
         const newAmount = document.getElementById("rowsSpin").value *
                 document.getElementById("colsSpin").value;
         if (newAmount < oldAmount) {
-            const elements = getFolderByPath(currPath, rootFolder).
-                    elements[document.getElementById("numberTf").value - 1].
-                    elements;
+            let elements;
+            let numberTf = document.getElementById("numberTf");
+            if (folder) {
+                elements = folder.elements;
+            } else {
+                elements = getFolderByPath(currPath || []).
+                        elements[numberTf.value - 1].elements;
+            }
             let nBookmarks = 0;
             let nFolders = 0;
             for (let i = newAmount; i < oldAmount; ++i) {
@@ -183,44 +241,21 @@ window.onload = function() {
     bufControls.forEach(function(item) {
         item.oninput = onGridSizeChanged;
     });
-
-    document.getElementById("urlTf").oninput = function() {
-        let urlSugDL = document.getElementById("urlSuggectionsDL");
-        let urlTf = document.getElementById("urlTf");
-
-        urlSugDL.innerHTML = "";
-        browser.history.search({
-            text: urlTf.value,
-            startTime: 0,
-            maxResults: 20
-        }).then(function(results) {
-            urlSugDL.innerHTML = "";
-            for (let item of results) {
-                let option = document.createElement("option");
-                option.value = item.url;
-                urlSugDL.appendChild(option);
-            }
-        }, onPromiseFailed);
-    }
-
-    document.getElementById("cancelBtn").onclick = hideAssignmentForm;
 }
 
 /**
- * Инициализация корневой папки {@link rootFolder}
+ * Обработчик выгрузки информации из storage
  *
- * Выполняется при успешной операции чтения структуры элементов из
- * локального хранилища. Функция будет вызвана также в случае, если
- * структура не была найдена в хранилище. Тогда параметр results будет
- * пустым, а структура будет создана с параметрами по умолчанию.
- * Вызывает функцию построения страницы папки {@link buildPage}
+ * Выполняется при успешной операции чтения из локального хранилища. Если
+ * соответствие какому-либо имени не будет найдено в хранилище, в переменную
+ * запишется его значение по умолчанию.
  *
- * @param   mixed   results    Результат чтения
+ * @param   Object  results Результат чтения
  */
-function onStructureLoaded(results) {
-    /*console.log("results in onStructureLoaded:")
+function onStorageCheckedOut(results) {
+    /*console.log("results in onStorageCheckedOut:")
     console.log(results);
-    console.log("-- onStructureLoaded end --");*/
+    console.log("-- onStorageCheckedOut end --");*/
     if (results.structure) {
         rootFolder = results.structure;
     } else {
@@ -228,7 +263,15 @@ function onStructureLoaded(results) {
         let structure = rootFolder;
         browser.storage.local.set({structure});
     }
-    buildPage(rootFolder);
+
+    if (results.settings) {
+        settings = results.settings;
+    } else {
+        settings = {
+            doPageFocus: true
+        }
+        browser.storage.local.set({settings});
+    }
 }
 
 /**
@@ -522,11 +565,11 @@ async function parseAssignmentForm(copyElems) {
             bgtype = BgType.IMAGE_LOCAL;
             const picker = document.getElementById("bgimgPicker");
             if (picker.files.length > 0) {
-                let file = document.getElementById("bgimgPicker").files[0];
+                let file = picker.files[0];
                 document.getElementById("imgLocalBgSpinner").style.display = "initial";
                 await readFile(file).then(function(data) {bgdata = data;},
                         onPromiseFailed);
-                bgviewstr = document.getElementById("bgimgPicker").files[0].name;
+                bgviewstr = picker.files[0].name;
             } else {
                 bgdata = document.getElementById("bgimgBase64").value;
                 bgviewstr = "Какой-то файл.жыпэг";
@@ -568,7 +611,7 @@ async function parseAssignmentForm(copyElems) {
  *                          строки base64; в случае неудачи - сообщение
  *                          об ошибке.
  */
-function readFile(file) {
+export function readFile(file) {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.onloadend = function() {
@@ -753,7 +796,7 @@ function getBase64Image(img) {
  *                      строки base64; в случае неудачи - сообщение
  *                      об ошибке.
  */
-function remoteImageToBase64(url) {
+export function remoteImageToBase64(url) {
     return new Promise((resolve, reject) => {
         let tmpImg = document.createElement("img");
         tmpImg.onload = function() {

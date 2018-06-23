@@ -157,5 +157,50 @@
     "elementIsNotFound":
     {
         "message": "There is nothing at this address"
+    },
+
+    "rootFolderSettings":
+    {
+        "message": "Root folder settings"
+    },
+
+    "rootFolderSettingsDesc":
+    {
+        "message": "Parameters of main folder, that just displayed on a new empty tab."
+    },
+
+    "save":
+    {
+        "message": "Save"
+    },
+
+    "restore":
+    {
+        "message": "Restore"
+    },
+
+    "newTabFocusSettings":
+    {
+        "message": "Focus capturing on a new tab"
+    },
+
+    "newTabFocusSettingsDesc":
+    {
+        "message": "This parameter defines where must be focus when a new empty tab is open.\nIf focus is on the page, you can immediately use the keyboard navigation (Ctrl + bookmark/folder address).\nIf focus is on the address bar, you can immediately enter addres of some page. To use keyboard navigation you are to click anywhere on the page before."
+    },
+
+    "focusPage":
+    {
+        "message": "Focus on page"
+    },
+
+    "focusAddressBar":
+    {
+        "message": "Focus on address bar"
+    },
+
+    "rlyRestoreRootFolderForm":
+    {
+        "message": "Do you really want to restore root folder settings form? Fields will be filled with current values."
     }
 }

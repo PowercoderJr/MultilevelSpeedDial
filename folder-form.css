@@ -1,5 +1,9 @@
 @import 'photon.css';
 
+form {
+    font-size: 15px;
+}
+
 input[type='number'] {
     -moz-appearance: textfield;
 }

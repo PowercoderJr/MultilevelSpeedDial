@@ -1,1 +1,5 @@
 @import 'folder-form.css';
+
+label.description {
+	font-size: 13px;
+}

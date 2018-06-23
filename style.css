@@ -85,6 +85,10 @@ td {
     filter: blur(0px);
 }*/
 
+input:disabled {
+    opacity: initial;
+}
+
 #assignmentForm fieldset:disabled {
     opacity: 0.4;
 }
