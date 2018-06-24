@@ -9,6 +9,25 @@ const Commands = {
 Object.freeze(Commands);
 /*Импорты закончились*/
 
+let settings;
+browser.storage.local.get(['settings']).then(function(results) {
+    if (results.settings) {
+        settings = results.settings;
+    } else {
+        settings = {
+            doPageFocus: true
+        }
+    }
+    console.log("Settings is ", settings);
+});
+
+browser.storage.onChanged.addListener(function(changes, areaName) {
+    if (areaName == "local" && changes.settings) {
+        settings = changes.settings.newValue;
+        console.log("Settings now is ", settings);
+    }
+});
+
 browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     switch (msg.command) {
         case Commands.GOTO_URL:
@@ -47,10 +66,14 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
  *
  * Посылает сообщение с элементом папки и новым путём, которое в дальнейшем
  * будет получено вкладкой с Mlsd. Там обработчик onMessage сообщения
+ *
+ * @param   Tab     tab     Вкладка-получатель
+ * @param   Folder  folder  Объект папки, которая будет открыта
+ * @param   Array   path    Путь к папке, которая будет открыта
  */
 function sendBuldPageCommand(tab, folder, path) {
     let handledOnce = false;
-    let onMlsdsTabCompleted = function(tabId, changeInfo, tabInfo) {
+    let onMlsdTabCompleted = function(tabId, changeInfo, tabInfo) {
         if (!handledOnce && tabId == tab.id && changeInfo.status
                 && changeInfo.status == "complete") {
             handledOnce = true;
@@ -59,8 +82,47 @@ function sendBuldPageCommand(tab, folder, path) {
                 folder: folder,
                 path: path
             });
-            browser.tabs.onUpdated.removeListener(onMlsdsTabCompleted);
+            browser.tabs.onUpdated.removeListener(onMlsdTabCompleted);
         }
     }
-    browser.tabs.onUpdated.addListener(onMlsdsTabCompleted);
+    browser.tabs.onUpdated.addListener(onMlsdTabCompleted);
 }
+
+/**
+ * Индексы вкладок, которые нужно закрыть
+ *
+ * Используется при включённой опции "фокус на страницу на новой вкладке".
+ * В массив помещаются идексы вкладок, которые не имеют openerTabId (а значит,
+ * открыты кнопкой "+" на заголовке или комбинацией Ctrl+T). Как только станет
+ * известен адрес страницы, выполнится проверка на совпадение с mlsd.html, и
+ * в случае успеха вкладка будет закрыта, а вместо неё открыта такая же новая.
+ * Фишка в том, что вкладки, открытые способами, описанными выше, имеют фокус
+ * на адресной строке, а открытые из кода - на странице. Ура, костыль!
+ *
+ * @var Array   tabIndicesToRemove
+ */
+let tabIndicesToRemove = [];
+
+browser.tabs.onCreated.addListener(function(tab) {
+    let openerTabId = tab.openerTabId;
+    if (settings.doPageFocus && !tab.openerTabId) {
+        tabIndicesToRemove.push(tab.id);
+    } else {
+        console.log("openerTabId is ", tab.openerTabId);
+    }
+});
+
+browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (tabIndicesToRemove.indexOf(tabId) >= 0 && changeInfo.url &&
+            changeInfo.url == browser.extension.getURL("mlsd.html")) {
+        tabIndicesToRemove.splice(tabIndicesToRemove.indexOf(tabId), 1);
+        console.log("Tab is reopening");
+        browser.tabs.create({
+            url: tab.url,
+            openerTabId: tab.id
+        }).then(function(newTab) {
+            browser.tabs.remove(tab.id);
+        });
+    }
+});
+//RABOTAET

@@ -79,9 +79,6 @@ window.onload = function() {
     browser.storage.local.get(['structure', 'settings']).then(function(results) {
         onStorageCheckedOut(results);
         buildPage(rootFolder);
-        if (settings.doPageFocus) {
-            window.focus();
-        }
     }, onPromiseFailed);
     browser.storage.local.get().then(function(all) { //DEBUG
         console.log("Stored data: ");
