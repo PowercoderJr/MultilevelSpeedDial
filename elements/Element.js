@@ -59,7 +59,7 @@ Element.prototype.onClicked = function(event) {
     const number = document.getElementById(StrongString.NUMBER +
             StrongString.SEPARATOR + this.number);
 
-    console.log("Target is ", event.target);
+    //console.log("Target is ", event.target);
     if (verifyTarget(event, [container, header, favicon, caption, number])) {
         this.action();
         return true;

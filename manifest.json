@@ -5,6 +5,41 @@
     "version": "1.0",
     "default_locale": "en",
 
+    "developer":
+    {
+        "name": "__MSG_developerName__",
+        "url": "https://github.com/PowercoderJr/MultilevelSpeedDial"
+    },
+
+    "icons": 
+    {
+        "8": "icons/icon.svg",
+        "16": "icons/icon.svg",
+        "24": "icons/icon.svg",
+        "32": "icons/icon.svg",
+        "40": "icons/icon.svg",
+        "48": "icons/icon.svg",
+        "56": "icons/icon.svg",
+        "64": "icons/icon.svg",
+        "72": "icons/icon.svg",
+        "80": "icons/icon.svg",
+        "88": "icons/icon.svg",
+        "96": "icons/icon.svg",
+        "104": "icons/icon.svg",
+        "112": "icons/icon.svg",
+        "120": "icons/icon.svg",
+        "128": "icons/icon.svg",
+        "136": "icons/icon.svg",
+        "144": "icons/icon.svg",
+        "152": "icons/icon.svg",
+        "160": "icons/icon.svg",
+        "168": "icons/icon.svg",
+        "176": "icons/icon.svg",
+        "184": "icons/icon.svg",
+        "192": "icons/icon.svg",
+        "200": "icons/icon.svg"
+    },
+
     "permissions": ["storage", "history", "tabs", "<all_urls>"],
 
     "chrome_url_overrides":

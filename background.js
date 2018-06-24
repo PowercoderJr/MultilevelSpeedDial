@@ -18,13 +18,11 @@ browser.storage.local.get(['settings']).then(function(results) {
             doPageFocus: true
         }
     }
-    console.log("Settings is ", settings);
 });
 
 browser.storage.onChanged.addListener(function(changes, areaName) {
     if (areaName == "local" && changes.settings) {
         settings = changes.settings.newValue;
-        console.log("Settings now is ", settings);
     }
 });
 
@@ -107,8 +105,6 @@ browser.tabs.onCreated.addListener(function(tab) {
     let openerTabId = tab.openerTabId;
     if (settings.doPageFocus && !tab.openerTabId) {
         tabIndicesToRemove.push(tab.id);
-    } else {
-        console.log("openerTabId is ", tab.openerTabId);
     }
 });
 
@@ -116,7 +112,6 @@ browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (tabIndicesToRemove.indexOf(tabId) >= 0 && changeInfo.url &&
             changeInfo.url == browser.extension.getURL("mlsd.html")) {
         tabIndicesToRemove.splice(tabIndicesToRemove.indexOf(tabId), 1);
-        console.log("Tab is reopening");
         browser.tabs.create({
             url: tab.url,
             openerTabId: tab.id
@@ -125,4 +120,3 @@ browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         });
     }
 });
-//RABOTAET

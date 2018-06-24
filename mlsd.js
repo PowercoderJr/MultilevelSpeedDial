@@ -257,8 +257,7 @@ function onStorageCheckedOut(results) {
         rootFolder = results.structure;
     } else {
         rootFolder = new Folder(-1, browser.i18n.getMessage("extensionName"));
-        let structure = rootFolder;
-        browser.storage.local.set({structure});
+        browser.storage.local.set({structure: rootFolder});
     }
 
     if (results.settings) {
@@ -699,9 +698,7 @@ export function overwriteElement(path, element) {
     if (path == currPath) {
         rebuildElement(element);
     }
-
-    let structure = rootFolder;
-    browser.storage.local.set({structure});
+    browser.storage.local.set({structure: rootFolder});
 }
 
 /**

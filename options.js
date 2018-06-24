@@ -30,6 +30,14 @@ window.onload = function() {
     document.getElementById("focusPageLabel").innerHTML += browser.i18n.getMessage("focusPage");
     document.getElementById("focusAddressBarLabel").innerHTML += browser.i18n.getMessage("focusAddressBar");
     document.getElementById("newTabFocusSettingsLabel").textContent = browser.i18n.getMessage("newTabFocusSettings");
+
+    document.getElementById("structureManagingLabel").textContent = browser.i18n.getMessage("structureManaging");
+    document.getElementById("structureManagingDescLabel").textContent = browser.i18n.getMessage("structureManagingDesc");
+    document.getElementById("uploadSyncStorageBtn").value = browser.i18n.getMessage("uploadSyncStorage");
+    document.getElementById("downloadSyncStorageBtn").value = browser.i18n.getMessage("downloadSyncStorage");
+    document.getElementById("getJsonStructureBtn").value = browser.i18n.getMessage("getJsonStructure");
+    document.getElementById("setJsonStrustureBtn").value = browser.i18n.getMessage("setJsonStrusture");
+    document.getElementById("setDefaultStorageBtn").value = browser.i18n.getMessage("setDefaultStorage");
     browser.storage.local.get(['structure', 'settings']).then(function(results) {
         onStructureLoaded(results);
         initFolderForm(rootFolder);
@@ -68,6 +76,82 @@ window.onload = function() {
     bufControls.forEach(function(item) {
         item.oninput = onNewTabFocusParamChanged;
     }, onPromiseFailed);
+
+    document.getElementById("uploadSyncStorageBtn").onclick = function() {
+        if (confirm(browser.i18n.getMessage("rlyOverwriteRemoteStructure"))) {
+            browser.storage.local.get('structure').then(function(results) {
+                if (results.structure) {
+                    browser.storage.sync.set({
+                        structure: results.structure
+                    }).then(function() {
+                        //Success
+                    }, alert); //не удалось загрузить в синк
+                } else {
+                    alert(browser.i18n.getMessage("noStructureInLocal")); //в локал нет структуры
+                }
+            }, alert); //ошибка чтения из локал
+        }
+    }
+    document.getElementById("downloadSyncStorageBtn").onclick = function() {
+        if (confirm(browser.i18n.getMessage("rlyOverwriteCurrStructure"))) {
+            browser.storage.sync.get().then(function(results) {
+                if (results.structure) {
+                    browser.storage.local.set({
+                        structure: results.structure
+                    }).then(function() {
+                        //Success
+                    }, alert); //не удалось загрузить в локал
+                } else {
+                    alert(browser.i18n.getMessage("noStructureInSync")); //в синк нет структуры
+                }
+            }, alert); //ошибка чтения из синк
+        }
+    }
+    document.getElementById("getJsonStructureBtn").onclick = function() {
+        browser.storage.local.get().then(function(results) {
+            if (results.structure) {
+                document.getElementById("jsonStructureTa").value =
+                        JSON.stringify(results.structure);
+                
+                /* Этот код позволяет скачать структуру в виде файла, но
+                   требует дополнительных полномочий (downloads):
+
+                let structureStr = JSON.stringify(results.structure);
+                let structureBlob = new Blob([structureStr]);
+                let url = URL.createObjectURL(structureBlob);
+                browser.downloads.download({
+                    url: url,
+                    saveAs: true,
+                    filename: "mlsd-structure.text" //.json }:)
+                });*/
+            } else {
+                alert(browser.i18n.getMessage("noStructureInLocal")); //в локал нет структуры
+            }
+        }, alert); //ошибка чтения из локал
+    }
+    document.getElementById("setJsonStrustureBtn").onclick = function() {
+        if (confirm(browser.i18n.getMessage("rlyOverwriteCurrStructure"))) {
+            let structure;
+            try {
+                structure = JSON.parse(document.
+                        getElementById("jsonStructureTa").value);
+                browser.storage.local.set({structure}).then(function(results) {
+                    //Success
+                }, alert); //не удалось загрузить в локал
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+    }
+    document.getElementById("setDefaultStorageBtn").onclick = function() {
+        if (confirm(browser.i18n.getMessage("rlyOverwriteCurrStructure"))) {
+            let structure = new Folder(-1,
+                    browser.i18n.getMessage("extensionName"));
+            browser.storage.local.set({structure}).then(function(results) {
+                //Success
+            }, alert); //не удалось загрузить в локал
+        }
+    }
 }
 
 function onStructureLoaded(results) {
@@ -75,8 +159,7 @@ function onStructureLoaded(results) {
         rootFolder = results.structure;
     } else {
         rootFolder = new Folder(-1, browser.i18n.getMessage("extensionName"));
-        let structure = rootFolder;
-        browser.storage.local.set({structure});
+        browser.storage.local.set({structure: rootFolder});
     }
 }
 
@@ -197,6 +280,5 @@ async function saveFolderSettings() {
     }
 
     rootFolder = result;
-    let structure = rootFolder;
-    browser.storage.local.set({structure});
+    browser.storage.local.set({structure: rootFolder});
 }

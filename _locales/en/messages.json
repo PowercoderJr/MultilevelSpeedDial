@@ -6,7 +6,12 @@
 
     "extensionDescription": 
     {
-    	"message": "Adds visual bookmarks. For convenience you can unite bookmarks into folders. You can navigate through saved bookmarks by opening new tab or by using shortcut with bookmark's number."
+    	"message": "Organize frequently visited sites in a convenient menu of visual bookmarks\ninstead of a blank browser page. Bookmarks can be divided into folders, and\nfolders - into other folders. You can quickly open a bookmark or folder from\nany other tab using keyboard shortcuts. Each folder can be stylized. If you\ndonot want to draw attention to a bookmark, it is not necessary to hide it\nsomewhere far away, but you can only hide its preview and / or title and\narrange it as it conveniently does. The structure of the bookmarks can be\neasily synchronized between different devices or saved to disk.\n\nWhy does this extension needed various permissions?\n- Store unlimited amount of client-side data:\n    - storing of information about bookmarks and folders;\n    - storing of settings;\n- Access browsing history:\n    - compiling a list of proposals during the creation of the bookmark;\n- Access browser tabs:\n    - opening bookmarks in existing or new tabs;\n    - processing keyboard shortcuts for navigating bookmarks from the keyboard;\n- Access data on other sites\n    - retrieve information about pages while creating bookmarks (page title,\n      icon, screenshot-preview);\n    - placement on the pages of interface elements for navigation from the keyboard."
+    },
+
+    "developerName":
+    {
+        "message": "Ruslan Komarichev"
     },
 
     "cellAssignmentTitle":
@@ -202,5 +207,60 @@
     "rlyRestoreRootFolderForm":
     {
         "message": "Do you really want to restore root folder settings form? Fields will be filled with current values."
+    },
+
+    "structureManaging":
+    {
+        "message": "Storing and restoring bookmark structure"
+    },
+
+    "structureManagingDesc":
+    {
+        "message": "Here you can store bookmark structure into remote storage (available if you logged in to a Firefox Account) or onto disk, or restore what you've stored before. In case of something goes wrong, there is Reset function."
+    },
+
+    "uploadSyncStorage":
+    {
+        "message": "Save to remote storage"
+    },
+
+    "downloadSyncStorage":
+    {
+        "message": "Load from remote storage"
+    },
+
+    "getJsonStructure":
+    {
+        "message": "Get as text"
+    },
+
+    "setJsonStrusture":
+    {
+        "message": "Read from the text"
+    },
+
+    "setDefaultStorage":
+    {
+        "message": "Reset structure"
+    },
+
+    "rlyOverwriteCurrStructure":
+    {
+        "message": "Do you really want to overwrite current bookmarks structure?"
+    },
+
+    "rlyOverwriteRemoteStructure":
+    {
+        "message": "Do you really want to overwrite bookmarks structure in remote storage?"
+    },
+
+    "noStructureInLocal":
+    {
+        "message": "Bookmarks structure not yet created"
+    },
+
+    "noStructureInSync":
+    {
+        "message": "No bookmarks structure found in remote storage"
     }
 }
