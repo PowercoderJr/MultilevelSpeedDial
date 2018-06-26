@@ -40,7 +40,9 @@
         "200": "icons/icon.svg"
     },
 
-    "permissions": ["storage", "history", "tabs", "<all_urls>"],
+    "permissions": ["storage", "tabs", "<all_urls>"],
+
+    "optional_permissions": ["history", "tabHide"],
 
     "chrome_url_overrides":
     {
@@ -63,7 +65,7 @@
         "gecko":
         {
             "id": "multilevelspeeddial@mozilla.org",
-            "strict_min_version": "42.0"
+            "strict_min_version": "61.0"
         }
     },
 

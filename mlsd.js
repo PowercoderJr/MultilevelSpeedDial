@@ -127,18 +127,24 @@ window.onload = function() {
         let urlTf = document.getElementById("urlTf");
 
         urlSugDL.innerHTML = "";
-        browser.history.search({
-            text: urlTf.value,
-            startTime: 0,
-            maxResults: 20
-        }).then(function(results) {
-            urlSugDL.innerHTML = "";
-            for (let item of results) {
-                let option = document.createElement("option");
-                option.value = item.url;
-                urlSugDL.appendChild(option);
+        browser.permissions.contains({
+            permissions: ["history"]
+        }).then(function(granted) {
+            if (granted) {
+                browser.history.search({
+                    text: urlTf.value,
+                    startTime: 0,
+                    maxResults: 20
+                }).then(function(results) {
+                    urlSugDL.innerHTML = "";
+                    for (let item of results) {
+                        let option = document.createElement("option");
+                        option.value = item.url;
+                        urlSugDL.appendChild(option);
+                    }
+                }, onPromiseFailed);
             }
-        }, onPromiseFailed);
+        });
     }
 
     document.getElementById("cancelBtn").onclick = hideAssignmentForm;
@@ -638,8 +644,11 @@ export function getPagePreviewInfo(url) {
     return new Promise((resolve, reject) => {
         let result;
         browser.tabs.create({url: url, active: false}).then(function(tab) {
-            //TODO: hide() на данный момент является эксперементальной функцией, стоит ли дождаться релиза?
-            //browser.tabs.hide(tab.id);
+            browser.permissions.contains({permissions: ["tabHide"]}).then(function(granted) {
+                if (granted) {
+                    browser.tabs.hide(tab.id);
+                }
+            });
             let handledOnce = false;
             let handler = function(tabId, changeInfo, tabInfo) {
                 if (!handledOnce && tabId == tab.id && changeInfo.status && changeInfo.status == "complete") {

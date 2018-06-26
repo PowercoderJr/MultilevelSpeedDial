@@ -1,13 +1,33 @@
 @import 'folder-form.css';
 
+body {
+    background-color: var(--grey-10);
+}
+
 label.description {
-	font-size: 13px;
+    font-size: 13px;
 }
 
 #structureManagingForm input[type="button"] {
-	width: 250px;
+    width: 250px;
 }
 
 #jsonStructureTa {
-	resize: none;
+    resize: none;
+}
+
+#historyPermissionStatusLabel,
+#tabHidePermissionStatusLabel {
+    font-style: bold;
+    margin-left: 8px;
+}
+
+#historyPermissionStatusLabel[tag="enabled"],
+#tabHidePermissionStatusLabel[tag="enabled"] {
+    color: darkgreen;
+}
+
+#historyPermissionStatusLabel[tag="disabled"],
+#tabHidePermissionStatusLabel[tag="disabled"] {
+    color: darkred;
 }

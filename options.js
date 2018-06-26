@@ -20,24 +20,6 @@ var rootFolder;
 let settings;
 
 window.onload = function() {
-    document.getElementById("rootFolderSettingsLabel").textContent = browser.i18n.getMessage("rootFolderSettings");
-    document.getElementById("rootFolderSettingsDescLabel").textContent = browser.i18n.getMessage("rootFolderSettingsDesc");
-    document.getElementById("rootFolderSettingsDescLabel").innerHTML = document.getElementById("rootFolderSettingsDescLabel").innerHTML.replace(/\n/g, "<br/>");
-    document.getElementById("okBtn").value = browser.i18n.getMessage("save");
-    document.getElementById("restoreBtn").value = browser.i18n.getMessage("restore");
-    document.getElementById("newTabFocusSettingsDescLabel").textContent = browser.i18n.getMessage("newTabFocusSettingsDesc");
-    document.getElementById("newTabFocusSettingsDescLabel").innerHTML = document.getElementById("newTabFocusSettingsDescLabel").innerHTML.replace(/\n/g, "<br/>");
-    document.getElementById("focusPageLabel").innerHTML += browser.i18n.getMessage("focusPage");
-    document.getElementById("focusAddressBarLabel").innerHTML += browser.i18n.getMessage("focusAddressBar");
-    document.getElementById("newTabFocusSettingsLabel").textContent = browser.i18n.getMessage("newTabFocusSettings");
-
-    document.getElementById("structureManagingLabel").textContent = browser.i18n.getMessage("structureManaging");
-    document.getElementById("structureManagingDescLabel").textContent = browser.i18n.getMessage("structureManagingDesc");
-    document.getElementById("uploadSyncStorageBtn").value = browser.i18n.getMessage("uploadSyncStorage");
-    document.getElementById("downloadSyncStorageBtn").value = browser.i18n.getMessage("downloadSyncStorage");
-    document.getElementById("getJsonStructureBtn").value = browser.i18n.getMessage("getJsonStructure");
-    document.getElementById("setJsonStrustureBtn").value = browser.i18n.getMessage("setJsonStrusture");
-    document.getElementById("setDefaultStorageBtn").value = browser.i18n.getMessage("setDefaultStorage");
     browser.storage.local.get(['structure', 'settings']).then(function(results) {
         onStructureLoaded(results);
         initFolderForm(rootFolder);
@@ -45,6 +27,57 @@ window.onload = function() {
         onSettingsLoaded(results);
         refillNewTabFocusForm();
     }, onPromiseFailed);
+
+    /*Форма "дополнительные полномочия расширения"*/
+    document.getElementById("permissionsSettingsLabel").textContent = browser.i18n.getMessage("permissionsSettings");
+    document.getElementById("historyPermissionLabel").textContent = browser.i18n.getMessage("historyPermission") + ":";
+    document.getElementById("tabHidePermissionLabel").textContent = browser.i18n.getMessage("tabHidePermission") + ":";
+
+    let onPermissionInfoReceived = function(permission, granted) {
+        document.getElementById(permission + "PermissionBtn").disabled = false;
+        if (granted) {
+            document.getElementById(permission + "PermissionBtn").value = browser.i18n.getMessage("permissionDisable");
+            document.getElementById(permission + "PermissionStatusLabel").textContent = browser.i18n.getMessage("permissionEnabled");
+            document.getElementById(permission + "PermissionStatusLabel").setAttribute("tag", "enabled");
+        } else {
+            document.getElementById(permission + "PermissionBtn").value = browser.i18n.getMessage("permissionEnable");
+            document.getElementById(permission + "PermissionStatusLabel").textContent = browser.i18n.getMessage("permissionDisabled");
+            document.getElementById(permission + "PermissionStatusLabel").setAttribute("tag", "disabled");
+        }
+    }
+
+    let optionalPermissionsList = ["history", "tabHide"];
+    for (let i = 0; i < optionalPermissionsList.length; ++i) {
+        let permission = optionalPermissionsList[i];
+        let btn = document.getElementById(permission + "PermissionBtn");
+
+        btn.onclick = function() {
+            let isEnabledNow = document.getElementById(permission + "PermissionStatusLabel").getAttribute("tag") && 
+                    document.getElementById(permission + "PermissionStatusLabel").getAttribute("tag") == "enabled";
+            document.getElementById(permission + "PermissionStatusLabel").textContent = "...";
+            document.getElementById(permission + "PermissionStatusLabel").setAttribute("tag", "");
+            if (isEnabledNow) {
+                browser.permissions.remove({permissions: [permission]}).then(function(revoked) {
+                    onPermissionInfoReceived(permission, !revoked);
+                }, onPromiseFailed);
+            } else {
+                browser.permissions.request({permissions: [permission]}).then(function(granted) {
+                    onPermissionInfoReceived(permission, granted);
+                }, onPromiseFailed);
+            }
+        }
+
+        browser.permissions.contains({permissions: [permission]}).then(function(granted) {
+            onPermissionInfoReceived(permission, granted);
+        }, onPromiseFailed);
+    }
+
+    /*Форма "настройки корневой папки"*/
+    document.getElementById("rootFolderSettingsLabel").textContent = browser.i18n.getMessage("rootFolderSettings");
+    document.getElementById("rootFolderSettingsDescLabel").textContent = browser.i18n.getMessage("rootFolderSettingsDesc");
+    document.getElementById("rootFolderSettingsDescLabel").innerHTML = document.getElementById("rootFolderSettingsDescLabel").innerHTML.replace(/\n/g, "<br/>");
+    document.getElementById("okBtn").value = browser.i18n.getMessage("save");
+    document.getElementById("restoreBtn").value = browser.i18n.getMessage("restore");
 
     document.getElementById("folderSettingsForm").onsubmit = function(event) {
         event.preventDefault();
@@ -64,6 +97,13 @@ window.onload = function() {
         }
     }
 
+    /*Форма "захват фокуса на новой вкладке"*/
+    document.getElementById("newTabFocusSettingsDescLabel").textContent = browser.i18n.getMessage("newTabFocusSettingsDesc");
+    document.getElementById("newTabFocusSettingsDescLabel").innerHTML = document.getElementById("newTabFocusSettingsDescLabel").innerHTML.replace(/\n/g, "<br/>");
+    document.getElementById("focusPageLabel").innerHTML += browser.i18n.getMessage("focusPage");
+    document.getElementById("focusAddressBarLabel").innerHTML += browser.i18n.getMessage("focusAddressBar");
+    document.getElementById("newTabFocusSettingsLabel").textContent = browser.i18n.getMessage("newTabFocusSettings");
+
     let onNewTabFocusParamChanged = function () {
         browser.storage.local.get('settings').then(function(results) {
             onSettingsLoaded(results);
@@ -76,6 +116,15 @@ window.onload = function() {
     bufControls.forEach(function(item) {
         item.oninput = onNewTabFocusParamChanged;
     }, onPromiseFailed);
+
+    /*Форма "выгрузка и загрузка структуры закладок"*/
+    document.getElementById("structureManagingLabel").textContent = browser.i18n.getMessage("structureManaging");
+    document.getElementById("structureManagingDescLabel").textContent = browser.i18n.getMessage("structureManagingDesc");
+    document.getElementById("uploadSyncStorageBtn").value = browser.i18n.getMessage("uploadSyncStorage");
+    document.getElementById("downloadSyncStorageBtn").value = browser.i18n.getMessage("downloadSyncStorage");
+    document.getElementById("getJsonStructureBtn").value = browser.i18n.getMessage("getJsonStructure");
+    document.getElementById("setJsonStrustureBtn").value = browser.i18n.getMessage("setJsonStrusture");
+    document.getElementById("setDefaultStorageBtn").value = browser.i18n.getMessage("setDefaultStorage");
 
     document.getElementById("uploadSyncStorageBtn").onclick = function() {
         if (confirm(browser.i18n.getMessage("rlyOverwriteRemoteStructure"))) {

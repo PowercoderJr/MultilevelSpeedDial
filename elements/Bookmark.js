@@ -102,6 +102,10 @@ Bookmark.prototype.getInnerHtml = function () {
  * {@link FilledElement.prototype.refresh}
  */
 Bookmark.prototype.refresh = function() {
+    document.getElementById(StrongString.NUMBER +
+            StrongString.SEPARATOR + this.number).
+            textContent = "...";
+
     FilledElement.prototype.refresh.call(this);
     getPagePreviewInfo(this.url).then(function(data) {
         this.caption = data.title;
@@ -110,5 +114,9 @@ Bookmark.prototype.refresh = function() {
         overwriteElement(currPath, this);
         //getFolderByPath(currPath).elements[this.number - 1] = this;
         //rebuildElement(this);
-    }.bind(this), onPromiseFailed);
+    }.bind(this), onPromiseFailed). then(function() {
+        document.getElementById(StrongString.NUMBER +
+                StrongString.SEPARATOR + this.number).
+                textContent = this.number;
+    }.bind(this));
 }
