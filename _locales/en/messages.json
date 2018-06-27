@@ -297,5 +297,10 @@
     "permissionDisabled":
     {
         "message": "DISABLED"
+    }, 
+
+    "ohnonono":
+    {
+        "message": "Oh no no no" 
     }
 }

@@ -297,5 +297,10 @@
     "permissionDisabled":
     {
         "message": "ОТКЛЮЧЕНО"
+    }, 
+
+    "ohnonono":
+    {
+        "message": "Ай-яй-яй" 
     }
 }

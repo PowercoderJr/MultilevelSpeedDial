@@ -135,9 +135,14 @@ Element.prototype.bindHtml = function() {
     htmlElement.onclick = Element.prototype.onClicked.bind(this);
     htmlElement.ondragstart = Element.prototype.onDragStart.bind(this);
     htmlElement.ondragenter = Element.prototype.onDragEnter.bind(this);
+    htmlElement.ondragleave = Element.prototype.onDragLeave.bind(this);
     htmlElement.ondragover = Element.prototype.onDragOver.bind(this);
     htmlElement.ondrop = Element.prototype.onDrop.bind(this);
 }
+
+let dragEnterTime;
+let counter;
+let isOverDropTarget;
 
 Element.prototype.onDragStart = function(event) {
     if (this.type != ElementType.EMPTY && this.type != ElementType.BACKSTEP) {
@@ -146,36 +151,99 @@ Element.prototype.onDragStart = function(event) {
         event.dataTransfer.setData("srcPath", JSON.stringify(dndSrc));
         event.dataTransfer.setData("", JSON.stringify(dndSrc));
         event.dataTransfer.effectAllowed = "move";
+        isOverDropTarget = false;
+        counter = 0;
     }
 }
 
-let dragEnterTime;
 Element.prototype.onDragEnter = function(event) {
     event.preventDefault();
-    let date = new Date();
-    dragEnterTime = date.getTime();
+    ++counter;
+
+    let currElementPath = Array.from(currPath);
+    currElementPath.push(this.number);
+    let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
+
+    let isDragTarget = arraysEqual(currElementPath, srcPath);
+    let isDropTarget;
+    if (!isOverDropTarget && !isDragTarget) {
+        let date = new Date();
+        dragEnterTime = date.getTime();
+        isOverDropTarget = true;
+        event.currentTarget.style.borderStyle = "dashed";
+    }
+}
+
+Element.prototype.onDragLeave = function(event) {
+    event.preventDefault();
+    --counter;
+
+    if (counter == 0) {
+        isOverDropTarget = false;
+        event.currentTarget.style.borderStyle = "solid";
+    }
 }
 
 Element.prototype.onDragOver = function(event) {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
 
-    if (this.type == ElementType.BACKSTEP || this.type == ElementType.FOLDER) {
+    let currElementPath = Array.from(currPath);
+    currElementPath.push(this.number);
+    let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
+
+    let isDragTarget = arraysEqual(currElementPath, srcPath);
+
+    if (!isDragTarget &&
+            (this.type == ElementType.BACKSTEP ||
+            this.type == ElementType.FOLDER)) {
         let date = new Date();
         if (date.getTime() - dragEnterTime > 1000) {
             let trueObj = ElementFactoryByType[this.type](this);
             trueObj.action();
+            counter = 0;
         }
     }
 }
 
 Element.prototype.onDrop = function(event) {
     event.preventDefault();
-    if (this.type != ElementType.BACKSTEP) {
-        let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
+
+    let currElementPathStr = Array.from(currPath);
+    currElementPathStr.push(this.number);
+    currElementPathStr = currElementPathStr.join("/");
+    let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
+    let srcPathStr = srcPath.join("/");
+
+    let isLoopDetected = srcPathStr.startsWith(currElementPathStr);
+
+    if (this.type != ElementType.BACKSTEP && !isLoopDetected) {
         let dstPath = Array.from(currPath);
         dstPath.push(this.number);
 
+        console.log(srcPathStr, " -> ", currElementPathStr);
         swapElements(srcPath, dstPath);
+    } else {
+        event.currentTarget.style.borderStyle = "solid";
+        alert(browser.i18n.getMessage("ohnonono"));
     }
+}
+
+/**
+ * Проверка на равенство двух массивов
+ *
+ * @param   Array   arr1    Первый массив
+ * @param   Array   arr2    Второй массив
+ */
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+    for (let i = 0; i < arr1.length; ++i) {
+        if (arr1[i] !== arr2[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
