@@ -26,6 +26,7 @@ window.onload = function() {
         refillRootFolderForm();
         onSettingsLoaded(results);
         refillNewTabFocusForm();
+        refillNewTabActiveForm();
     }, onPromiseFailed);
 
     /*Форма "дополнительные полномочия расширения"*/
@@ -92,17 +93,18 @@ window.onload = function() {
     document.getElementById("restoreBtn").onclick = function(event) {
         if (confirm(browser.i18n.getMessage("rlyRestoreRootFolderForm"))) {
             browser.storage.local.get('structure').then(function(results) {
+                onStructureLoaded(results);
                 refillRootFolderForm();
             }, onPromiseFailed);
         }
     }
 
     /*Форма "захват фокуса на новой вкладке"*/
+    document.getElementById("newTabFocusSettingsLabel").textContent = browser.i18n.getMessage("newTabFocusSettings");
     document.getElementById("newTabFocusSettingsDescLabel").textContent = browser.i18n.getMessage("newTabFocusSettingsDesc");
     document.getElementById("newTabFocusSettingsDescLabel").innerHTML = document.getElementById("newTabFocusSettingsDescLabel").innerHTML.replace(/\n/g, "<br/>");
     document.getElementById("focusPageLabel").innerHTML += browser.i18n.getMessage("focusPage");
     document.getElementById("focusAddressBarLabel").innerHTML += browser.i18n.getMessage("focusAddressBar");
-    document.getElementById("newTabFocusSettingsLabel").textContent = browser.i18n.getMessage("newTabFocusSettings");
 
     let onNewTabFocusParamChanged = function () {
         browser.storage.local.get('settings').then(function(results) {
@@ -115,6 +117,24 @@ window.onload = function() {
     let bufControls = document.getElementsByName("newPageFocus");
     bufControls.forEach(function(item) {
         item.oninput = onNewTabFocusParamChanged;
+    }, onPromiseFailed);
+
+    /*Форма "поведение при открытии новой вкладки сочетанием клавиш"*/
+    document.getElementById("newTabActiveSettingsLabel").textContent = browser.i18n.getMessage("newTabActiveSettings");
+    document.getElementById("newTabActiveYesLabel").innerHTML += browser.i18n.getMessage("newTabActiveYes");
+    document.getElementById("newTabActiveNoLabel").innerHTML += browser.i18n.getMessage("newTabActiveNo");
+
+    let onNewTabActiveParamChanged = function () {
+        browser.storage.local.get('settings').then(function(results) {
+            onSettingsLoaded(results);
+            settings.newTabActive =
+                    document.getElementById("newTabActiveYesRb").checked;
+            browser.storage.local.set({settings});
+        }, onPromiseFailed);
+    }
+    bufControls = document.getElementsByName("newTabActive");
+    bufControls.forEach(function(item) {
+        item.oninput = onNewTabActiveParamChanged;
     }, onPromiseFailed);
 
     /*Форма "выгрузка и загрузка структуры закладок"*/
@@ -143,12 +163,16 @@ window.onload = function() {
     }
     document.getElementById("downloadSyncStorageBtn").onclick = function() {
         if (confirm(browser.i18n.getMessage("rlyOverwriteCurrStructure"))) {
-            browser.storage.sync.get().then(function(results) {
+            browser.storage.sync.get('structure').then(function(results) {
                 if (results.structure) {
                     browser.storage.local.set({
                         structure: results.structure
                     }).then(function() {
                         //Success
+                        browser.storage.local.get('structure').then(function(results) {
+                            onStructureLoaded(results);
+                            refillRootFolderForm();
+                        }, onPromiseFailed);
                     }, alert); //не удалось загрузить в локал
                 } else {
                     alert(browser.i18n.getMessage("noStructureInSync")); //в синк нет структуры
@@ -157,7 +181,7 @@ window.onload = function() {
         }
     }
     document.getElementById("getJsonStructureBtn").onclick = function() {
-        browser.storage.local.get().then(function(results) {
+        browser.storage.local.get('structure').then(function(results) {
             if (results.structure) {
                 document.getElementById("jsonStructureTa").value =
                         JSON.stringify(results.structure);
@@ -186,6 +210,10 @@ window.onload = function() {
                         getElementById("jsonStructureTa").value);
                 browser.storage.local.set({structure}).then(function(results) {
                     //Success
+                    browser.storage.local.get('structure').then(function(results) {
+                        onStructureLoaded(results);
+                        refillRootFolderForm();
+                    }, onPromiseFailed);
                 }, alert); //не удалось загрузить в локал
             } catch (e) {
                 alert(e.message);
@@ -198,6 +226,10 @@ window.onload = function() {
                     browser.i18n.getMessage("extensionName"));
             browser.storage.local.set({structure}).then(function(results) {
                 //Success
+                browser.storage.local.get('structure').then(function(results) {
+                    onStructureLoaded(results);
+                    refillRootFolderForm();
+                }, onPromiseFailed);
             }, alert); //не удалось загрузить в локал
         }
     }
@@ -217,7 +249,8 @@ function onSettingsLoaded(results) {
         settings = results.settings;
     } else {
         settings = {
-            doPageFocus: true
+            doPageFocus: true,
+            newTabActive: true
         }
         browser.storage.local.set({settings});
     }
@@ -277,6 +310,15 @@ function refillNewTabFocusForm() {
     document.getElementById("focusAddressBarRb").checked =
             !(document.getElementById("focusPageRb").checked =
             settings.doPageFocus);
+}
+
+/**
+ * Заполнение формы настроек поведения при открытии новой вкладки
+ */
+function refillNewTabActiveForm() {
+    document.getElementById("newTabActiveNoRb").checked =
+            !(document.getElementById("newTabActiveYesRb").checked =
+            settings.newTabActive);
 }
 
 /**

@@ -79,3 +79,12 @@
     font-size: 16pt;
     color: var(--grey-10);
 }
+
+#hints {
+    all: initial;
+    font-family: 'Fira Sans';
+    font-size: 10pt;
+    font-style: italic;
+    text-align: center;
+    color: var(--grey-40);    
+}

@@ -164,6 +164,11 @@
         "message": "There is nothing at this address"
     },
 
+    "kbdNavHints":
+    {
+        "message": "0-9  →  dialing\n+ or -  →  look over elements\n/ or SPACE  →  separator\nShift  →  open in a new tab"
+    },
+
     "rootFolderSettings":
     {
         "message": "Root folder settings"
@@ -202,6 +207,21 @@
     "focusAddressBar":
     {
         "message": "Focus on address bar"
+    },
+
+    "newTabActiveSettings":
+    {
+        "message": "Behaviour when open a new tab with shortcut Ctrl+Shift+<address>"
+    },
+
+    "newTabActiveYes":
+    {
+        "message": "Go to a new tab immediately"
+    },
+
+    "newTabActiveNo":
+    {
+        "message": "Open a new tab, but stay on current"
     },
 
     "rlyRestoreRootFolderForm":

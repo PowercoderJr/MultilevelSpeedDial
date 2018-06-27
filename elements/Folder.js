@@ -96,7 +96,7 @@ Folder.prototype.parseObj = function(data) {
  * {@link Element.prototype.action}
  */
 Folder.prototype.action = function() {
-    console.log("Здесь открывается папка");
+    //console.log("Здесь открывается папка");
     currPath.push(this.number);
     buildPage(this);
 }

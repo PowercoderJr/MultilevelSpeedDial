@@ -130,6 +130,15 @@ let captionLabel = document.createElement("label");
 captionLabel.id = "captionLabel";
 
 /**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
+ * @var HTMLElement captionLabel
+ */
+let hints = document.createElement("label");
+hints.id = "hints";
+hints.style.display = "none";
+
+/**
  * Флаг - инициализирован ли пользовательский интерфейс
  *
  * @var boolean  hasUiBeenInited
@@ -178,8 +187,12 @@ function initUI() {
     iconPlusCaption.appendChild(iconImg);
     iconPlusCaption.appendChild(captionLabel);
     previewRect.appendChild(iconPlusCaption);
+    previewRect.appendChild(hints);
     navCurtain.appendChild(previewRect);
     document.body.appendChild(navCurtain);
+
+    hints.textContent = browser.i18n.getMessage("kbdNavHints");
+    hints.innerHTML = hints.innerHTML.replace(/\n/g, "<br/>");
 
     hasUiBeenInited = true;
 }
@@ -198,7 +211,6 @@ window.addEventListener("keydown", function(event) {
 });
 
 window.addEventListener("keypress", function(event) {
-    //console.log(event);
     if (inputMode) {
         if (event.key === "Backspace" && pathString.length > 0) {
             pathString = pathString.substring(0, pathString.length - 1);
@@ -293,6 +305,7 @@ function switchNavUI(switch1) {
     if (switch1) {
         isPreviewShown = true;
         navCurtain.style.display = "flex";
+        hints.style.display = "initial";
     } else {
         isPreviewShown = false;
         navCurtain.style.display = "none";
@@ -335,7 +348,6 @@ function onStructureLoaded(results) {
  * @param   object  error   Детали
  */
 function onStructureLoadFailed(error) {
-    console.log("Structure Load Failed :(")
     fillPreview({type: -1});
 }
 

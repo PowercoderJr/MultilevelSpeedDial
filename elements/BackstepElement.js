@@ -38,7 +38,7 @@ BackstepElement.prototype.parseObj = function(data) {
  * {@link Element.prototype.action}
  */
 BackstepElement.prototype.action = function() {
-    console.log("Здесь открывается предыдущая папка");
+    //console.log("Здесь открывается предыдущая папка");
     currPath.pop();
     buildPage(getFolderByPath(currPath));
 }

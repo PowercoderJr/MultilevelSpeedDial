@@ -60,7 +60,6 @@ Element.prototype.onClicked = function(event) {
     const number = document.getElementById(StrongString.NUMBER +
             StrongString.SEPARATOR + this.number);
 
-    //console.log("Target is ", event.target);
     if (verifyTarget(event, [container, header, favicon, caption, number])) {
         this.action();
         return true;
@@ -221,7 +220,6 @@ Element.prototype.onDrop = function(event) {
         let dstPath = Array.from(currPath);
         dstPath.push(this.number);
 
-        console.log(srcPathStr, " -> ", currElementPathStr);
         swapElements(srcPath, dstPath);
     } else {
         event.currentTarget.style.borderStyle = "solid";

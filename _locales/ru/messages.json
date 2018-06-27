@@ -164,6 +164,11 @@
         "message": "По этому адресу ничего нет"
     },
 
+    "kbdNavHints":
+    {
+        "message": "0-9  →  набор адреса\n+ или -  →  перебор элементов\n/ или пробел  →  разделитель\nBackspace  →  стереть\nShift  →  открыть в новой вкладке"
+    },
+
     "rootFolderSettings":
     {
         "message": "Настройки корневой папки"
@@ -202,6 +207,21 @@
     "focusAddressBar":
     {
         "message": "Фокус на адресной строке"
+    },
+
+    "newTabActiveSettings":
+    {
+        "message": "Поведение при открытии новой вкладки комбинацией Ctrl+Shift+<адрес>"
+    },
+
+    "newTabActiveYes":
+    {
+        "message": "Сразу перейти на новую вкладку"
+    },
+
+    "newTabActiveNo":
+    {
+        "message": "Открыть новую вкладку, но остаться на текущей"
     },
 
     "rlyRestoreRootFolderForm":

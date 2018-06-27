@@ -48,7 +48,7 @@ Bookmark.prototype.parseObj = function(data) {
  * {@link Element.prototype.action}
  */
 Bookmark.prototype.action = function() {
-    console.log("Здесь открывается закладка");
+    //console.log("Здесь открывается закладка");
 }
 
 /**

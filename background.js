@@ -15,7 +15,8 @@ browser.storage.local.get(['settings']).then(function(results) {
         settings = results.settings;
     } else {
         settings = {
-            doPageFocus: true
+            doPageFocus: true,
+            newTabActive: true
         }
     }
 });
@@ -32,6 +33,7 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             if (msg.newTab) {
                 browser.tabs.create({
                     url: msg.url,
+                    active: settings.newTabActive,
                     openerTabId: sender.tab.id
                 });
             } else {
@@ -44,6 +46,7 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             if (msg.newTab) {
                 browser.tabs.create({
                     url: browser.extension.getURL("mlsd.html"),
+                    active: settings.newTabActive,
                     openerTabId: sender.tab.id
                 }).then(function(tab) {
                     sendBuldPageCommand(tab, msg.folder, msg.path);

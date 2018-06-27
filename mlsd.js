@@ -256,9 +256,6 @@ export function initFolderForm(folder) {
  * @param   Object  results Результат чтения
  */
 function onStorageCheckedOut(results) {
-    /*console.log("results in onStorageCheckedOut:")
-    console.log(results);
-    console.log("-- onStorageCheckedOut end --");*/
     if (results.structure) {
         rootFolder = results.structure;
     } else {
@@ -270,7 +267,8 @@ function onStorageCheckedOut(results) {
         settings = results.settings;
     } else {
         settings = {
-            doPageFocus: true
+            doPageFocus: true,
+            newTabActive: true
         }
         browser.storage.local.set({settings});
     }
@@ -869,6 +867,7 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             buildPage(folder);
             break;
         default:
+            //DEBUG
             console.log("Поступила какая-то команда, но мы её проигнорируем");
             break;
     }
