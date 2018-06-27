@@ -66,6 +66,7 @@ Bookmark.prototype.getInitHtml = function() {
     newA.className = "element";
     newA.id = StrongString.ELEMENT + StrongString.SEPARATOR + this.number;
     newA.href = this.url;
+    newA.draggable = "true";
     return newA;
 }
 

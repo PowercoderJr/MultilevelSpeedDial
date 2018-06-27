@@ -1,5 +1,6 @@
 import * as StrongString from '../strong-string.js';
-import {verifyTarget, showAssignmentForm, AssignmentMode} from '../mlsd.js';
+import {verifyTarget, showAssignmentForm, AssignmentMode, currPath,
+    swapElements, buildPage, ElementFactoryByType} from '../mlsd.js';
 
 /**
  * enum Тип элемента
@@ -91,6 +92,7 @@ Element.prototype.getInitHtml = function(number) {
     let newDiv = document.createElement("div");
     newDiv.className = "element";
     newDiv.id = StrongString.ELEMENT + StrongString.SEPARATOR + number;
+    newDiv.draggable = "true";
     return newDiv;
 }
 
@@ -128,7 +130,52 @@ Element.prototype.getInnerHtml = function () {
  *                              в виде HTML-элемента
  */
 Element.prototype.bindHtml = function() {
-    let lookingfor = StrongString.ELEMENT + StrongString.SEPARATOR + this.number;
-    document.getElementById(lookingfor).onclick =
-            Element.prototype.onClicked.bind(this);
+    let htmlElement = document.getElementById(StrongString.ELEMENT 
+            + StrongString.SEPARATOR + this.number);
+    htmlElement.onclick = Element.prototype.onClicked.bind(this);
+    htmlElement.ondragstart = Element.prototype.onDragStart.bind(this);
+    htmlElement.ondragenter = Element.prototype.onDragEnter.bind(this);
+    htmlElement.ondragover = Element.prototype.onDragOver.bind(this);
+    htmlElement.ondrop = Element.prototype.onDrop.bind(this);
+}
+
+Element.prototype.onDragStart = function(event) {
+    if (this.type != ElementType.EMPTY && this.type != ElementType.BACKSTEP) {
+        let dndSrc = Array.from(currPath);
+        dndSrc.push(this.number);
+        event.dataTransfer.setData("srcPath", JSON.stringify(dndSrc));
+        event.dataTransfer.setData("", JSON.stringify(dndSrc));
+        event.dataTransfer.effectAllowed = "move";
+    }
+}
+
+let dragEnterTime;
+Element.prototype.onDragEnter = function(event) {
+    event.preventDefault();
+    let date = new Date();
+    dragEnterTime = date.getTime();
+}
+
+Element.prototype.onDragOver = function(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+
+    if (this.type == ElementType.BACKSTEP || this.type == ElementType.FOLDER) {
+        let date = new Date();
+        if (date.getTime() - dragEnterTime > 1000) {
+            let trueObj = ElementFactoryByType[this.type](this);
+            trueObj.action();
+        }
+    }
+}
+
+Element.prototype.onDrop = function(event) {
+    event.preventDefault();
+    if (this.type != ElementType.BACKSTEP) {
+        let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
+        let dstPath = Array.from(currPath);
+        dstPath.push(this.number);
+
+        swapElements(srcPath, dstPath);
+    }
 }

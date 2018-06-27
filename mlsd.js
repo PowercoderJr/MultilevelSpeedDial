@@ -369,6 +369,48 @@ function rebuildElement(element) {
     element.bindHtml();
 }
 
+/**
+ * Поменять элементы местами
+ *
+ * Меняет два элемента по заданным путям местами в структуре закладок
+ *
+ * @param   Array   pathA   Путь к первому элементу
+ * @param   Array   pathB   Путь ко второму элементу
+ */
+export function swapElements(pathA, pathB) {
+    let numberA = pathA.pop();
+    let numberB = pathB.pop();
+    let folderA = getFolderByPath(pathA);
+    let folderB = getFolderByPath(pathB);
+    let buf = folderA.elements[numberA - 1];
+    folderA.elements[numberA - 1] = folderB.elements[numberB - 1];
+    folderB.elements[numberB - 1] = buf;
+    folderA.elements[numberA - 1].number = numberA;
+    folderB.elements[numberB - 1].number = numberB;
+
+    function arraysEqual(arr1, arr2) {
+        if (arr1.length != arr2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < arr1.length; ++i) {
+            if (arr1[i] != arr2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    if (arraysEqual(pathA, currPath)) {
+        rebuildElement(folderA.elements[numberA - 1]);
+    }
+    if (arraysEqual(pathB, currPath)) {
+        rebuildElement(folderB.elements[numberB - 1]);
+    }
+    browser.storage.local.set({structure: rootFolder});
+}
+
 //https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
 /**
  * Проверка цели события
