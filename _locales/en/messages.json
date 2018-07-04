@@ -322,5 +322,15 @@
     "ohnonono":
     {
         "message": "Oh no no no" 
+    },
+
+    "browse":
+    {
+        "message": "Browse..." 
+    },
+
+    "noFileChosen":
+    {
+        "message": "No file chosen" 
     }
 }

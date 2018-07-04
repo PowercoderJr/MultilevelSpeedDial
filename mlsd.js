@@ -167,20 +167,32 @@ export function initFolderForm(folder) {
     document.getElementById("defaultBgLabel").innerHTML += browser.i18n.getMessage("default");
     document.getElementById("colorBgLabel").innerHTML += browser.i18n.getMessage("color") + ": ";
     document.getElementById("imgLocalBgLabel").innerHTML += browser.i18n.getMessage("imageLocal") + ": ";
+    document.getElementById("fakeBgimgPickerBtn").value = browser.i18n.getMessage("browse");
+    document.getElementById("fakeBgimgPickerLabel").textContent = browser.i18n.getMessage("nofilechosen");
     document.getElementById("imgRemoteBgLabel").innerHTML += browser.i18n.getMessage("imageRemote") + ": ";
 
     let onBgtypeChanged = function () {
-        document.getElementById("bgcolorPicker").disabled =
-                !document.getElementById("colorBgRb").checked;
-        document.getElementById("bgimgPicker").disabled =
-                !document.getElementById("imgLocalBgRb").checked;
-        document.getElementById("bgimgUrlTf").disabled =
-                !document.getElementById("imgRemoteBgRb").checked;
+        document.getElementById("bgcolorPicker").disabled = !document.getElementById("colorBgRb").checked;
+        document.getElementById("bgimgPicker").disabled = !document.getElementById("imgLocalBgRb").checked;
+        document.getElementById("fakeBgimgPickerBtn").disabled = !document.getElementById("imgLocalBgRb").checked;
+        document.getElementById("bgimgUrlTf").disabled = !document.getElementById("imgRemoteBgRb").checked;
     }
     let bufControls = document.getElementsByName("bgtype");
     bufControls.forEach(function(item) {
         item.oninput = onBgtypeChanged;
     });
+
+    let bgimgPicker = document.getElementById("bgimgPicker");
+    document.getElementById("fakeBgimgPickerBtn").onclick = function() {
+        bgimgPicker.click();
+    };
+    bgimgPicker.onchange = function() {
+        if (bgimgPicker.files.length > 0) {
+            document.getElementById("fakeBgimgPickerLabel").textContent = bgimgPicker.files[0].name;
+        } else {
+            document.getElementById("fakeBgimgPickerLabel").textContent = browser.i18n.getMessage("nofilechosen");
+        }
+    }
 
     let onGridSizeChanged = function () {
         const oldAmount = document.getElementById("rowsOld").value *
@@ -449,6 +461,7 @@ export function showAssignmentForm(element, mode) {
     document.getElementById("elemsWillBeLostLabel").textContent = "";
     document.getElementById("elemsWillBeLostLabel").style.display = "none";
     document.getElementById("imgLocalBgSpinner").style.display = "none";
+    document.getElementById("fakeBgimgPickerLabel").textContent = browser.i18n.getMessage("nofilechosen");
 
     if (mode == AssignmentMode.CREATE) {
         document.getElementById("modeTf").value = AssignmentMode.CREATE;
@@ -458,6 +471,7 @@ export function showAssignmentForm(element, mode) {
         document.getElementById("defaultBgRb").checked = true;
         document.getElementById("bgcolorPicker").disabled = true;
         document.getElementById("bgimgPicker").disabled = true;
+        document.getElementById("fakeBgimgPickerBtn").disabled = true;
         document.getElementById("bgimgUrlTf").disabled = true;
     }
     else if (mode == AssignmentMode.EDIT) {
@@ -469,6 +483,7 @@ export function showAssignmentForm(element, mode) {
             document.getElementById("defaultBgRb").checked = true;
             document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = false);
             document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = false);
+            document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = false);
             document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = false);
         }
         else if (element.type == ElementType.FOLDER) {
@@ -480,6 +495,7 @@ export function showAssignmentForm(element, mode) {
             document.getElementById("defaultBgRb").checked = element.bgtype == BgType.DEFAULT;
             document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = element.bgtype == BgType.SOLID);
             document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgType.IMAGE_LOCAL);
+            document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgType.IMAGE_LOCAL);
             document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = element.bgtype == BgType.IMAGE_REMOTE);
             switch (element.bgtype) {
                 case (BgType.SOLID):
@@ -490,10 +506,9 @@ export function showAssignmentForm(element, mode) {
                         document.getElementById("bgimgPicker").required = true;
                         document.getElementById("bgimgBase64").value = "";
                     } else {
-                        //TODO: отобразить имя файла, если он был указан ранее https://stackoverflow.com/a/17949302
-                        //document.getElementById("bgimgPicker").value = element.bgviewstr; //SecurityError: The operation is insecure
                         document.getElementById("bgimgPicker").required = false;
                         document.getElementById("bgimgBase64").value = element.bgdata;
+                        document.getElementById("fakeBgimgPickerLabel").textContent = element.bgviewstr;
                     }
                     break;
                 case (BgType.IMAGE_REMOTE):
@@ -616,7 +631,7 @@ async function parseAssignmentForm(copyElems) {
                 bgviewstr = picker.files[0].name;
             } else {
                 bgdata = document.getElementById("bgimgBase64").value;
-                bgviewstr = "Какой-то файл.жыпэг";
+                bgviewstr = document.getElementById("fakeBgimgPickerLabel").textContent;
             }
         }
         else if (document.getElementById("imgRemoteBgRb").checked) {

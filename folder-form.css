@@ -44,3 +44,32 @@ input[type='number'] {
     margin-top: 3px;
     margin-left: 2px;
 }
+
+#bgimgPicker {
+    display: none;
+}
+
+#fakeBgimgPicker {
+    display: inline-block;
+    height: 24px;
+}
+
+#fakeBgimgPickerBtn {
+    min-width: 80px;
+    width: 80px;
+    height: 24px;
+}
+
+#fakeBgimgPickerLabel {
+    font-size: 12px;
+    padding-right: 2px;
+}
+
+#fakeBgimgPickerBtn:disabled+#fakeBgimgPickerLabel {
+    opacity: 0.4;
+}
+
+#bgimgPicker:invalid+#fakeBgimgPicker {
+    border-radius: 2px;
+    box-shadow: 0 0 2px 1px red/*var(--red-60)*/;
+}

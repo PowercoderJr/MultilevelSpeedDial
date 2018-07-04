@@ -43,6 +43,10 @@
                     <input type="color" id="bgcolorPicker" name="bgcolor" value="#F9F9FA" disabled>
                     <br><label id="imgLocalBgLabel" class="doLeading"><input type="radio" id="imgLocalBgRb" name="bgtype" value="IMAGE_LOCAL"></label>
                     <input type="file" id="bgimgPicker" name="bgimgLocal" accept="image/*" required disabled>
+                    <span id="fakeBgimgPicker">
+                        <input id="fakeBgimgPickerBtn" type="button">
+                        <label id="fakeBgimgPickerLabel" for="fakeBgimgPickerBtn"></label>
+                    </span>
                     <img id="imgLocalBgSpinner" src="icons/tail-spin.svg">
                     <br><label id="imgRemoteBgLabel" class="doLeading"><input type="radio" id="imgRemoteBgRb" name="bgtype" value="IMAGE_REMOTE"></label>
                     <input type="url" id="bgimgUrlTf" name="bgimgRemote" size="80" required pattern=".*\.+(png|jpg|jpeg|PNG|JPG|JPEG)" disabled>

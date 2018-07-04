@@ -265,6 +265,7 @@ function refillRootFolderForm() {
     document.getElementById("elemsWillBeLostLabel").textContent = "";
     document.getElementById("elemsWillBeLostLabel").style.display = "none";
     document.getElementById("imgLocalBgSpinner").style.display = "none";
+    document.getElementById("fakeBgimgPickerLabel").textContent = browser.i18n.getMessage("nofilechosen");
 
     document.getElementById("rowsSpin").value = rootFolder.rows;
     document.getElementById("colsSpin").value = rootFolder.cols;
@@ -273,6 +274,7 @@ function refillRootFolderForm() {
     document.getElementById("defaultBgRb").checked = rootFolder.bgtype == BgType.DEFAULT;
     document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = rootFolder.bgtype == BgType.SOLID);
     document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = rootFolder.bgtype == BgType.IMAGE_LOCAL);
+    document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = rootFolder.bgtype == BgType.IMAGE_LOCAL);
     document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = rootFolder.bgtype == BgType.IMAGE_REMOTE);
     switch (rootFolder.bgtype) {
         case (BgType.SOLID):
@@ -283,10 +285,9 @@ function refillRootFolderForm() {
                 document.getElementById("bgimgPicker").required = true;
                 document.getElementById("bgimgBase64").value = "";
             } else {
-                //TODO: отобразить имя файла, если он был указан ранее https://stackoverflow.com/a/17949302
-                //document.getElementById("bgimgPicker").value = rootFolder.bgviewstr; //SecurityError: The operation is insecure
                 document.getElementById("bgimgPicker").required = false;
                 document.getElementById("bgimgBase64").value = rootFolder.bgdata;
+                document.getElementById("fakeBgimgPickerLabel").textContent = rootFolder.bgviewstr;
             }
             break;
         case (BgType.IMAGE_REMOTE):
@@ -353,7 +354,7 @@ async function saveFolderSettings() {
             bgviewstr = picker.files[0].name;
         } else {
             bgdata = document.getElementById("bgimgBase64").value;
-            bgviewstr = "Какой-то файл.жыпэг";
+            bgviewstr = document.getElementById("fakeBgimgPickerLabel").textContent;
         }
     }
     else if (document.getElementById("imgRemoteBgRb").checked) {
