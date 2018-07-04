@@ -80,12 +80,12 @@ window.onload = function() {
         onStorageCheckedOut(results);
         buildPage(rootFolder);
     }, onPromiseFailed);
-    browser.storage.local.get().then(function(all) { //DEBUG
+    /*browser.storage.local.get().then(function(all) { //DEBUG
         console.log("Stored data: ");
         for (let key in all) {
             console.log(key, " = ", all[key]);
         }
-    }, onPromiseFailed);
+    }, onPromiseFailed);*/
 
     /*Вставка строк из файлов локализации*/
     document.getElementById("cellAssignmentTitle").textContent = browser.i18n.getMessage("cellAssignmentTitle") + " - " + browser.i18n.getMessage("extensionName");
@@ -190,6 +190,7 @@ export function initFolderForm(folder) {
         if (newAmount < oldAmount) {
             let elements;
             let numberTf = document.getElementById("numberTf");
+            //let bsNumberTf = document.getElementById("bsNumberTf");
             if (folder) {
                 elements = folder.elements;
             } else {
@@ -198,7 +199,8 @@ export function initFolderForm(folder) {
             }
             let nBookmarks = 0;
             let nFolders = 0;
-            for (let i = newAmount; i < oldAmount; ++i) {
+            const lastSavedN = newAmount - (numberTf ? 1 : 0);
+            for (let i = lastSavedN; i < oldAmount; ++i) {
                 switch (elements[i].type) {
                     case ElementType.BOOKMARK:
                         ++nBookmarks;
@@ -228,7 +230,7 @@ export function initFolderForm(folder) {
                 const endingBookmarks = getEnding(nBookmarks);
                 const endingFolders = getEnding(nFolders);
                 document.getElementById("elemsWillBeLostLabel").textContent =
-                        browser.i18n.getMessage("elemsWillBeLost", [newAmount,
+                        browser.i18n.getMessage("elemsWillBeLost", [lastSavedN,
                         nBookmarks, endingBookmarks, nFolders, endingFolders]);
                 document.getElementById("elemsWillBeLostLabel").style.display = "initial";
             } else {
@@ -627,10 +629,18 @@ async function parseAssignmentForm(copyElems) {
         if (copyElems) {
             let src = getFolderByPath(currPath, rootFolder).elements[number - 1];
             if (src.type == ElementType.FOLDER) {
-                const bound = Math.min(src.elements.length, rows * cols);
+                let amount = rows * cols;
+                const bound = Math.min(src.elements.length, amount);
                 for (let i = 0; i < bound; ++i) {
                     result.elements[i] = src.elements[i];
                 }
+                let bsIndex = getBackstepIndex(result);
+                console.log("bsIndex = ", bsIndex, " amount = ", amount);
+                if (bsIndex >= 0 && bsIndex + 1 < amount) {
+                    result.elements[bsIndex] = new Element(bsIndex + 1);
+                    console.log("Done");
+                }
+                result.elements[amount - 1] = new BackstepElement(amount);
             }
         }
     } else {
@@ -868,7 +878,21 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             break;
         default:
             //DEBUG
-            console.log("Поступила какая-то команда, но мы её проигнорируем");
+            //console.log("Поступила какая-то команда, но мы её проигнорируем");
             break;
     }
 });
+
+/**
+ * Поиск элемента возврата в папке
+ *
+ * @param   Folder  folder  Папка, в которой осуществляется поиск
+ */
+function getBackstepIndex(folder) {
+    for (let i = 0; i < folder.elements.length; ++i) {
+        if (folder.elements[i].type == ElementType.BACKSTEP) {
+            return i;
+        }
+    }
+    return -1;
+}

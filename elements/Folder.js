@@ -58,13 +58,13 @@ var Folder = function(number, caption, rows = 3, cols = 3,
 
     let amount = this.rows * this.cols;
     this.elements = new Array(amount);
-    if (this.number > 0) {
-        this.elements[0] = new BackstepElement();
-    } else {
-        this.elements[0] = new Element(1);
-    }
-    for (let i = 1; i < amount; ++i) {
+    for (let i = 0; i < amount - 1; ++i) {
         this.elements[i] = new Element(i + 1);
+    }
+    if (this.number > 0) {
+        this.elements[amount - 1] = new BackstepElement(amount);
+    } else {
+        this.elements[amount - 1] = new Element(amount);
     }
 }
 Folder.prototype = Object.create(FilledElement.prototype);

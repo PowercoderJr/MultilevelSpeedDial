@@ -9,7 +9,7 @@ import Element from './Element.js';
  *
  * @param   int number  Номер элемента
  */
-var BackstepElement = function(number = 1) {
+var BackstepElement = function(number) {
     Element.call(this, number);
     this.type = ElementType.BACKSTEP;
 }
@@ -28,7 +28,7 @@ export default BackstepElement;
  *                          элемента с заданными свойствами
  */
 BackstepElement.prototype.parseObj = function(data) {
-    return new BackstepElement();
+    return new BackstepElement(data.number);
 }
 
 /**

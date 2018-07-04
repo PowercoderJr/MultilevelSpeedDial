@@ -16,6 +16,7 @@
         <div id="assignmentFormContainer">
             <form id="assignmentForm" method="post">
                 <input type="hidden" id="modeTf" name="mode">
+                <input type="hidden" id="bsNumberTf" name="mode">
                 <fieldset>
                     <legend id="cellAssignmentTitle"></legend>
                     <div>
@@ -37,7 +38,8 @@
                         <legend id="bookmarkSettingsLabel"></legend>
                         <p>
                             <label id="urlLabel"></label>
-                            <input type="url" id="urlTf" name="url" size="80" placeholder="https://www.google.com/" list="urlSuggectionsDL" autocomplete="off" required>
+                            <!--<input type="url" id="urlTf" name="url" size="80" placeholder="https://www.google.com/" list="urlSuggectionsDL" autocomplete="off" required>-->
+                            <input type="text" id="urlTf" name="url" size="80" placeholder="https://www.google.com/" list="urlSuggectionsDL" autocomplete="off" required>
                             <datalist id="urlSuggectionsDL">
                             </datalist>
                         </p>

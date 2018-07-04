@@ -164,7 +164,6 @@ Element.prototype.onDragEnter = function(event) {
     let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
 
     let isDragTarget = arraysEqual(currElementPath, srcPath);
-    let isDropTarget;
     if (!isOverDropTarget && !isDragTarget) {
         let date = new Date();
         dragEnterTime = date.getTime();
@@ -208,22 +207,24 @@ Element.prototype.onDragOver = function(event) {
 Element.prototype.onDrop = function(event) {
     event.preventDefault();
 
-    let currElementPathStr = Array.from(currPath);
-    currElementPathStr.push(this.number);
-    currElementPathStr = currElementPathStr.join("/");
-    let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
-    let srcPathStr = srcPath.join("/");
+    if (this.type != ElementType.BACKSTEP) {
+        let currElementPathStr = Array.from(currPath);
+        currElementPathStr.push(this.number);
+        currElementPathStr = currElementPathStr.join("/");
+        let srcPath = JSON.parse(event.dataTransfer.getData("srcPath"));
+        let srcPathStr = srcPath.join("/");
+        let isLoopDetected = srcPathStr.startsWith(currElementPathStr) &&
+                srcPathStr.length > currElementPathStr.length;
 
-    let isLoopDetected = srcPathStr.startsWith(currElementPathStr);
+        if (!isLoopDetected) {
+            let dstPath = Array.from(currPath);
+            dstPath.push(this.number);
 
-    if (this.type != ElementType.BACKSTEP && !isLoopDetected) {
-        let dstPath = Array.from(currPath);
-        dstPath.push(this.number);
-
-        swapElements(srcPath, dstPath);
-    } else {
-        event.currentTarget.style.borderStyle = "solid";
-        alert(browser.i18n.getMessage("ohnonono"));
+            swapElements(srcPath, dstPath);
+        } else {
+            event.currentTarget.style.borderStyle = "solid";
+            alert(browser.i18n.getMessage("ohnonono"));
+        }
     }
 }
 
