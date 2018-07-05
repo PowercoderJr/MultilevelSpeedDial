@@ -11,7 +11,7 @@
         "url": "https://github.com/PowercoderJr/MultilevelSpeedDial"
     },
 
-    "icons": 
+    "icons":
     {
         "8": "icons/icon.svg",
         "16": "icons/icon.svg",
@@ -67,6 +67,14 @@
             "id": "multilevelspeeddial@mozilla.org",
             "strict_min_version": "61.0"
         }
+    },
+
+    "browser_action":
+    {
+        "default_title": "__MSG_extensionName__",
+        "default_icon": "icons/icon.svg",
+        "default_popup": "toolbar-menu.html",
+        "browser_style": true
     },
 
     "options_ui":

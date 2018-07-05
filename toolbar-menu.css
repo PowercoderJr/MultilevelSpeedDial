@@ -1,0 +1,30 @@
+@import 'photon-colors.css';
+
+@font-face {
+    font-family: 'Fira Sans Regular';
+    src: url('fonts/FiraSans-Regular.ttf');
+}
+
+.vertical-menu {
+    width: 300px;
+}
+
+.vertical-menu-element {
+    background-color: var(--white-100);
+    font-size: 11px;
+    color: black;
+    display: block;
+    padding: 6px;
+    text-decoration: none;
+    cursor: default;
+}
+
+.vertical-menu-element:hover {
+    background-color: var(--grey-90-a05);
+}
+
+.vertical-menu-element img {
+	margin: 0px 8px 0px 8px;
+	vertical-align: middle;
+	width: 20px;
+}

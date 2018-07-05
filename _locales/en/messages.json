@@ -332,5 +332,15 @@
     "noFileChosen":
     {
         "message": "No file chosen" 
+    },
+
+    "openInCurrentTab":
+    {
+        "message": "Open in current tab"
+    },
+
+    "settings":
+    {
+        "message": "Settings"
     }
 }

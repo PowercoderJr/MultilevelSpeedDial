@@ -332,5 +332,15 @@
     "noFileChosen":
     {
         "message": "Файл не выбран" 
+    },
+
+    "openInCurrentTab":
+    {
+        "message": "Открыть в текущей вкладке"
+    },
+
+    "settings":
+    {
+        "message": "Настройки"
     }
 }
