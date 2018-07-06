@@ -33,7 +33,7 @@ input[type='number'] {
     top: 4px;
 }
 
-#imgLocalBgSpinner {
+.waitSpinner {
     height: 25px;
     position: relative;
     top: 7px;

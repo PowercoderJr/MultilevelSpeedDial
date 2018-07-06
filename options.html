@@ -47,7 +47,7 @@
                         <input id="fakeBgimgPickerBtn" type="button">
                         <label id="fakeBgimgPickerLabel" for="fakeBgimgPickerBtn"></label>
                     </span>
-                    <img id="imgLocalBgSpinner" src="icons/tail-spin.svg">
+                    <img id="imgLocalBgSpinner" class="waitSpinner" src="icons/tail-spin.svg">
                     <br><label id="imgRemoteBgLabel" class="doLeading"><input type="radio" id="imgRemoteBgRb" name="bgtype" value="IMAGE_REMOTE"></label>
                     <input type="url" id="bgimgUrlTf" name="bgimgRemote" size="80" required pattern=".*\.+(png|jpg|jpeg|PNG|JPG|JPEG)" disabled>
                 </p>
@@ -92,8 +92,9 @@
                 </p>
                 <p>
                     <input type="button" id="getJsonStructureBtn">
-                    <input type="button" id="setJsonStrustureBtn">
-                    <br/><textarea id="jsonStructureTa" cols="90" rows="10"></textarea>
+                    <input type="file" id="setJsonStructureBtn" accept=".json">
+                    <input type="button" id="fakeSetJsonStructureBtn">
+                    <img id="jsonStructureSpinner" class="waitSpinner" src="icons/tail-spin.svg">
                 </p>
                 <p>
                     <input type="button" id="setDefaultStorageBtn">

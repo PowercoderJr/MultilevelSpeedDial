@@ -42,15 +42,19 @@
 
     "permissions": ["storage", "tabs", "<all_urls>"],
 
-    "optional_permissions": ["history", "tabHide"],
+    "optional_permissions": ["history", "tabHide", "downloads"],
+
+    "chrome_settings_overrides":
+    {
+        "homepage": "mlsd.html"
+    },
 
     "chrome_url_overrides":
     {
         "newtab": "mlsd.html"
     },
 
-    "content_scripts": [
-    {
+    "content_scripts": [{
         "matches": ["<all_urls>"],
         "js": ["kbd-navigation.js"]
     }],

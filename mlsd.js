@@ -626,8 +626,8 @@ async function parseAssignmentForm(copyElems) {
             if (picker.files.length > 0) {
                 let file = picker.files[0];
                 document.getElementById("imgLocalBgSpinner").style.display = "initial";
-                await readFile(file).then(function(data) {bgdata = data;},
-                        onPromiseFailed);
+                await readFile(file, document.getElementById("imgLocalBgSpinner"), true).
+                        then(function(data) {bgdata = data;}, onPromiseFailed);
                 bgviewstr = picker.files[0].name;
             } else {
                 bgdata = document.getElementById("bgimgBase64").value;
@@ -650,10 +650,8 @@ async function parseAssignmentForm(copyElems) {
                     result.elements[i] = src.elements[i];
                 }
                 let bsIndex = getBackstepIndex(result);
-                console.log("bsIndex = ", bsIndex, " amount = ", amount);
                 if (bsIndex >= 0 && bsIndex + 1 < amount) {
                     result.elements[bsIndex] = new Element(bsIndex + 1);
-                    console.log("Done");
                 }
                 result.elements[amount - 1] = new BackstepElement(amount);
             }
@@ -672,24 +670,33 @@ async function parseAssignmentForm(copyElems) {
  *
  * Считывает файл с компьютера
  *
- * @param   File    file    Выбранный файл
- * @return  Promise         Возвращает Promise, который в случае успеха
- *                          предоставляет считанную информацию в виде
- *                          строки base64; в случае неудачи - сообщение
- *                          об ошибке.
+ * @param   File        file        Выбранный файл
+ * @param   HTMLElement indicator   Элемент, который отображается во время
+ *                                  загрузки файла и будет скрыт по завершению
+ * @param   boolean     readAsUrl   Считать ли файл как Data URL
+ * @return  Promise                 Возвращает Promise, который в случае успеха
+ *                                  предоставляет считанную информацию в виде
+ *                                  строки base64; в случае неудачи - сообщение
+ *                                  об ошибке.
  */
-export function readFile(file) {
+export function readFile(file, indicator, readAsUrl) {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.onloadend = function() {
-            document.getElementById("imgLocalBgSpinner").style.display = "none";
+            if (indicator) {
+                indicator.style.display = "none";
+            }
             if (resolve && reader.result) {
                 resolve(reader.result);
             } else if (reject) {
-                reject(browser.i18n.getMessage("unableToLoadImg"));
+                reject(browser.i18n.getMessage("unableToLoadFile"));
             }
         }
-        reader.readAsDataURL(file);
+        if (readAsUrl) {
+            reader.readAsDataURL(file);
+        } else {
+            reader.readAsText(file);
+        }
     });
 }
 
@@ -873,7 +880,7 @@ export function remoteImageToBase64(url) {
         };
 
         tmpImg.onerror = function() {
-            reject(browser.i18n.getMessage("unableToLoadImg"));
+            reject(browser.i18n.getMessage("unableToLoadFile"));
         };
         tmpImg.src = url;
     });

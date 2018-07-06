@@ -20,7 +20,8 @@ var rootFolder;
 let settings;
 
 window.onload = function() {
-    browser.storage.local.get(['structure', 'settings']).then(function(results) {
+    browser.storage.local.get(['structure', 'settings']).
+            then(function(results) {
         onStructureLoaded(results);
         initFolderForm(rootFolder);
         refillRootFolderForm();
@@ -143,7 +144,7 @@ window.onload = function() {
     document.getElementById("uploadSyncStorageBtn").value = browser.i18n.getMessage("uploadSyncStorage");
     document.getElementById("downloadSyncStorageBtn").value = browser.i18n.getMessage("downloadSyncStorage");
     document.getElementById("getJsonStructureBtn").value = browser.i18n.getMessage("getJsonStructure");
-    document.getElementById("setJsonStrustureBtn").value = browser.i18n.getMessage("setJsonStrusture");
+    document.getElementById("fakeSetJsonStructureBtn").value = browser.i18n.getMessage("setJsonStructure");
     document.getElementById("setDefaultStorageBtn").value = browser.i18n.getMessage("setDefaultStorage");
 
     document.getElementById("uploadSyncStorageBtn").onclick = function() {
@@ -169,7 +170,8 @@ window.onload = function() {
                         structure: results.structure
                     }).then(function() {
                         //Success
-                        browser.storage.local.get('structure').then(function(results) {
+                        browser.storage.local.get('structure').
+                                then(function(results) {
                             onStructureLoaded(results);
                             refillRootFolderForm();
                         }, onPromiseFailed);
@@ -181,43 +183,67 @@ window.onload = function() {
         }
     }
     document.getElementById("getJsonStructureBtn").onclick = function() {
-        browser.storage.local.get('structure').then(function(results) {
-            if (results.structure) {
-                document.getElementById("jsonStructureTa").value =
-                        JSON.stringify(results.structure);
-                
-                /* Этот код позволяет скачать структуру в виде файла, но
-                   требует дополнительных полномочий (downloads):
-
-                let structureStr = JSON.stringify(results.structure);
-                let structureBlob = new Blob([structureStr]);
-                let url = URL.createObjectURL(structureBlob);
-                browser.downloads.download({
-                    url: url,
-                    saveAs: true,
-                    filename: "mlsd-structure.text" //.json }:)
-                });*/
-            } else {
-                alert(browser.i18n.getMessage("noStructureInLocal")); //в локал нет структуры
+        browser.permissions.request({permissions: ["downloads"]}).
+                then(function(granted) {
+            if (granted) {
+                browser.storage.local.get('structure').then(function(results) {
+                    if (results.structure) {
+                        let structureStr = JSON.stringify(results.structure);
+                        let structureBlob = new Blob([structureStr]);
+                        let url = URL.createObjectURL(structureBlob);
+                        let releaseResources = function() {
+                            browser.permissions.remove({
+                                permissions: ["downloads"]
+                            });
+                            URL.revokeObjectURL(url);
+                        }
+                        browser.downloads.download({
+                            url: url,
+                            saveAs: true,
+                            filename: "mlsd-structure.json"
+                        }).then(function(id) {
+                            let listener = function(item) {
+                                if (item.id == id) {
+                                    browser.downloads.onChanged.
+                                            removeListener(listener);
+                                    releaseResources();
+                                }
+                            };
+                            browser.downloads.onChanged.addListener(listener);
+                        }, releaseResources);
+                    } else {
+                        alert(browser.i18n.getMessage("noStructureInLocal")); //в локал нет структуры
+                    }
+                }, alert); //ошибка чтения из локал
             }
-        }, alert); //ошибка чтения из локал
+        }, onPromiseFailed);
     }
-    document.getElementById("setJsonStrustureBtn").onclick = function() {
-        if (confirm(browser.i18n.getMessage("rlyOverwriteCurrStructure"))) {
-            let structure;
-            try {
-                structure = JSON.parse(document.
-                        getElementById("jsonStructureTa").value);
-                browser.storage.local.set({structure}).then(function(results) {
-                    //Success
-                    browser.storage.local.get('structure').then(function(results) {
-                        onStructureLoaded(results);
-                        refillRootFolderForm();
-                    }, onPromiseFailed);
-                }, alert); //не удалось загрузить в локал
-            } catch (e) {
-                alert(e.message);
-            }
+    document.getElementById("fakeSetJsonStructureBtn").onclick = function() {
+        document.getElementById("setJsonStructureBtn").click();
+    }
+    document.getElementById("setJsonStructureBtn").oninput = async function() {
+        if (document.getElementById("setJsonStructureBtn").files.length > 0 &&
+                confirm(browser.i18n.getMessage("rlyOverwriteCurrStructure"))) {
+            document.getElementById("jsonStructureSpinner").style.display = "initial";
+            await readFile(document.getElementById("setJsonStructureBtn").files[0],
+                    document.getElementById("jsonStructureSpinner"), false).
+                    then(function(data) {
+                let structure;
+                try {
+                    structure = JSON.parse(data);
+                    browser.storage.local.set({structure}).
+                            then(function(results) {
+                        //Success
+                        browser.storage.local.get('structure').
+                                then(function(results) {
+                            onStructureLoaded(results);
+                            refillRootFolderForm();
+                        }, onPromiseFailed);
+                    }, alert); //не удалось загрузить в локал
+                } catch (e) {
+                    alert(e.message);
+                }
+            }, onPromiseFailed);
         }
     }
     document.getElementById("setDefaultStorageBtn").onclick = function() {
@@ -349,8 +375,8 @@ async function saveFolderSettings() {
         if (picker.files.length > 0) {
             let file = picker.files[0];
             document.getElementById("imgLocalBgSpinner").style.display = "initial";
-            await readFile(file).then(function(data) {bgdata = data;},
-                    onPromiseFailed);
+            await readFile(file, document.getElementById("imgLocalBgSpinner"), true).
+                    then(function(data) {bgdata = data;}, onPromiseFailed);
             bgviewstr = picker.files[0].name;
         } else {
             bgdata = document.getElementById("bgimgBase64").value;
