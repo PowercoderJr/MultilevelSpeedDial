@@ -166,7 +166,7 @@
 
     "kbdNavHints":
     {
-        "message": "0-9  →  dialing\n+ or -  →  look over elements\n/ or SPACE  →  separator\nShift  →  open in a new tab"
+        "message": "0-9 → dialing\n+ or - → look over elements\n/ or SPACE → separator\nBACKSPACE → erase\nSHIFT → open in a new tab"
     },
 
     "rootFolderSettings":

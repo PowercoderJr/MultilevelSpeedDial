@@ -226,7 +226,7 @@ export function initFolderForm(folder) {
             if (nBookmarks + nFolders > 0) {
                 let getEnding = function(n) {
                     const locale = browser.i18n.getMessage("@@ui_locale");
-                    if (locale == "ru") {
+                    if (locale.startsWith("ru")) {
                         if (n % 100 != 11 && n % 10 == 1) {
                             return browser.i18n.getMessage("endingCase1")
                         } else if ((n % 100 < 12 || n % 100 > 14) &&
@@ -235,7 +235,7 @@ export function initFolderForm(folder) {
                         } else {
                             return browser.i18n.getMessage("endingCase0")
                         }
-                    } else if (locale == "en") {
+                    } else if (locale.startsWith("en")) {
                         return n == 1 ? "" : "s";
                     }
                 }
@@ -532,6 +532,14 @@ export function showAssignmentForm(element, mode) {
     document.getElementById("curtain").style.display = "flex";
     document.getElementById("background").style.WebkitFilter = "contrast(0.25)";
     scaleAssignmentForm();
+
+    if (document.getElementById("bookmarkRb").checked) {
+        document.getElementById("urlTf").focus();
+    } else if (document.getElementById("folderRb").checked) {
+        document.getElementById("folderNameTf").focus();
+    } else {
+        throw -1;
+    }
 }
 
 /**
@@ -602,6 +610,11 @@ async function parseAssignmentForm(copyElems) {
     let number = parseInt(document.getElementById("numberTf").value);
     if (document.getElementById("bookmarkRb").checked) {
         let url = document.getElementById("urlTf").value;
+
+        if (!/^https?:\/\//i.test(url)) {
+            url = "http:" + (url.startsWith("//") ? "" : "//") + url;
+        }
+
         result = new Bookmark(number, url);
     }
     else if (document.getElementById("folderRb").checked) {

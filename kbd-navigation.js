@@ -235,7 +235,7 @@ window.addEventListener("keypress", function(event) {
             } else {
                 const digitRegExp = /^(Digit|Numpad|)(\d)$/;
                 let appendix;
-                if (event.code.match(digitRegExp) !== null) {
+                if (digitRegExp.test(event.code)) {
                     appendix = event.code.replace(digitRegExp, "$2")
                 } else if (event.key === '/' || event.key === ' ') {
                     appendix = '/';
@@ -246,7 +246,7 @@ window.addEventListener("keypress", function(event) {
                 if (appendix !== null) {
                     let newPathString = pathString + appendix;
                     const pathRegExp = /^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/;
-                    if (newPathString.match(pathRegExp) !== null) {
+                    if (pathRegExp.test(newPathString)) {
                         if (!hasUiBeenInited) {
                             initUI();
                         }

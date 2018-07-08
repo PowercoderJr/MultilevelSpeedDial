@@ -197,6 +197,7 @@ Element.prototype.onDragOver = function(event) {
             this.type == ElementType.FOLDER)) {
         let date = new Date();
         if (date.getTime() - dragEnterTime > 1000) {
+            dragEnterTime = date.getTime();
             let trueObj = ElementFactoryByType[this.type](this);
             trueObj.action();
             counter = 0;
