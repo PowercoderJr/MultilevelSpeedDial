@@ -1,8 +1,9 @@
 import * as StrongString from '../strong-string.js';
+import * as ElementTypes from './elementTypes.js';
+
 import {overwriteElement, getPagePreviewInfo, onPromiseFailed,
     currPath} from '../mlsd.js';
 
-import {ElementType} from './Element.js';
 import FilledElement from './FilledElement.js';
 
 /**
@@ -13,7 +14,7 @@ import FilledElement from './FilledElement.js';
  */
 var Bookmark = function(number, url) {
     FilledElement.call(this, number);
-    this.type = ElementType.BOOKMARK;
+    this.type = ElementTypes.BOOKMARK;
     this.url = url;
     this.icon = null;
     this.caption = null;

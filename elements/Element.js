@@ -1,23 +1,8 @@
 import * as StrongString from '../strong-string.js';
+import * as ElementTypes from './elementTypes.js';
+
 import {verifyTarget, showAssignmentForm, AssignmentMode, currPath,
     swapElements, buildPage, ElementFactoryByType} from '../mlsd.js';
-
-/**
- * enum Тип элемента
- *
- * @var Object  ElementType
- */
-export const ElementType = {
-    //Пустой
-    EMPTY: 0,
-    //Закладка
-    BOOKMARK: 1,
-    //Папка
-    FOLDER: 2,
-    //Шаг на уровень вверх
-    BACKSTEP: 3
-}
-Object.freeze(ElementType);
 
 /**
  * Конструктор Element
@@ -25,7 +10,7 @@ Object.freeze(ElementType);
  * @param   int number  Номер элемента
  */
 var Element = function(number) {
-    this.type = ElementType.EMPTY;
+    this.type = ElementTypes.EMPTY;
     this.number = number;
 }
 export default Element;
@@ -144,7 +129,7 @@ let counter;
 let isOverDropTarget;
 
 Element.prototype.onDragStart = function(event) {
-    if (this.type != ElementType.EMPTY && this.type != ElementType.BACKSTEP) {
+    if (this.type != ElementTypes.EMPTY && this.type != ElementTypes.BACKSTEP) {
         let dndSrc = Array.from(currPath);
         dndSrc.push(this.number);
         event.dataTransfer.setData("srcPath", JSON.stringify(dndSrc));
@@ -193,8 +178,8 @@ Element.prototype.onDragOver = function(event) {
     let isDragTarget = arraysEqual(currElementPath, srcPath);
 
     if (!isDragTarget &&
-            (this.type == ElementType.BACKSTEP ||
-            this.type == ElementType.FOLDER)) {
+            (this.type == ElementTypes.BACKSTEP ||
+            this.type == ElementTypes.FOLDER)) {
         let date = new Date();
         if (date.getTime() - dragEnterTime > 1000) {
             dragEnterTime = date.getTime();
@@ -208,7 +193,7 @@ Element.prototype.onDragOver = function(event) {
 Element.prototype.onDrop = function(event) {
     event.preventDefault();
 
-    if (this.type != ElementType.BACKSTEP) {
+    if (this.type != ElementTypes.BACKSTEP) {
         let currElementPathStr = Array.from(currPath);
         currElementPathStr.push(this.number);
         currElementPathStr = currElementPathStr.join("/");

@@ -1,13 +1,4 @@
-/*Представь, что это импорты*/
-
-//import {Commands} from './mlsd.js';
-const Commands = {
-    GOTO_URL: 0,
-    GOTO_FOLDER: 1,
-    BUILD_FOLDER_PAGE: 2
-}
-Object.freeze(Commands);
-/*Импорты закончились*/
+import * as Commands from './messaging-commands.js';
 
 let settings;
 browser.storage.local.get(['settings']).then(function(results) {

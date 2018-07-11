@@ -1,6 +1,8 @@
-import {initFolderForm, onPromiseFailed, readFile, remoteImageToBase64}
-    from './mlsd.js';
-import {BgType, DEFAULT_BGCOLOR} from './elements/Folder.js';
+import * as BgTypes from './elements/bgTypes.js';
+
+import {initFolderForm, onPromiseFailed, readFile, remoteImageToBase64,
+    updateGridSizeChangedListener} from './mlsd.js';
+import {DEFAULT_BGCOLOR} from './elements/defaultBgColor.js';
 import Folder from './elements/Folder.js';
 
 /**
@@ -8,7 +10,7 @@ import Folder from './elements/Folder.js';
  *
  * @var Folder  rootFolder
  */
-var rootFolder;
+let rootFolder;
 
 /**
  * Настройки
@@ -87,6 +89,7 @@ window.onload = function() {
             onStructureLoaded(results);
             saveFolderSettings().then(function() {
                 refillRootFolderForm();
+                updateGridSizeChangedListener(rootFolder);
             }, onPromiseFailed);
         }, onPromiseFailed);
     }
@@ -96,6 +99,7 @@ window.onload = function() {
             browser.storage.local.get('structure').then(function(results) {
                 onStructureLoaded(results);
                 refillRootFolderForm();
+                updateGridSizeChangedListener(rootFolder);
             }, onPromiseFailed);
         }
     }
@@ -174,6 +178,7 @@ window.onload = function() {
                                 then(function(results) {
                             onStructureLoaded(results);
                             refillRootFolderForm();
+                            updateGridSizeChangedListener(rootFolder);
                         }, onPromiseFailed);
                     }, alert); //не удалось загрузить в локал
                 } else {
@@ -238,6 +243,7 @@ window.onload = function() {
                                 then(function(results) {
                             onStructureLoaded(results);
                             refillRootFolderForm();
+                            updateGridSizeChangedListener(rootFolder);
                         }, onPromiseFailed);
                     }, alert); //не удалось загрузить в локал
                 } catch (e) {
@@ -255,6 +261,7 @@ window.onload = function() {
                 browser.storage.local.get('structure').then(function(results) {
                     onStructureLoaded(results);
                     refillRootFolderForm();
+                    updateGridSizeChangedListener(rootFolder);
                 }, onPromiseFailed);
             }, alert); //не удалось загрузить в локал
         }
@@ -297,16 +304,16 @@ function refillRootFolderForm() {
     document.getElementById("colsSpin").value = rootFolder.cols;
     document.getElementById("rowsOld").value = rootFolder.rows;
     document.getElementById("colsOld").value = rootFolder.cols;
-    document.getElementById("defaultBgRb").checked = rootFolder.bgtype == BgType.DEFAULT;
-    document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = rootFolder.bgtype == BgType.SOLID);
-    document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = rootFolder.bgtype == BgType.IMAGE_LOCAL);
-    document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = rootFolder.bgtype == BgType.IMAGE_LOCAL);
-    document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = rootFolder.bgtype == BgType.IMAGE_REMOTE);
+    document.getElementById("defaultBgRb").checked = rootFolder.bgtype == BgTypes.DEFAULT;
+    document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = rootFolder.bgtype == BgTypes.SOLID);
+    document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = rootFolder.bgtype == BgTypes.IMAGE_LOCAL);
+    document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = rootFolder.bgtype == BgTypes.IMAGE_LOCAL);
+    document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = rootFolder.bgtype == BgTypes.IMAGE_REMOTE);
     switch (rootFolder.bgtype) {
-        case (BgType.SOLID):
+        case (BgTypes.SOLID):
             document.getElementById("bgcolorPicker").value = rootFolder.bgdata;
             break;
-        case (BgType.IMAGE_LOCAL):
+        case (BgTypes.IMAGE_LOCAL):
             if (rootFolder.bgviewstr.length == 0) {
                 document.getElementById("bgimgPicker").required = true;
                 document.getElementById("bgimgBase64").value = "";
@@ -316,7 +323,7 @@ function refillRootFolderForm() {
                 document.getElementById("fakeBgimgPickerLabel").textContent = rootFolder.bgviewstr;
             }
             break;
-        case (BgType.IMAGE_REMOTE):
+        case (BgTypes.IMAGE_REMOTE):
             if (rootFolder.bgviewstr.length == 0) {
                 document.getElementById("bgimgUrlTf").value = "";
                 document.getElementById("bgimgUrlTf").required = true;
@@ -360,17 +367,17 @@ async function saveFolderSettings() {
 
     let bgtype, bgdata, bgviewstr;
     if (document.getElementById("defaultBgRb").checked) {
-        bgtype = BgType.DEFAULT;
+        bgtype = BgTypes.DEFAULT;
         bgdata = null;
         bgviewstr = "";
     }
     else if (document.getElementById("colorBgRb").checked) {
-        bgtype = BgType.SOLID;
+        bgtype = BgTypes.SOLID;
         bgdata = document.getElementById("bgcolorPicker").value;
         bgviewstr = "";
     }
     else if (document.getElementById("imgLocalBgRb").checked) {
-        bgtype = BgType.IMAGE_LOCAL;
+        bgtype = BgTypes.IMAGE_LOCAL;
         const picker = document.getElementById("bgimgPicker");
         if (picker.files.length > 0) {
             let file = picker.files[0];
@@ -384,7 +391,7 @@ async function saveFolderSettings() {
         }
     }
     else if (document.getElementById("imgRemoteBgRb").checked) {
-        bgtype = BgType.IMAGE_REMOTE;
+        bgtype = BgTypes.IMAGE_REMOTE;
         await remoteImageToBase64(document.getElementById("bgimgUrlTf").value).
                 then(function(data) {bgdata = data;}, onPromiseFailed);
         bgviewstr = document.getElementById("bgimgUrlTf").value;

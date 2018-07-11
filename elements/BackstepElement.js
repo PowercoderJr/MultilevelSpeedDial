@@ -1,7 +1,7 @@
 import * as StrongString from '../strong-string.js';
 import {currPath, buildPage, getFolderByPath} from '../mlsd.js';
+import * as ElementTypes from './elementTypes.js';
 
-import {ElementType} from './Element.js';
 import Element from './Element.js';
 
 /**
@@ -11,7 +11,7 @@ import Element from './Element.js';
  */
 var BackstepElement = function(number) {
     Element.call(this, number);
-    this.type = ElementType.BACKSTEP;
+    this.type = ElementTypes.BACKSTEP;
 }
 BackstepElement.prototype = Object.create(Element.prototype);
 BackstepElement.prototype.constructor = BackstepElement;

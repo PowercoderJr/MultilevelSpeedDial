@@ -1,1 +1,4 @@
 _trash/*
+node_modules/*
+bundles/*
+background.sublime-workspace

@@ -1,10 +1,12 @@
 //import * as PhotonColors from './photon-colors.js';
 import * as StrongString from './strong-string.js';
+import * as Commands from './messaging-commands.js';
+import * as ElementTypes from './elements/elementTypes.js';
+import * as BgTypes from './elements/bgTypes.js';
 
-import {ElementType} from './elements/Element.js';
 import Element from './elements/Element.js';
 import Bookmark from './elements/Bookmark.js';
-import {BgType, DEFAULT_BGCOLOR} from './elements/Folder.js';
+import {DEFAULT_BGCOLOR} from './elements/defaultBgColor.js';
 import Folder from './elements/Folder.js';
 import BackstepElement from './elements/BackstepElement.js';
 
@@ -22,27 +24,15 @@ export const AssignmentMode = {
 Object.freeze(AssignmentMode);
 
 /**
- * Команды для обмена между скриптами
- *
- * @var enum    Commands
- */
-export const Commands = {
-    GOTO_URL: 0,
-    GOTO_FOLDER: 1,
-    BUILD_FOLDER_PAGE: 2
-}
-Object.freeze(Commands);
-
-/**
  * enum Парсер элемента
  *
  * @var Object ElementFactoryByType
  */
 export const ElementFactoryByType = {
-    [ElementType.EMPTY]: Element.prototype.parseObj,
-    [ElementType.BOOKMARK]: Bookmark.prototype.parseObj,
-    [ElementType.FOLDER]: Folder.prototype.parseObj,
-    [ElementType.BACKSTEP]: BackstepElement.prototype.parseObj
+    [ElementTypes.EMPTY]: Element.prototype.parseObj,
+    [ElementTypes.BOOKMARK]: Bookmark.prototype.parseObj,
+    [ElementTypes.FOLDER]: Folder.prototype.parseObj,
+    [ElementTypes.BACKSTEP]: BackstepElement.prototype.parseObj
 }
 Object.freeze(ElementFactoryByType);
 
@@ -194,11 +184,22 @@ export function initFolderForm(folder) {
         }
     }
 
+    updateGridSizeChangedListener(folder);
+}
+
+/**
+ * Обновление слушателя изменений значений в полях размера сетки
+ *
+ * @param   Folder  folder  Папка
+ */
+export function updateGridSizeChangedListener(folder) {
+    console.log("Hello!", folder);
     let onGridSizeChanged = function () {
         const oldAmount = document.getElementById("rowsOld").value *
                 document.getElementById("colsOld").value;
         const newAmount = document.getElementById("rowsSpin").value *
                 document.getElementById("colsSpin").value;
+        console.log(newAmount, " ", oldAmount);
         if (newAmount < oldAmount) {
             let elements;
             let numberTf = document.getElementById("numberTf");
@@ -209,15 +210,17 @@ export function initFolderForm(folder) {
                 elements = getFolderByPath(currPath || []).
                         elements[numberTf.value - 1].elements;
             }
+                console.log("Folder: ", folder, "Elements: ", elements);
             let nBookmarks = 0;
             let nFolders = 0;
             const lastSavedN = newAmount - (numberTf ? 1 : 0);
             for (let i = lastSavedN; i < oldAmount; ++i) {
+                console.log("i = ", i, "elements[i] = ", elements[i]);
                 switch (elements[i].type) {
-                    case ElementType.BOOKMARK:
+                    case ElementTypes.BOOKMARK:
                         ++nBookmarks;
                         break;
-                    case ElementType.FOLDER:
+                    case ElementTypes.FOLDER:
                         ++nFolders;
                         break;
                 }
@@ -254,8 +257,9 @@ export function initFolderForm(folder) {
             document.getElementById("elemsWillBeLostLabel").style.display = "none";
         }
     }
-    bufControls = document.getElementsByName("gridSize");
+    let bufControls = document.getElementsByName("gridSize");
     bufControls.forEach(function(item) {
+        console.log("Pick");
         item.oninput = onGridSizeChanged;
     });
 }
@@ -311,16 +315,16 @@ export function buildPage(folder) {
     /*Установка фона*/
     let background = document.getElementById("background");
     switch (folder.bgtype) {
-        case BgType.DEFAULT:
+        case BgTypes.DEFAULT:
             background.style.backgroundColor = DEFAULT_BGCOLOR;
             background.style.backgroundImage = "";
             break;
-        case BgType.SOLID:
+        case BgTypes.SOLID:
             background.style.backgroundColor = folder.bgdata;
             background.style.backgroundImage = "";
             break;
-        case BgType.IMAGE_LOCAL:
-        case BgType.IMAGE_REMOTE:
+        case BgTypes.IMAGE_LOCAL:
+        case BgTypes.IMAGE_REMOTE:
             background.style.backgroundColor = "";
             background.style.backgroundImage = "url('" + folder.bgdata + "')";
             break;
@@ -476,9 +480,9 @@ export function showAssignmentForm(element, mode) {
     }
     else if (mode == AssignmentMode.EDIT) {
         document.getElementById("modeTf").value = AssignmentMode.EDIT;
-        document.getElementById("bookmarkSettings").disabled = !(document.getElementById("bookmarkRb").checked = element.type == ElementType.BOOKMARK || element.type == ElementType.EMPTY);
-        document.getElementById("folderSettings").disabled = !(document.getElementById("folderRb").checked = element.type == ElementType.FOLDER);
-        if (element.type == ElementType.BOOKMARK) {
+        document.getElementById("bookmarkSettings").disabled = !(document.getElementById("bookmarkRb").checked = element.type == ElementTypes.BOOKMARK || element.type == ElementTypes.EMPTY);
+        document.getElementById("folderSettings").disabled = !(document.getElementById("folderRb").checked = element.type == ElementTypes.FOLDER);
+        if (element.type == ElementTypes.BOOKMARK) {
             document.getElementById("urlTf").value = element.url;
             document.getElementById("defaultBgRb").checked = true;
             document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = false);
@@ -486,22 +490,22 @@ export function showAssignmentForm(element, mode) {
             document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = false);
             document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = false);
         }
-        else if (element.type == ElementType.FOLDER) {
+        else if (element.type == ElementTypes.FOLDER) {
             document.getElementById("folderNameTf").value = element.caption;
             document.getElementById("rowsSpin").value = element.rows;
             document.getElementById("colsSpin").value = element.cols;
             document.getElementById("rowsOld").value = element.rows;
             document.getElementById("colsOld").value = element.cols;
-            document.getElementById("defaultBgRb").checked = element.bgtype == BgType.DEFAULT;
-            document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = element.bgtype == BgType.SOLID);
-            document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgType.IMAGE_LOCAL);
-            document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgType.IMAGE_LOCAL);
-            document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = element.bgtype == BgType.IMAGE_REMOTE);
+            document.getElementById("defaultBgRb").checked = element.bgtype == BgTypes.DEFAULT;
+            document.getElementById("bgcolorPicker").disabled = !(document.getElementById("colorBgRb").checked = element.bgtype == BgTypes.SOLID);
+            document.getElementById("bgimgPicker").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgTypes.IMAGE_LOCAL);
+            document.getElementById("fakeBgimgPickerBtn").disabled = !(document.getElementById("imgLocalBgRb").checked = element.bgtype == BgTypes.IMAGE_LOCAL);
+            document.getElementById("bgimgUrlTf").disabled = !(document.getElementById("imgRemoteBgRb").checked = element.bgtype == BgTypes.IMAGE_REMOTE);
             switch (element.bgtype) {
-                case (BgType.SOLID):
+                case (BgTypes.SOLID):
                     document.getElementById("bgcolorPicker").value = element.bgdata;
                     break;
-                case (BgType.IMAGE_LOCAL):
+                case (BgTypes.IMAGE_LOCAL):
                     if (element.bgviewstr.length == 0) {
                         document.getElementById("bgimgPicker").required = true;
                         document.getElementById("bgimgBase64").value = "";
@@ -511,7 +515,7 @@ export function showAssignmentForm(element, mode) {
                         document.getElementById("fakeBgimgPickerLabel").textContent = element.bgviewstr;
                     }
                     break;
-                case (BgType.IMAGE_REMOTE):
+                case (BgTypes.IMAGE_REMOTE):
                     if (element.bgviewstr.length == 0) {
                         document.getElementById("bgimgUrlTf").value = "";
                         document.getElementById("bgimgUrlTf").required = true;
@@ -624,17 +628,17 @@ async function parseAssignmentForm(copyElems) {
 
         let bgtype, bgdata, bgviewstr;
         if (document.getElementById("defaultBgRb").checked) {
-            bgtype = BgType.DEFAULT;
+            bgtype = BgTypes.DEFAULT;
             bgdata = null;
             bgviewstr = "";
         }
         else if (document.getElementById("colorBgRb").checked) {
-            bgtype = BgType.SOLID;
+            bgtype = BgTypes.SOLID;
             bgdata = document.getElementById("bgcolorPicker").value;
             bgviewstr = "";
         }
         else if (document.getElementById("imgLocalBgRb").checked) {
-            bgtype = BgType.IMAGE_LOCAL;
+            bgtype = BgTypes.IMAGE_LOCAL;
             const picker = document.getElementById("bgimgPicker");
             if (picker.files.length > 0) {
                 let file = picker.files[0];
@@ -648,7 +652,7 @@ async function parseAssignmentForm(copyElems) {
             }
         }
         else if (document.getElementById("imgRemoteBgRb").checked) {
-            bgtype = BgType.IMAGE_REMOTE;
+            bgtype = BgTypes.IMAGE_REMOTE;
             await remoteImageToBase64(document.getElementById("bgimgUrlTf").value).
                     then(function(data) {bgdata = data;}, onPromiseFailed);
             bgviewstr = document.getElementById("bgimgUrlTf").value;
@@ -656,7 +660,7 @@ async function parseAssignmentForm(copyElems) {
         result = new Folder(number, caption, rows, cols, bgtype, bgdata, bgviewstr);
         if (copyElems) {
             let src = getFolderByPath(currPath, rootFolder).elements[number - 1];
-            if (src.type == ElementType.FOLDER) {
+            if (src.type == ElementTypes.FOLDER) {
                 let amount = rows * cols;
                 const bound = Math.min(src.elements.length, amount);
                 for (let i = 0; i < bound; ++i) {
@@ -925,7 +929,7 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
  */
 function getBackstepIndex(folder) {
     for (let i = 0; i < folder.elements.length; ++i) {
-        if (folder.elements[i].type == ElementType.BACKSTEP) {
+        if (folder.elements[i].type == ElementTypes.BACKSTEP) {
             return i;
         }
     }

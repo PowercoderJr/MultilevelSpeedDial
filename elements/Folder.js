@@ -1,36 +1,14 @@
 import * as PhotonColors from '../photon-colors.js';
 import * as StrongString from '../strong-string.js';
+import * as ElementTypes from './elementTypes.js';
+import * as BgTypes from './bgTypes.js';
 
 import {currPath, buildPage} from '../mlsd.js';
+import {DEFAULT_BGCOLOR} from './defaultBgColor.js';
 
-import {ElementType} from './Element.js';
 import Element from './Element.js';
 import FilledElement from './FilledElement.js';
 import BackstepElement from './BackstepElement.js';
-
-/**
- * Цвет фона по умолчанию
- *
- * @var string  DEFAULT_BGCOLOR
- */
-export const DEFAULT_BGCOLOR = PhotonColors.GREY_10;
-
-/**
- * enum Тип фона
- *
- * @var Object  BgType
- */
-export const BgType = {
-    //По умолчанию
-    DEFAULT: 0,
-    //Сплошной цвет
-    SOLID: 1,
-    //Изображение с компьютера
-    IMAGE_LOCAL: 2,
-    //Удалённое изображение
-    IMAGE_REMOTE: 3
-}
-Object.freeze(BgType);
 
 /**
  * Конструктор элемента-папки
@@ -39,15 +17,15 @@ Object.freeze(BgType);
  * @param   string  caption     Название папки
  * @param   int     rows        Количество строк (по умолчанию 3)
  * @param   int     cols        Количество столбцов (по умолчанию 3)
- * @param   BgType  bgtype      Тип фона (по умолчанию стандартный)
+ * @param   BgTypes bgtype      Тип фона (по умолчанию стандартный)
  * @param   string  bgdata      Данные фона (по умолчанию null)
  * @param   string  bgviewstr   Отображаемая строка вместо данных фона
  *                              (по умолчанию пуста)
  */
 var Folder = function(number, caption, rows = 3, cols = 3,
-        bgtype = BgType.DEFAULT, bgdata = null, bgviewstr = "") {
+        bgtype = BgTypes.DEFAULT, bgdata = null, bgviewstr = "") {
     FilledElement.call(this, number);
-    this.type = ElementType.FOLDER;
+    this.type = ElementTypes.FOLDER;
     this.caption = caption;
     this.icon = "icons/folder.svg";
     this.rows = rows > 0 ? rows : 1;
@@ -118,16 +96,16 @@ Folder.prototype.getInnerHtml = function () {
         let mture = df.getElementById(StrongString.MINIATURE +
                 StrongString.SEPARATOR + this.number);
         switch (this.bgtype) {
-            case BgType.DEFAULT:
+            case BgTypes.DEFAULT:
                 mture.style.backgroundColor = DEFAULT_BGCOLOR;
                 mture.style.backgroundImage = "";
                 break;
-            case BgType.SOLID:
+            case BgTypes.SOLID:
                 mture.style.backgroundColor = this.bgdata;
                 mture.style.backgroundImage = "";
                 break;
-            case BgType.IMAGE_LOCAL:
-            case BgType.IMAGE_REMOTE:
+            case BgTypes.IMAGE_LOCAL:
+            case BgTypes.IMAGE_REMOTE:
                 mture.style.backgroundColor = "";
                 mture.style.backgroundImage = "url('" + this.bgdata + "')";
                 break;

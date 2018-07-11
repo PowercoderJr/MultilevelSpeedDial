@@ -1,47 +1,9 @@
-/*Представь, что это импорты*/
+import * as Commands from './messaging-commands.js';
+import * as PhotonColors from './photon-colors.js';
+import * as ElementTypes from './elements/elementTypes.js';
+import * as BgTypes from './elements/bgTypes.js';
 
-//import * as PhotonColors from './photon-colors.js';
-const PhotonColors = {
-    YELLOW_50: '#ffe900',
-    PURPLE_50: '#9400ff',
-    GREY_10: '#f9f9fa'
-}
-
-//import {ElementType} from './elements/Element.js';
-const ElementType = {
-    //Пустой
-    EMPTY: 0,
-    //Закладка
-    BOOKMARK: 1,
-    //Папка
-    FOLDER: 2,
-    //Шаг на уровень вверх
-    BACKSTEP: 3
-}
-Object.freeze(ElementType);
-
-//import {DEFAULT_BGCOLOR, BgType} from './elements/Folder.js';
-const DEFAULT_BGCOLOR = PhotonColors.GREY_10;
-const BgType = {
-    //По умолчанию
-    DEFAULT: 0,
-    //Сплошной цвет
-    SOLID: 1,
-    //Изображение с компьютера
-    IMAGE_LOCAL: 2,
-    //Удалённое изображение
-    IMAGE_REMOTE: 3
-}
-Object.freeze(BgType);
-
-//import {Commands} from './mlsd.js';
-const Commands = {
-    GOTO_URL: 0,
-    GOTO_FOLDER: 1,
-    BUILD_FOLDER_PAGE: 2
-}
-Object.freeze(Commands);
-/*Импорты закончились*/
+import {DEFAULT_BGCOLOR} from './elements/defaultBgColor.js';
 
 /**
  * Флаг режима ввода
@@ -276,14 +238,14 @@ window.addEventListener("keyup", function(event) {
 
         if (target) {
             switch (target.type) {
-                case ElementType.BOOKMARK:
+                case ElementTypes.BOOKMARK:
                     browser.runtime.sendMessage({
                         command: Commands.GOTO_URL,
                         url: target.url,
                         newTab: isNewTabNeeded
                     });
                     break;
-                case ElementType.FOLDER:
+                case ElementTypes.FOLDER:
                     browser.runtime.sendMessage({
                         command: Commands.GOTO_FOLDER,
                         folder: target,
@@ -375,7 +337,7 @@ function getElementByPath(path) {
     let success = true;
     for (let i = 0; success && i < path.length; ++i) {
         folder = folder.elements[path[i] - 1];
-        success = folder && folder.type == ElementType.FOLDER;
+        success = folder && folder.type == ElementTypes.FOLDER;
     }
 
     let result = success ? folder.elements[targetIndex - 1] : {type: -1};
@@ -392,7 +354,7 @@ function getElementByPath(path) {
  */
 function fillPreview(element) {
     switch (element.type) {
-        case (ElementType.FOLDER):
+        case (ElementTypes.FOLDER):
             if (element.isMiniatureHidden) {
                 miniature.style.backgroundColor = PhotonColors.PURPLE_50;
                 miniature.style.backgroundImage =
@@ -401,16 +363,16 @@ function fillPreview(element) {
                 miniature.style.backgroundSize = "200px";
             } else {
                 switch (element.bgtype) {
-                    case BgType.DEFAULT:
+                    case BgTypes.DEFAULT:
                         miniature.style.backgroundColor = DEFAULT_BGCOLOR;
                         miniature.style.backgroundImage = "";
                         break;
-                    case BgType.SOLID:
+                    case BgTypes.SOLID:
                         miniature.style.backgroundColor = element.bgdata;
                         miniature.style.backgroundImage = "";
                         break;
-                    case BgType.IMAGE_LOCAL:
-                    case BgType.IMAGE_REMOTE:
+                    case BgTypes.IMAGE_LOCAL:
+                    case BgTypes.IMAGE_REMOTE:
                         miniature.style.backgroundColor = "";
                         miniature.style.backgroundImage =
                                 "url('" + element.bgdata + "')";
@@ -426,7 +388,7 @@ function fillPreview(element) {
                         " (" + element.cols + "x" + element.rows + ")";
             }
             break;
-        case (ElementType.BOOKMARK):
+        case (ElementTypes.BOOKMARK):
             if (element.isMiniatureHidden) {
                 miniature.style.backgroundColor = PhotonColors.PURPLE_50;
                 miniature.style.backgroundImage =

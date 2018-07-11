@@ -1,0 +1,49 @@
+{
+    "name": "multilevelspeeddial",
+
+    "version": "1.0.0",
+
+    "description": "Extension adds visual bookmarks into browser",
+
+    "main": "mlsd.js",
+
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "pack-mlsd": "webpack mlsd.js -o bundles/mlsd.js",
+        "pack-kbd-navigation": "webpack kbd-navigation.js -o bundles/kbd-navigation.js",
+        "pack-background": "webpack background.js -o bundles/background.js",
+        "pack-options": "webpack options.js -o bundles/options.js",
+        "pack-full": "webpack mlsd.js -o bundles/mlsd.js & webpack kbd-navigation.js -o bundles/kbd-navigation.js & webpack background.js -o bundles/background.js & webpack options.js -o bundles/options.js"
+    },
+
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/PowercoderJr/MultilevelSpeedDial.git"
+    },
+
+    "keywords": [
+        "mozilla",
+        "firefox",
+        "browser",
+        "extension",
+        "addon",
+        "bookmarks",
+        "speeddial"
+    ],
+
+    "author": "Ruslan Komarichev",
+
+    "license": "MPL-2.0",
+
+    "bugs": {
+        "url": "https://github.com/PowercoderJr/MultilevelSpeedDial/issues"
+    },
+
+    "homepage": "https://github.com/PowercoderJr/MultilevelSpeedDial#readme",
+
+    "devDependencies": {
+        "i": "^0.3.6",
+        "webpack": "^4.15.1",
+        "webpack-cli": "^3.0.8"
+    }
+}
