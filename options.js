@@ -174,7 +174,6 @@ window.onload = function() {
                         structure: results.structure
                     }).then(function() {
                         //Success
-                        console.log(results.structure);
                     }, alert); //не удалось загрузить в синк
                 } else {
                     alert(browser.i18n.getMessage("noStructureInLocal")); //в локал нет структуры

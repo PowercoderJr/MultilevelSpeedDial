@@ -193,13 +193,11 @@ export function initFolderForm(folder) {
  * @param   Folder  folder  Папка
  */
 export function updateGridSizeChangedListener(folder) {
-    console.log("Hello!", folder);
     let onGridSizeChanged = function () {
         const oldAmount = document.getElementById("rowsOld").value *
                 document.getElementById("colsOld").value;
         const newAmount = document.getElementById("rowsSpin").value *
                 document.getElementById("colsSpin").value;
-        console.log(newAmount, " ", oldAmount);
         if (newAmount < oldAmount) {
             let elements;
             let numberTf = document.getElementById("numberTf");
@@ -210,12 +208,10 @@ export function updateGridSizeChangedListener(folder) {
                 elements = getFolderByPath(currPath || []).
                         elements[numberTf.value - 1].elements;
             }
-                console.log("Folder: ", folder, "Elements: ", elements);
             let nBookmarks = 0;
             let nFolders = 0;
             const lastSavedN = newAmount - (numberTf ? 1 : 0);
             for (let i = lastSavedN; i < oldAmount; ++i) {
-                console.log("i = ", i, "elements[i] = ", elements[i]);
                 switch (elements[i].type) {
                     case ElementTypes.BOOKMARK:
                         ++nBookmarks;
@@ -259,7 +255,6 @@ export function updateGridSizeChangedListener(folder) {
     }
     let bufControls = document.getElementsByName("gridSize");
     bufControls.forEach(function(item) {
-        console.log("Pick");
         item.oninput = onGridSizeChanged;
     });
 }
