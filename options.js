@@ -1,3 +1,4 @@
+import * as ElementTypes from './elements/elementTypes.js';
 import * as BgTypes from './elements/bgTypes.js';
 
 import {initFolderForm, onPromiseFailed, readFile, remoteImageToBase64,
@@ -155,10 +156,25 @@ window.onload = function() {
         if (confirm(browser.i18n.getMessage("rlyOverwriteRemoteStructure"))) {
             browser.storage.local.get('structure').then(function(results) {
                 if (results.structure) {
+                    let eraseImagesInfo = function(item) {
+                        if (item.type == ElementTypes.BOOKMARK) {
+                            item.miniature = "";
+                        } else if (item.type == ElementTypes.FOLDER) {
+                            item.bgdata = "";
+                            if (item.bgType == BgTypes.IMAGE_LOCAL) {
+                                item.bgviewstr = "";
+                            }
+                            for (let i = 0; i < item.elements.length; ++i) {
+                                eraseImagesInfo(item.elements[i]);
+                            }
+                        }
+                    };
+                    eraseImagesInfo(results.structure);
                     browser.storage.sync.set({
                         structure: results.structure
                     }).then(function() {
                         //Success
+                        console.log(results.structure);
                     }, alert); //не удалось загрузить в синк
                 } else {
                     alert(browser.i18n.getMessage("noStructureInLocal")); //в локал нет структуры

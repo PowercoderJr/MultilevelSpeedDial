@@ -236,17 +236,17 @@
 
     "structureManagingDesc":
     {
-        "message": "Here you can store bookmarks structure into cloud or onto disk, or load what you've stored before."
+        "message": "Here you can store bookmarks structure into cloud or onto disk, or load what you've stored before. With cloud you can synchronize bookmarks structure between devices on which you logged into the same Firefox account. (Bookmarks previews and folders backgrounds won't be saved in cloud because of space limitation)"
     },
 
     "uploadSyncStorage":
     {
-        "message": "Save to remote storage"
+        "message": "Save to cloud"
     },
 
     "downloadSyncStorage":
     {
-        "message": "Load from remote storage"
+        "message": "Load from cloud"
     },
 
     "getJsonStructure":
@@ -271,7 +271,7 @@
 
     "rlyOverwriteRemoteStructure":
     {
-        "message": "Do you really want to overwrite bookmarks structure in remote storage?"
+        "message": "Do you really want to overwrite bookmarks structure in cloud?"
     },
 
     "noStructureInLocal":
@@ -281,7 +281,7 @@
 
     "noStructureInSync":
     {
-        "message": "No bookmarks structure found in remote storage"
+        "message": "No bookmarks structure found in cloud"
     },
 
     "permissionsSettings":
@@ -342,5 +342,10 @@
     "settings":
     {
         "message": "Settings"
+    },
+
+    "extensionAmoPage":
+    {
+        "message": "Extension page on AMO"
     }
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="extension-amo-page-menu-item.svg"
+   inkscape:version="0.92.1 r15371">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="14.75"
+     inkscape:cx="-4.2033898"
+     inkscape:cy="8"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     d="m 12.160613,1.2907209 c -0.618689,0.6186893 0,1.2743328 -0.477876,1.7522088 a 0.68933349,0.68933349 0 0 1 -0.955749,0 L 8.6561968,0.97213846 a 0.90108953,0.90108953 0 0 0 -1.2743331,0 L 5.3110728,3.0429294 a 0.68933349,0.68933349 0 0 1 -0.9557498,0 C 3.8774481,2.5650537 4.4961368,1.9094102 3.8774481,1.2907212 3.3262991,0.73957248 2.3482484,0.90842134 1.6473653,1.6093041 0.94648214,2.3101877 0.77763294,3.2882384 1.328782,3.8393871 c 0.6186887,0.6186887 1.2743331,0 1.7522079,0.4778749 a 0.68933349,0.68933349 0 0 1 0,0.9557499 L 1.0101988,7.343803 a 0.90108953,0.90108953 0 0 0 0,1.2743331 l 1.4336247,1.4336249 a 0.68933349,0.68933349 0 0 0 0.9557496,0 C 3.877448,9.5738858 3.2587594,8.9182415 3.8774481,8.2995528 4.4285972,7.7484037 5.4066478,7.9172529 6.1075309,8.6181361 6.808414,9.3190189 6.9772631,10.29707 6.4261141,10.848219 c -0.6186886,0.618688 -1.2743329,0 -1.7522078,0.477875 a 0.68933349,0.68933349 0 0 0 -10e-8,0.95575 l 2.7079578,2.707957 a 0.90108953,0.90108953 0 0 0 1.274333,0 l 2.070792,-2.070791 a 0.68933349,0.68933349 0 0 0 0,-0.95575 C 10.249113,11.485385 9.593469,12.104074 8.9747803,11.485385 8.4236312,10.934236 8.5924804,9.9561856 9.2933635,9.2553029 9.9942467,8.5544194 10.972298,8.3855703 11.523446,8.9367195 c 0.618689,0.6186885 0,1.2743325 0.477875,1.7522075 a 0.68933349,0.68933349 0 0 0 0.955751,0 l 2.070791,-2.0707911 a 0.90108953,0.90108953 0 0 0 0,-1.274333 L 12.957072,5.2730118 a 0.68933349,0.68933349 0 0 1 0,-0.9557498 c 0.477874,-0.4778749 1.133519,0.1408138 1.752207,-0.4778751 0.55115,-0.5511489 0.3823,-1.529199 -0.318583,-2.2300828 C 13.689812,0.90842161 12.711762,0.73957248 12.160613,1.2907209 Z"
+     id="path2"
+     style="fill:#000000;stroke:#000000;stroke-width:0;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+     inkscape:connector-curvature="0" />
+</svg>
