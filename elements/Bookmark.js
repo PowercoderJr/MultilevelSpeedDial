@@ -104,6 +104,8 @@ Bookmark.prototype.getInnerHtml = function () {
  * {@link FilledElement.prototype.refresh}
  */
 Bookmark.prototype.refresh = function() {
+    let folderPath = Array.from(currPath);
+
     document.getElementById(StrongString.NUMBER +
             StrongString.SEPARATOR + this.number).
             textContent = "...";
@@ -113,7 +115,7 @@ Bookmark.prototype.refresh = function() {
         this.caption = data.title;
         this.icon = data.favicon;
         this.miniature = data.screenshot;
-        overwriteElement(currPath, this);
+        overwriteElement(folderPath, this);
         //getFolderByPath(currPath).elements[this.number - 1] = this;
         //rebuildElement(this);
     }.bind(this), onPromiseFailed). then(function() {

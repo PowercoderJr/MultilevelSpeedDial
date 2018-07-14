@@ -104,6 +104,14 @@ window.onload = function() {
                 !document.getElementById("bookmarkRb").checked;
         document.getElementById("folderSettings").disabled =
                 !document.getElementById("folderRb").checked;
+
+        if (document.getElementById("bookmarkRb").checked) {
+            document.getElementById("urlTf").focus();
+        } else if (document.getElementById("folderRb").checked) {
+            document.getElementById("folderNameTf").focus();
+        } else {
+            throw -1;
+        }
     }
     let bufControls = document.getElementsByName("elementType");
     bufControls.forEach(function(item) {
