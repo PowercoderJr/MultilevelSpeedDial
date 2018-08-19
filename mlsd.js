@@ -317,11 +317,11 @@ function stylize(isDarkTheme) {
         document.documentElement.style.setProperty("--textColor",
                 "var(--grey-90)");
         document.documentElement.style.setProperty("--inputsColor",
-                "whvar(--ite-100)");
+                "var(--white-100)");
         document.documentElement.style.setProperty("--curtainColor",
-                "greyvar(---90-a60)");
+                "var(--grey-90-a60)");
         document.documentElement.style.setProperty("--togglesColor",
-                "greyvar(---90-a10)");
+                "var(--grey-90-a10)");
     }
 }
 

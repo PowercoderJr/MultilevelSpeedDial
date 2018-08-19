@@ -6,10 +6,10 @@
 }
 
 :root {
-    --backgroundColor: var(--white-100); /*white-100 / grey-60*/
-    --hoverColor: var(--grey-90-a05); /*grey-90-a05 / #5c5c61*/
-    --textColor: var(--grey-90); /*grey-90 / grey-10*/
-    --imgFilter: none; /*none / invert(100%)*/
+    --backgroundColor: ; /*white-100 / grey-60*/
+    --hoverColor: ; /*grey-90-a05 / #5c5c61*/
+    --textColor: ; /*grey-90 / grey-10*/
+    --imgFilter: ; /*none / invert(100%)*/
 }
 
 .vertical-menu {

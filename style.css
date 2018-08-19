@@ -15,11 +15,11 @@
     --elementNumberDisplay: flex;
     --elementBorderRadius: 2px;
 
-    --backgroundColor: var(--grey-70); /*grey-10 / grey-70*/
-    --textColor: var(--grey-10); /*grey-90 / grey-10*/
-    --inputsColor: var(--grey-60); /*white-100 / grey-60*/
-    --curtainColor: var(--grey-90-a90); /*grey-90-a60 / grey-90-a90*/
-    --togglesColor: var(--grey-90-a50); /*grey-90-a10 / grey-90-a50*/
+    --backgroundColor: ; /*grey-10 / grey-70*/
+    --textColor: ; /*grey-90 / grey-10*/
+    --inputsColor: ; /*white-100 / grey-60*/
+    --curtainColor: ; /*grey-90-a60 / grey-90-a90*/
+    --togglesColor: ; /*grey-90-a10 / grey-90-a50*/
 }
 
 body {
