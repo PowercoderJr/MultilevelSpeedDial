@@ -189,6 +189,21 @@
         "message": "Восстановить"
     },
 
+    "displaySettings":
+    {
+        "message": "Настройки отображения"
+    },
+
+    "showNumbers":
+    {
+        "message": "Отобразить номера элементов поверх миниатюр"
+    },
+
+    "roundCorners":
+    {
+        "message": "Скруглить углы элементов"
+    },
+
     "newTabFocusSettings":
     {
         "message": "Захват фокуса на новой вкладке"

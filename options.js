@@ -5,6 +5,7 @@ import {initFolderForm, onPromiseFailed, readFile, remoteImageToBase64,
     updateGridSizeChangedListener} from './mlsd.js';
 import {DEFAULT_BGCOLOR} from './elements/defaultBgColor.js';
 import Folder from './elements/Folder.js';
+import {onSettingsLoaded} from './settings-reader.js';
 
 /**
  * Корневая папка
@@ -28,7 +29,8 @@ window.onload = function() {
         onStructureLoaded(results);
         initFolderForm(rootFolder);
         refillRootFolderForm();
-        onSettingsLoaded(results);
+        settings = onSettingsLoaded(results);
+        refillDisplaySettingsForm();
         refillNewTabFocusForm();
         refillNewTabActiveForm();
     }, onPromiseFailed);
@@ -77,6 +79,23 @@ window.onload = function() {
         }, onPromiseFailed);
     }
 
+    /*Форма "настройки отображения"*/
+    document.getElementById("displaySettingsLabel").textContent = browser.i18n.getMessage("displaySettings");
+    document.getElementById("showNumbersLabel").innerHTML += browser.i18n.getMessage("showNumbers");
+    document.getElementById("roundCornersLabel").innerHTML += browser.i18n.getMessage("roundCorners");
+    let onDisplaySettingsChanged = function(event) {
+        browser.storage.local.get('settings').then(function(results) {
+            onSettingsLoaded(results);
+            settings[event.target.id.substr(0, event.target.id.length - 3)] =
+                    event.target.checked;
+            browser.storage.local.set({settings});
+        }, onPromiseFailed);
+    }
+    let bufControls = document.getElementsByName("displayChbs");
+    bufControls.forEach(function(item) {
+        item.oninput = onDisplaySettingsChanged;
+    }, onPromiseFailed);
+
     /*Форма "настройки корневой папки"*/
     document.getElementById("rootFolderSettingsLabel").textContent = browser.i18n.getMessage("rootFolderSettings");
     document.getElementById("rootFolderSettingsDescLabel").textContent = browser.i18n.getMessage("rootFolderSettingsDesc");
@@ -120,7 +139,7 @@ window.onload = function() {
             browser.storage.local.set({settings});
         }, onPromiseFailed);
     }
-    let bufControls = document.getElementsByName("newPageFocus");
+    bufControls = document.getElementsByName("newPageFocus");
     bufControls.forEach(function(item) {
         item.oninput = onNewTabFocusParamChanged;
     }, onPromiseFailed);
@@ -159,7 +178,9 @@ window.onload = function() {
                     let eraseImagesInfo = function(item) {
                         if (item.type == ElementTypes.BOOKMARK) {
                             item.miniature = "";
-                        } else if (item.type == ElementTypes.FOLDER) {
+                        } else if (item.type == ElementTypes.FOLDER &&
+                                    (item.bgtype == BgTypes.IMAGE_LOCAL ||
+                                    item.bgtype == BgTypes.IMAGE_REMOTE)) {
                             item.bgdata = "";
                             if (item.bgType == BgTypes.IMAGE_LOCAL) {
                                 item.bgviewstr = "";
@@ -292,17 +313,18 @@ function onStructureLoaded(results) {
     }
 }
 
-function onSettingsLoaded(results) {
+/*function onSettingsLoaded(results) {
     if (results.settings) {
         settings = results.settings;
     } else {
         settings = {
+            showNumbers:true,
             doPageFocus: true,
-            newTabActive: true
+            newTabActive: true,
         }
         browser.storage.local.set({settings});
     }
-}
+}*/
 
 /**
  * Заполнение формы настроек корневой папки текущими значениями
@@ -350,6 +372,14 @@ function refillRootFolderForm() {
             }
             break;
     }
+}
+
+/**
+ * Заполнение формы настроек отображения
+ */
+function refillDisplaySettingsForm() {
+    document.getElementById("showNumbersChb").checked = settings.showNumbers;
+    document.getElementById("roundCornersChb").checked = settings.roundCorners;
 }
 
 /**

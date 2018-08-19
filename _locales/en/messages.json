@@ -189,6 +189,21 @@
         "message": "Restore"
     },
 
+    "displaySettings":
+    {
+        "message": "Display settings"
+    },
+
+    "showNumbers":
+    {
+        "message": "Show numbers of elements over miniatures"
+    },
+
+    "roundCorners":
+    {
+        "message": "Round corners of elements"
+    },
+
     "newTabFocusSettings":
     {
         "message": "Focus capturing on a new tab"

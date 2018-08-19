@@ -12,6 +12,8 @@
     --numberFontSize: 0px;
     --assignmentFormScale: 1;
     --fieldsetBlurValue: 5px;
+    --elementNumberDisplay: flex;
+    --elementBorderRadius: 2px;
 }
 
 body {
@@ -112,7 +114,7 @@ input:disabled {
     background-clip: padding-box;
     border: var(--borderSize) solid rgba(170, 170, 170, .3);
     border-top-width: calc(var(--borderSize) * 4);
-    border-radius: var(--borderSize);
+    border-radius: var(--elementBorderRadius);
     box-shadow: 0 0 1px rgba(255, 255, 255, .8),
     0 0 3px rgba(0, 0, 0, .8),
     1px 1px 0 rgba(0, 0, 0, .8) inset,
@@ -187,7 +189,6 @@ input:disabled {
 
 .elementNumber {
     height: 100%;
-    display: flex;
     justify-content: center;
     align-items: center;
     font-family: 'Fira Sans Heavy';
@@ -196,6 +197,14 @@ input:disabled {
     color: transparent;
     -webkit-text-stroke: 2px black; /*Non-standard*/
     opacity: 0.75;
+}
+
+.elementNumber[tag="backstep"] {
+    display: flex;
+}
+
+.elementNumber:not([tag~="backstep"]) {
+    display: var(--elementNumberDisplay);
 }
 
 .element:hover .elementNumber {

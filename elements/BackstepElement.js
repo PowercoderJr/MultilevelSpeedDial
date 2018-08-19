@@ -56,6 +56,7 @@ BackstepElement.prototype.action = function() {
 BackstepElement.prototype.getInnerHtml = function () {
     let df = Element.prototype.getInnerHtml.call(this);
     let label = df.getElementById(StrongString.NUMBER + StrongString.SEPARATOR + this.number);
+    label.setAttribute("tag", "backstep");
     label.textContent = "←";
     return df;
 }

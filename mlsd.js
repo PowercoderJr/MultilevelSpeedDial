@@ -9,6 +9,7 @@ import Bookmark from './elements/Bookmark.js';
 import {DEFAULT_BGCOLOR} from './elements/defaultBgColor.js';
 import Folder from './elements/Folder.js';
 import BackstepElement from './elements/BackstepElement.js';
+import {onSettingsLoaded} from './settings-reader.js';
 
 /**
  * enum Режим назначения элемента
@@ -283,16 +284,11 @@ function onStorageCheckedOut(results) {
         rootFolder = new Folder(-1, browser.i18n.getMessage("extensionName"));
         browser.storage.local.set({structure: rootFolder});
     }
-
-    if (results.settings) {
-        settings = results.settings;
-    } else {
-        settings = {
-            doPageFocus: true,
-            newTabActive: true
-        }
-        browser.storage.local.set({settings});
-    }
+    settings = onSettingsLoaded(results);
+    document.documentElement.style.setProperty("--elementNumberDisplay",
+            settings.showNumbers ? "flex" : "none");
+    document.documentElement.style.setProperty("--elementBorderRadius",
+            settings.roundCorners ? "8px" : "2px");    
 }
 
 /**
@@ -358,11 +354,13 @@ export function buildPage(folder) {
         //TODO?: возможно ли перенести в CSS?
         let numberHTML = document.getElementById(StrongString.NUMBER
                 + StrongString.SEPARATOR + "1");
+        let displayState = numberHTML.style.display;
+        numberHTML.style.display = "flex";
         let numberFontSize = Math.min(numberHTML.offsetWidth * 0.9 / digits,
                 numberHTML.offsetHeight);
         document.documentElement.style.setProperty("--numberFontSize",
                 numberFontSize + "px");
-
+        numberHTML.style.display = displayState;
         scaleAssignmentForm();
     }
 

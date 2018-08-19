@@ -1,15 +1,10 @@
 import * as Commands from './messaging-commands.js';
 
+import {onSettingsLoaded} from './settings-reader.js';
+
 let settings;
 browser.storage.local.get(['settings']).then(function(results) {
-    if (results.settings) {
-        settings = results.settings;
-    } else {
-        settings = {
-            doPageFocus: true,
-            newTabActive: true
-        }
-    }
+    settings = onSettingsLoaded(results);
 });
 
 browser.storage.onChanged.addListener(function(changes, areaName) {

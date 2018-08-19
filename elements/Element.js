@@ -42,10 +42,12 @@ Element.prototype.onClicked = function(event) {
             StrongString.SEPARATOR + this.number);
     const caption = document.getElementById(StrongString.CAPTION +
             StrongString.SEPARATOR + this.number);
+    const miniature = document.getElementById(StrongString.MINIATURE +
+            StrongString.SEPARATOR + this.number);
     const number = document.getElementById(StrongString.NUMBER +
             StrongString.SEPARATOR + this.number);
 
-    if (verifyTarget(event, [container, header, favicon, caption, number])) {
+    if (verifyTarget(event, [container, header, favicon, caption, miniature, number])) {
         this.action();
         return true;
     } else {
@@ -95,6 +97,7 @@ Element.prototype.getInnerHtml = function () {
     miniature.id = StrongString.MINIATURE + StrongString.SEPARATOR + this.number;
     let newLabel = document.createElement("label");
     newLabel.className = "elementNumber";
+    newLabel.setAttribute("tag", "common");
     newLabel.id = StrongString.NUMBER + StrongString.SEPARATOR + this.number;
     newLabel.textContent = this.number;
     miniature.appendChild(newLabel);
