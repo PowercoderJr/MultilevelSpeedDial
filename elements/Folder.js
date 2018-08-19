@@ -97,7 +97,11 @@ Folder.prototype.getInnerHtml = function () {
                 StrongString.SEPARATOR + this.number);
         switch (this.bgtype) {
             case BgTypes.DEFAULT:
-                mture.style.backgroundColor = DEFAULT_BGCOLOR;
+                //mture.style.backgroundColor = DEFAULT_BGCOLOR();
+                DEFAULT_BGCOLOR().then(function(result)
+                {
+                    mture.style.backgroundColor = result;
+                });
                 mture.style.backgroundImage = "";
                 break;
             case BgTypes.SOLID:

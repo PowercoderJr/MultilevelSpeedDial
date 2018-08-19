@@ -14,10 +14,17 @@
     --fieldsetBlurValue: 5px;
     --elementNumberDisplay: flex;
     --elementBorderRadius: 2px;
+
+    --backgroundColor: var(--grey-70); /*grey-10 / grey-70*/
+    --textColor: var(--grey-10); /*grey-90 / grey-10*/
+    --inputsColor: var(--grey-60); /*white-100 / grey-60*/
+    --curtainColor: var(--grey-90-a90); /*grey-90-a60 / grey-90-a90*/
+    --togglesColor: var(--grey-90-a50); /*grey-90-a10 / grey-90-a50*/
 }
 
 body {
-    background-color: var(--grey-10);
+    background-color: var(--backgroundColor);
+    color: var(--textColor);
 }
 
 .fullscreenElement {
@@ -42,7 +49,7 @@ td {
 }
 
 #curtain {
-    background-color: var(--grey-90-a60);
+    background-color: var(--curtainColor);
     display: none; /*none or flex*/
     justify-content: center;
     align-items: center;
@@ -50,7 +57,7 @@ td {
 
 #assignmentFormContainer {
     /*position: absolute;*/
-    background-color: var(--grey-10);
+    background-color: var(--backgroundColor);
     padding: 20px;
     border-radius: 2px;
     /*animation-name: unbluring;
@@ -59,36 +66,18 @@ td {
     -moz-transform: scale(var(--assignmentFormScale));
 }
 
-/*@keyframes bluring {
-    from {
-        filter: blur(0px);
-    } to {
-        filter: blur(var(--fieldsetBlurValue));
-    }
+input {
+   background-color: var(--inputsColor);
+    color: var(--textColor);
 }
-
-@keyframes unbluring {
-    from {
-        filter: blur(var(--fieldsetBlurValue));
-    } to {
-        filter: blur(0px);
-    }
-}
-
-#assignmentFormContainer fieldset:disabled {
-    animation-name: bluring;
-    animation-duration: 0.25s;
-    filter: blur(var(--fieldsetBlurValue));
-}
-
-#assignmentFormContainer fieldset {
-    animation-name: unbluring;
-    animation-duration: 0.25s;
-    filter: blur(0px);
-}*/
 
 input:disabled {
     opacity: initial;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    background-color: var(--togglesColor);
 }
 
 #assignmentForm fieldset:disabled {

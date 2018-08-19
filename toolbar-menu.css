@@ -5,14 +5,21 @@
     src: url('fonts/FiraSans-Regular.ttf');
 }
 
+:root {
+    --backgroundColor: var(--white-100); /*white-100 / grey-60*/
+    --hoverColor: var(--grey-90-a05); /*grey-90-a05 / #5c5c61*/
+    --textColor: var(--grey-90); /*grey-90 / grey-10*/
+    --imgFilter: none; /*none / invert(100%)*/
+}
+
 .vertical-menu {
     width: 300px;
 }
 
 .vertical-menu-element {
-    background-color: var(--white-100);
+    background-color: var(--backgroundColor);
     font-size: 11px;
-    color: black;
+    color: var(--textColor);
     display: block;
     padding: 6px;
     text-decoration: none;
@@ -20,11 +27,12 @@
 }
 
 .vertical-menu-element:hover {
-    background-color: var(--grey-90-a05);
+    background-color: var(--hoverColor);
 }
 
 .vertical-menu-element img {
 	margin: 0px 8px 0px 8px;
 	vertical-align: middle;
 	width: 20px;
+    filter: var(--imgFilter);
 }

@@ -364,7 +364,11 @@ function fillPreview(element) {
             } else {
                 switch (element.bgtype) {
                     case BgTypes.DEFAULT:
-                        miniature.style.backgroundColor = DEFAULT_BGCOLOR;
+                        //miniature.style.backgroundColor = DEFAULT_BGCOLOR;
+                        DEFAULT_BGCOLOR().then(function(result)
+                        {
+                            miniature.style.backgroundColor = result;
+                        });
                         miniature.style.backgroundImage = "";
                         break;
                     case BgTypes.SOLID:

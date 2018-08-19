@@ -204,6 +204,11 @@
         "message": "Round corners of elements"
     },
 
+    "darkTheme":
+    {
+        "message": "Dark theme"
+    },
+
     "newTabFocusSettings":
     {
         "message": "Focus capturing on a new tab"

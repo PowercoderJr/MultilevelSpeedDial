@@ -21,4 +21,26 @@ window.onload = function() {
         });
         window.close();
     }
+
+    browser.storage.local.get(['settings']).then(function(results) {
+        if (results.settings && results.settings.darkTheme) {
+            document.documentElement.style.setProperty("--backgroundColor",
+                    "var(--grey-60)");
+            document.documentElement.style.setProperty("--hoverColor",
+                    "#5c5c61");
+            document.documentElement.style.setProperty("--textColor",
+                    "var(--grey-10)");
+            document.documentElement.style.setProperty("--imgFilter",
+                    "invert(100%)");
+        } else {
+            document.documentElement.style.setProperty("--backgroundColor",
+                    "var(--white-100)");
+            document.documentElement.style.setProperty("--hoverColor",
+                    "var(--grey-90-a05)");
+            document.documentElement.style.setProperty("--textColor",
+                    "var(--grey-90)");
+            document.documentElement.style.setProperty("--imgFilter",
+                    "none");
+        }
+    });
 }

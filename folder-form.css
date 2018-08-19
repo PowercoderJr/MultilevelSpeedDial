@@ -16,6 +16,7 @@ input[type='number'] {
     font-size: 75%;
     height: 20px;
     background-color: var(--yellow-50);
+    color: var(--grey-90);
     display: none; /*none or initial*/
     padding: 6px 2px 3px 2px;
 }

@@ -8,6 +8,9 @@ export function onSettingsLoaded(results) {
         if (!("roundCorners" in settings)) {
             settings.roundCorners = false;
         }
+        if (!("darkTheme" in settings)) {
+            settings.darkTheme = false;
+        }
         if (!("doPageFocus" in settings)) {
             settings.doPageFocus = true;
         }
@@ -18,6 +21,7 @@ export function onSettingsLoaded(results) {
         settings = {
             showNumbers: true,
             roundCorners: false,
+            darkTheme: false,
             doPageFocus: true,
             newTabActive: true,
         }

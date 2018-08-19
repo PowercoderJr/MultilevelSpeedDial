@@ -83,6 +83,7 @@ window.onload = function() {
     document.getElementById("displaySettingsLabel").textContent = browser.i18n.getMessage("displaySettings");
     document.getElementById("showNumbersLabel").innerHTML += browser.i18n.getMessage("showNumbers");
     document.getElementById("roundCornersLabel").innerHTML += browser.i18n.getMessage("roundCorners");
+    document.getElementById("darkThemeLabel").innerHTML += browser.i18n.getMessage("darkTheme");
     let onDisplaySettingsChanged = function(event) {
         browser.storage.local.get('settings').then(function(results) {
             onSettingsLoaded(results);
@@ -380,6 +381,7 @@ function refillRootFolderForm() {
 function refillDisplaySettingsForm() {
     document.getElementById("showNumbersChb").checked = settings.showNumbers;
     document.getElementById("roundCornersChb").checked = settings.roundCorners;
+    document.getElementById("darkThemeChb").checked = settings.darkTheme;
 }
 
 /**

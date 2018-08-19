@@ -288,7 +288,41 @@ function onStorageCheckedOut(results) {
     document.documentElement.style.setProperty("--elementNumberDisplay",
             settings.showNumbers ? "flex" : "none");
     document.documentElement.style.setProperty("--elementBorderRadius",
-            settings.roundCorners ? "8px" : "2px");    
+            settings.roundCorners ? "8px" : "2px");
+    stylize(settings.darkTheme);
+}
+
+/**
+ * Стилизатор интерфейса
+ *
+ * Устанавливает необходимые параметры стиля
+ *
+ * @param   boolean isDarkTheme Флаг тёмной темы
+ */
+function stylize(isDarkTheme) {
+    if (isDarkTheme) {
+        document.documentElement.style.setProperty("--backgroundColor",
+                "var(--grey-70)");
+        document.documentElement.style.setProperty("--textColor",
+                "var(--grey-10)");
+        document.documentElement.style.setProperty("--inputsColor",
+                "var(--grey-60)");
+        document.documentElement.style.setProperty("--curtainColor",
+                "var(--grey-90-a90)");
+        document.documentElement.style.setProperty("--togglesColor",
+                "var(--grey-90-a50)");
+    } else {
+        document.documentElement.style.setProperty("--backgroundColor",
+                "var(--grey-10)");
+        document.documentElement.style.setProperty("--textColor",
+                "var(--grey-90)");
+        document.documentElement.style.setProperty("--inputsColor",
+                "whvar(--ite-100)");
+        document.documentElement.style.setProperty("--curtainColor",
+                "greyvar(---90-a60)");
+        document.documentElement.style.setProperty("--togglesColor",
+                "greyvar(---90-a10)");
+    }
 }
 
 /**
@@ -315,7 +349,11 @@ export function buildPage(folder) {
     let background = document.getElementById("background");
     switch (folder.bgtype) {
         case BgTypes.DEFAULT:
-            background.style.backgroundColor = DEFAULT_BGCOLOR;
+            //background.style.backgroundColor = DEFAULT_BGCOLOR;
+            DEFAULT_BGCOLOR().then(function(result)
+            {
+                background.style.backgroundColor = result;
+            });
             background.style.backgroundImage = "";
             break;
         case BgTypes.SOLID:

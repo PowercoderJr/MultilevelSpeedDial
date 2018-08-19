@@ -204,6 +204,11 @@
         "message": "Скруглить углы элементов"
     },
 
+    "darkTheme":
+    {
+        "message": "Тёмная тема"
+    },
+
     "newTabFocusSettings":
     {
         "message": "Захват фокуса на новой вкладке"
