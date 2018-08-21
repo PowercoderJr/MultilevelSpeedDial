@@ -443,20 +443,6 @@ export function swapElements(pathA, pathB) {
     folderA.elements[numberA - 1].number = numberA;
     folderB.elements[numberB - 1].number = numberB;
 
-    function arraysEqual(arr1, arr2) {
-        if (arr1.length != arr2.length) {
-            return false;
-        }
-
-        for (let i = 0; i < arr1.length; ++i) {
-            if (arr1[i] != arr2[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     if (arraysEqual(pathA, currPath)) {
         rebuildElement(folderA.elements[numberA - 1]);
     }
@@ -464,6 +450,23 @@ export function swapElements(pathA, pathB) {
         rebuildElement(folderB.elements[numberB - 1]);
     }
     browser.storage.local.set({structure: rootFolder});
+}
+
+/**
+ * Сравнение двух массивов поэлементно
+ */
+function arraysEqual(arr1, arr2) {
+    if (arr1.length != arr2.length) {
+        return false;
+    }
+
+    for (let i = 0; i < arr1.length; ++i) {
+        if (arr1[i] != arr2[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
@@ -829,10 +832,11 @@ function onCurtainClicked(event) {
  * @param   Element element Новый элемент
  */
 export function overwriteElement(path, element) {
-    let folder = getFolderByPath(path, rootFolder);
+    let pathOrig = Array.from(path);
+    let folder = getFolderByPath(pathOrig, rootFolder);
     //WARN: element = verifyElementObject(element);
     folder.elements[element.number - 1] = element;
-    if (path == currPath) {
+    if (arraysEqual(pathOrig, currPath)) {
         rebuildElement(element);
     }
     browser.storage.local.set({structure: rootFolder});
@@ -849,15 +853,16 @@ export function overwriteElement(path, element) {
  * @param   Element element Новый элемент
  */
 export function restoreElement(path, number) {
+    let pathOrig = Array.from(path);
     browser.storage.local.get("structure").then(function(result) {
-        let folder = getFolderByPath(path, result.structure);
+        let folder = getFolderByPath(pathOrig, result.structure);
         let element = folder.elements[number - 1];
 
-        let folderFromStructure = getFolderByPath(path, rootFolder);
+        let folderFromStructure = getFolderByPath(pathOrig, rootFolder);
         //WARN: element = verifyElementObject(element);
         folderFromStructure.elements[element.number - 1] = element;
 
-        if (path == currPath) {
+        if (arraysEqual(pathOrig, currPath)) {
             rebuildElement(element);
         }
     }, onPromiseFailed);
