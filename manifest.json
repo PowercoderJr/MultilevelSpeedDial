@@ -90,6 +90,7 @@
     "web_accessible_resources": [
         "kbd-navigation.css",
         "icons/folder.svg",
+        "icons/close.svg",
         "icons/nothing-found.svg",
         "icons/hidden-miniature-placeholder.svg",
         "fonts/FiraSans-Regular.ttf",

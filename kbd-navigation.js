@@ -53,9 +53,16 @@ previewRect.id = "previewRect";
 /**
  * Элемент интерфейса при использовании сочетаний клавиш
  *
+ * @var HTMLElement closeBtn
+ */
+let closeBtn = document.createElement("img");
+closeBtn.id = "closeBtn";
+
+/**
+ * Элемент интерфейса при использовании сочетаний клавиш
+ *
  * @var HTMLElement addressLabel
  */
-
 let addressLabel = document.createElement("label");
 addressLabel.id = "addressLabel";
 
@@ -126,6 +133,7 @@ window.addEventListener("load", function() {
             then(onStructureLoaded, onStructureLoadFailed);
 
     initUI();
+    setListeners();
 });
 
 /**
@@ -144,6 +152,7 @@ function initUI() {
             browser.extension.getURL("kbd-navigation.css"));
     document.head.appendChild(cssLink);
 
+    previewRect.appendChild(closeBtn);
     previewRect.appendChild(addressLabel);
     previewRect.appendChild(miniature);
     iconPlusCaption.appendChild(iconImg);
@@ -159,7 +168,37 @@ function initUI() {
     hasUiBeenInited = true;
 }
 
-window.addEventListener("keydown", function(event) {
+/**
+ *
+ */
+function destroyUI() {
+    document.body.removeChild(navCurtain);
+}
+
+/**
+ * Установка слушателей
+ */
+function setListeners() {
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keypress", onKeyPress);
+    window.addEventListener("keyup", onKeyUp);
+
+    closeBtn.onclick = function(event) {        
+        unsetListeners();
+        destroyUI();
+    }
+}
+
+/**
+ * Удаление слушателей
+ */
+function unsetListeners() {
+    window.removeEventListener("keydown", onKeyDown);
+    window.removeEventListener("keypress", onKeyPress);
+    window.removeEventListener("keyup", onKeyUp);
+}
+
+function onKeyDown(event) {
     if (event.key === "Control" && !inputMode) {
         browser.storage.local.get('structure').
                 then(onStructureLoaded, onStructureLoadFailed);
@@ -170,9 +209,9 @@ window.addEventListener("keydown", function(event) {
     } else if (event.key === "Shift" && inputMode) {
         isNewTabNeeded = true;
     }
-});
+}
 
-window.addEventListener("keypress", function(event) {
+function onKeyPress(event) {
     if (inputMode) {
         if (event.key === "Backspace" && pathString.length > 0) {
             pathString = pathString.substring(0, pathString.length - 1);
@@ -229,9 +268,9 @@ window.addEventListener("keypress", function(event) {
     if (isPreviewShown) {
         event.preventDefault();
     }
-});
+}
 
-window.addEventListener("keyup", function(event) {
+function onKeyUp(event) {
     if (event.key === "Control" && inputMode) {
         inputMode = false;
         switchNavUI(false);
@@ -256,7 +295,7 @@ window.addEventListener("keyup", function(event) {
             }
         }
     }
-});
+}
 
 /**
  * Отобразить/скрыть интерфейс навигации

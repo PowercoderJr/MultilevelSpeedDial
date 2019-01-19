@@ -25,6 +25,7 @@
 
 #previewRect {
     all: initial;
+    position: relative;
     min-width: 700px;
     max-width: 90%;
     height: auto; /*200px*/
@@ -34,6 +35,17 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#closeBtn {
+    all: initial;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 48px;
+    height: 48px;
+    background-image: url(icons/close.svg);
+    cursor: pointer;
 }
 
 #addressLabel, #captionLabel {

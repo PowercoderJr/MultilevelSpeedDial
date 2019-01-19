@@ -1,30 +1,26 @@
+const defaults = {
+    showNumbers: true,
+    roundCorners: false,
+    darkTheme: false,
+    doPageFocus: true,
+    newTabActive: true,
+    kbdnavOn: true
+};
+Object.freeze(defaults);
+
 export function onSettingsLoaded(results) {
-    let settings;
+    let settings = {};
     if (results.settings) {
         settings = results.settings;
-        if (!("showNumbers" in settings)) {
-            settings.showNumbers = true;
+    }
+    let changed = false;
+    for (let key in defaults) {
+        if (!(key in settings)) {
+            settings[key] = defaults[key];
+            changed = true;
         }
-        if (!("roundCorners" in settings)) {
-            settings.roundCorners = false;
-        }
-        if (!("darkTheme" in settings)) {
-            settings.darkTheme = false;
-        }
-        if (!("doPageFocus" in settings)) {
-            settings.doPageFocus = true;
-        }
-        if (!("newTabActive" in settings)) {
-            settings.newTabActive = true;
-        }
-    } else {
-        settings = {
-            showNumbers: true,
-            roundCorners: false,
-            darkTheme: false,
-            doPageFocus: true,
-            newTabActive: true,
-        }
+    }
+    if (changed) {
         browser.storage.local.set({settings});
     }
     return settings;
