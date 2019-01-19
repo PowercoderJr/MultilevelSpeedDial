@@ -72,13 +72,15 @@ FilledElement.prototype.getInnerHtml = function () {
     header.appendChild(caption);
     let btn1 = document.createElement("img");
     btn1.className = "elementButton";
+    btn1.id = StrongString.REFRESH_INSTANT_BTN + StrongString.SEPARATOR + this.number;
     btn1.src = "icons/refresh.svg";
     header.appendChild(btn1);
     btn1.onclick = function() {
-        this.refresh();
+        this.refresh(0, false);
     }.bind(this);
     let btn2 = document.createElement("img");
     btn2.className = "elementButton";
+    btn2.id = StrongString.EDIT_BTN + StrongString.SEPARATOR + this.number;
     btn2.src = "icons/edit.svg";
     header.appendChild(btn2);
     btn2.onclick = function() {
@@ -86,6 +88,7 @@ FilledElement.prototype.getInnerHtml = function () {
     }.bind(this);
     let btn3 = document.createElement("img");
     btn3.className = "elementButton";
+    btn3.id = StrongString.DELETE_BTN + StrongString.SEPARATOR + this.number;
     btn3.src = "icons/delete.svg";
     header.appendChild(btn3);
     btn3.onclick = function() {
@@ -105,7 +108,9 @@ FilledElement.prototype.getInnerHtml = function () {
 
 /**
  * Обновление элемента
+ * 
+ * Аргументы не используются, но необходимы для дочерних прототипов
  */
-FilledElement.prototype.refresh = function() {
+FilledElement.prototype.refresh = function(delay, isToDisplay) {
     restoreElement(currPath, this.number);
 }

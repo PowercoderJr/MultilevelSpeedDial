@@ -150,7 +150,7 @@ input[type="checkbox"] {
 }
 
 .element:hover .elementCaption {
-    width: calc(100% - (var(--iconSize) + var(--inlineSpacing)) * 4 - 4px * 2);
+    width: calc(100% - (var(--iconSize) + var(--inlineSpacing)) * 5 - 4px * 2);
 }
 
 .elementButton {

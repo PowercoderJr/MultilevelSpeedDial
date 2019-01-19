@@ -766,42 +766,40 @@ export function readFile(file, indicator, readAsUrl) {
  * страницы и записывает её название (title), иконку (icon)
  * и скриншот (screenshot).
  *
- * @param   boolean copyElems   Копировать ли в новый объект структуру элементов
- *                              (актуально, если редактируется элемент-папка)
- * @return  Promise             Возвращает Promise, который в случае успеха
- *                              предоставляет объект со считанными свойствами элемента
+ * @param   string      url         Адрес страницы
+ * @param   int         delay       Задержка после загрузки страницы перед снимком 
+ * @param   boolean     isToDisplay Отобразить ли страницу пользователю
+ * @return  Promise                 Возвращает Promise, который в случае успеха
+ *                                  предоставляет объект с полученными данными о странице
  */
-export function getPagePreviewInfo(url) {
+export function getPagePreviewInfo(url, delay, isToDisplay) {
+    delay = delay || 0;
+    isToDisplay = isToDisplay || false;
     return new Promise((resolve, reject) => {
         let result;
-        browser.tabs.create({url: url, active: false}).then(function(tab) {
-            browser.permissions.contains({permissions: ["tabHide"]}).then(function(granted) {
-                if (granted) {
-                    browser.tabs.hide(tab.id);
-                }
-            });
+        browser.tabs.create({url: url, active: isToDisplay}).then(function(tab) {
+            if (!isToDisplay) {
+                browser.permissions.contains({permissions: ["tabHide"]}).then(function(granted) {
+                    if (granted) {
+                        browser.tabs.hide(tab.id);
+                    }
+                });
+            }
             let handledOnce = false;
             let handler = function(tabId, changeInfo, tabInfo) {
                 if (!handledOnce && tabId == tab.id && changeInfo.status && changeInfo.status == "complete") {
                     handledOnce = true;
                     browser.tabs.get(tabId).then(function(updatedTab) {
-                        let pageInfo = {title: updatedTab.title, favicon: null, screenshot: null};
-                        browser.tabs.captureTab(updatedTab.id).then(function(base64img) {
-                            pageInfo.screenshot = base64img;
-                        }, reject).then(function() {
-                            remoteImageToBase64(updatedTab.favIconUrl).then(function(base64ico) {
-                                pageInfo.favicon = base64ico;
+                        let pageInfo = {title: updatedTab.title, favicon: updatedTab.favIconUrl, screenshot: null};
+                        setTimeout(function() {
+                            browser.tabs.captureTab(updatedTab.id).then(function(base64img) {
+                                pageInfo.screenshot = base64img;
                             }, reject).then(function() {
                                 browser.tabs.remove(updatedTab.id);
                                 browser.tabs.onUpdated.removeListener(handler);
-
-                                if (pageInfo.screenshot !== null && pageInfo.favicon !== null) {
-                                    resolve(pageInfo);
-                                } else {
-                                    reject(browser.i18n.getMessage("unableToGetPageInfo"));
-                                }
+                                resolve(pageInfo);
                             }, function() {reject(browser.i18n.getMessage("unableToGetPageInfo"));});
-                        }, function() {reject(browser.i18n.getMessage("unableToGetPageInfo"));});
+                        }, delay);
                     }, reject);
                 }
             }

@@ -92,6 +92,17 @@ Folder.prototype.action = function() {
 Folder.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
 
+    let header = df.getElementById(StrongString.HEADER +
+            StrongString.SEPARATOR + this.number)
+    let riBtn = df.getElementById(StrongString.REFRESH_INSTANT_BTN +
+            StrongString.SEPARATOR + this.number)
+
+    let filler = document.createElement("img");
+    filler.className = "elementButton";
+    filler.style.width = "var(--iconSize)";
+    filler.style.cursor = "initial";
+    header.insertBefore(filler, riBtn);
+
     if (!this.isMiniatureHidden) {
         let mture = df.getElementById(StrongString.MINIATURE +
                 StrongString.SEPARATOR + this.number);

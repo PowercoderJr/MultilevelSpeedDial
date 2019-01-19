@@ -9,6 +9,18 @@ export const ELEMENT = "el";
 //Заголовок элемента
 export const HEADER = "hdr";
 
+//Кнопка "обновить мгновенно"
+export const REFRESH_INSTANT_BTN = "ribtn";
+
+//Кнопка "обновить с задержкой"
+export const REFRESH_DELAYED_BTN = "rdbtn";
+
+//Кнопка "изменить"
+export const EDIT_BTN = "editbtn";
+
+//Кнопка "удалить"
+export const DELETE_BTN = "rmvbtn";
+
 //Название элемента
 export const CAPTION = "cap";
 

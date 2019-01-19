@@ -83,6 +83,22 @@ Bookmark.prototype.getInitHtml = function() {
  */
 Bookmark.prototype.getInnerHtml = function () {
     let df = FilledElement.prototype.getInnerHtml.call(this);
+
+    let header = df.getElementById(StrongString.HEADER +
+            StrongString.SEPARATOR + this.number)
+    let editBtn = df.getElementById(StrongString.EDIT_BTN +
+            StrongString.SEPARATOR + this.number)
+
+    let rdBtn = document.createElement("img");
+    rdBtn.className = "elementButton";
+    rdBtn.id = StrongString.REFRESH_DELAYED_BTN +
+            StrongString.SEPARATOR + this.number;
+    rdBtn.src = "icons/refresh-delayed.svg";
+    header.insertBefore(rdBtn, editBtn);
+    rdBtn.onclick = function() {
+        this.refresh(3000, true);
+    }.bind(this);
+
     if (!this.isCaptionHidden) {
         df.getElementById(StrongString.CAPTION +
                 StrongString.SEPARATOR + this.number).
@@ -103,7 +119,7 @@ Bookmark.prototype.getInnerHtml = function () {
  *
  * {@link FilledElement.prototype.refresh}
  */
-Bookmark.prototype.refresh = function() {
+Bookmark.prototype.refresh = function(delay, isToDisplay) {
     let folderPath = Array.from(currPath);
 
     document.getElementById(StrongString.NUMBER +
@@ -111,14 +127,12 @@ Bookmark.prototype.refresh = function() {
             textContent = "...";
 
     FilledElement.prototype.refresh.call(this);
-    getPagePreviewInfo(this.url).then(function(data) {
-        this.caption = data.title;
-        this.icon = data.favicon;
-        this.miniature = data.screenshot;
+    getPagePreviewInfo(this.url, delay, isToDisplay).then(function(data) {
+        this.caption = data.title || this.caption;
+        this.icon = data.favicon || this.icon;
+        this.miniature = data.screenshot || this.miniature;
         overwriteElement(folderPath, this);
-        //getFolderByPath(currPath).elements[this.number - 1] = this;
-        //rebuildElement(this);
-    }.bind(this), onPromiseFailed). then(function() {
+    }.bind(this), onPromiseFailed).then(function() {
         document.getElementById(StrongString.NUMBER +
                 StrongString.SEPARATOR + this.number).
                 textContent = this.number;
