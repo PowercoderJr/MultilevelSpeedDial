@@ -189,11 +189,6 @@
         "message": "Restore"
     },
 
-    "generalSettings":
-    {
-        "message": "General settings"
-    },
-
     "showNumbers":
     {
         "message": "Numbers of elements over miniatures"

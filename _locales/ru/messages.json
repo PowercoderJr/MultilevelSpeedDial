@@ -189,11 +189,6 @@
         "message": "Восстановить"
     },
 
-    "generalSettings":
-    {
-        "message": "Общик настройки"
-    },
-
     "showNumbers":
     {
         "message": "Номера элементов поверх миниатюр"
