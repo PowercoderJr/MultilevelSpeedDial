@@ -146,7 +146,7 @@
 
     "rlyDeleteElement":
     {
-        "message": "Do you really want to delete element №$1 ($2)"
+        "message": "Do you really want to delete element №$1 ($2)?"
     },
 
     "unableToLoadFile":
@@ -189,14 +189,14 @@
         "message": "Restore"
     },
 
-    "displaySettings":
+    "generalSettings":
     {
-        "message": "Display settings"
+        "message": "General settings"
     },
 
     "showNumbers":
     {
-        "message": "Show numbers of elements over miniatures"
+        "message": "Numbers of elements over miniatures"
     },
 
     "roundCorners":
@@ -209,6 +209,11 @@
         "message": "Dark theme"
     },
 
+    "kbdnavOn":
+    {
+        "message": "Navigation with Ctrl+<address> shortcut"
+    },
+
     "newTabFocusSettings":
     {
         "message": "Focus capturing on a new tab"
@@ -216,7 +221,7 @@
 
     "newTabFocusSettingsDesc":
     {
-        "message": "This parameter defines where must be focus when a new empty tab is open.\nIf focus is on the page, you can immediately use the keyboard navigation (Ctrl + bookmark/folder address).\nIf focus is on the address bar, you can immediately enter addres of some page. To use keyboard navigation you are to click anywhere on the page before."
+        "message": "This parameter defines where must be focus when a new empty tab is open.\nIf focus is on the page, you can immediately use the keyboard navigation (Ctrl+<bookmark/folder address>).\nIf focus is on the address bar, you can immediately enter addres of some page. To use keyboard navigation you are to click anywhere on the page before."
     },
 
     "focusPage":

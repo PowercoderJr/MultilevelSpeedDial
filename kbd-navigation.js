@@ -4,6 +4,7 @@ import * as ElementTypes from './elements/elementTypes.js';
 import * as BgTypes from './elements/bgTypes.js';
 
 import {DEFAULT_BGCOLOR} from './elements/defaultBgColor.js';
+import {onSettingsLoaded} from './settings-reader.js';
 
 /**
  * Флаг режима ввода
@@ -132,19 +133,24 @@ window.addEventListener("load", function() {
     browser.storage.local.get('structure').
             then(onStructureLoaded, onStructureLoadFailed);
 
-    initUI();
-    setListeners();
+    browser.storage.local.get(['settings']).then(function(results) {
+        let settings = onSettingsLoaded(results);
+        if (settings.kbdnavOn) {
+            buildUI();
+            setListeners();
+        }
+    });
 });
 
 /**
- * Инициализация объектов для отображения превью
+ * Построение объектов для отображения превью
  *
  * Собирает все объекты (фоновый div, label адреса, image для превью,
  * image для иконки), добавляет их на штору, а штору - на страницу.
  * Также подключает для них таблицы стилей. Устанавливает флаг hasUiBeenInited
  * {@link hasUiBeenInited}
  */
-function initUI() {
+function buildUI() {
     let cssLink = document.createElement("link");
     cssLink.setAttribute("rel", "stylesheet");
     cssLink.setAttribute("type", "text/css");
@@ -169,7 +175,7 @@ function initUI() {
 }
 
 /**
- *
+ * Уничтожение объектов для отображения превью
  */
 function destroyUI() {
     document.body.removeChild(navCurtain);
@@ -249,7 +255,7 @@ function onKeyPress(event) {
                     const pathRegExp = /^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/;
                     if (pathRegExp.test(newPathString)) {
                         if (!hasUiBeenInited) {
-                            initUI();
+                            buildUI();
                         }
                         if (!isPreviewShown) {
                             switchNavUI(true);

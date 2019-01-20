@@ -30,7 +30,7 @@ window.onload = function() {
         initFolderForm(rootFolder);
         refillRootFolderForm();
         settings = onSettingsLoaded(results);
-        refillDisplaySettingsForm();
+        refillGeneralSettingsForm();
         refillNewTabFocusForm();
         refillNewTabActiveForm();
     }, onPromiseFailed);
@@ -79,12 +79,13 @@ window.onload = function() {
         }, onPromiseFailed);
     }
 
-    /*Форма "настройки отображения"*/
-    document.getElementById("displaySettingsLabel").textContent = browser.i18n.getMessage("displaySettings");
+    /*Форма "общие настройки"*/
+    document.getElementById("generalSettingsLabel").textContent = browser.i18n.getMessage("generalSettings");
     document.getElementById("showNumbersLabel").innerHTML += browser.i18n.getMessage("showNumbers");
     document.getElementById("roundCornersLabel").innerHTML += browser.i18n.getMessage("roundCorners");
     document.getElementById("darkThemeLabel").innerHTML += browser.i18n.getMessage("darkTheme");
-    let onDisplaySettingsChanged = function(event) {
+    document.getElementById("kbdnavOnLabel").innerHTML += browser.i18n.getMessage("kbdnavOn");
+    let onGeneralSettingsChanged = function(event) {
         browser.storage.local.get('settings').then(function(results) {
             onSettingsLoaded(results);
             settings[event.target.id.substr(0, event.target.id.length - 3)] =
@@ -92,9 +93,9 @@ window.onload = function() {
             browser.storage.local.set({settings});
         }, onPromiseFailed);
     }
-    let bufControls = document.getElementsByName("displayChbs");
+    let bufControls = document.getElementsByName("generalChbs");
     bufControls.forEach(function(item) {
-        item.oninput = onDisplaySettingsChanged;
+        item.oninput = onGeneralSettingsChanged;
     }, onPromiseFailed);
 
     /*Форма "настройки корневой папки"*/
@@ -378,10 +379,11 @@ function refillRootFolderForm() {
 /**
  * Заполнение формы настроек отображения
  */
-function refillDisplaySettingsForm() {
+function refillGeneralSettingsForm() {
     document.getElementById("showNumbersChb").checked = settings.showNumbers;
     document.getElementById("roundCornersChb").checked = settings.roundCorners;
     document.getElementById("darkThemeChb").checked = settings.darkTheme;
+    document.getElementById("kbdnavOnChb").checked = settings.kbdnavOn;
 }
 
 /**
