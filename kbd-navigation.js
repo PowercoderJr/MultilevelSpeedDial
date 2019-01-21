@@ -129,18 +129,21 @@ let rootFolder;
  */
 let target;
 
-window.addEventListener("load", function() {
-    browser.storage.local.get('structure').
-            then(onStructureLoaded, onStructureLoadFailed);
+//console.log("Asking for...")
+browser.storage.local.get('structure').
+        then(onStructureLoaded, onStructureLoadFailed);
 
-    browser.storage.local.get(['settings']).then(function(results) {
-        let settings = onSettingsLoaded(results);
-        if (settings.kbdnavOn) {
-            buildUI();
-            setListeners();
-        }
-    });
+browser.storage.local.get(['settings']).then(function(results) {
+    let settings = onSettingsLoaded(results);
+    //console.log("Settings: ", settings)
+    if (settings.kbdnavOn) {
+        buildUI();
+        setListeners();
+    }
+}, function(results) {
+    console.log(results)
 });
+//console.log("Well asked")
 
 /**
  * Построение объектов для отображения превью
@@ -151,12 +154,12 @@ window.addEventListener("load", function() {
  * {@link hasUiBeenInited}
  */
 function buildUI() {
-    let cssLink = document.createElement("link");
+    /*let cssLink = document.createElement("link");
     cssLink.setAttribute("rel", "stylesheet");
     cssLink.setAttribute("type", "text/css");
     cssLink.setAttribute("href",
             browser.extension.getURL("kbd-navigation.css"));
-    document.head.appendChild(cssLink);
+    document.head.appendChild(cssLink);*/
 
     previewRect.appendChild(closeBtn);
     previewRect.appendChild(addressLabel);
