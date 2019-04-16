@@ -65,11 +65,24 @@ let rootFolder;
  */
 let settings;
 
+/**
+ * Флаг загрузки корневой папки
+ *
+ * Определяет, надо ли загружать на страницу корневую папку в событии
+ * window.onload. По умолчанию надо, однако если страница создана по команде
+ * GOTO_FOLDER -> BUILD_FOLDER_PAGE, переменная флаг будет снят
+ *
+ * @var boolean isRootLoad
+ */
+let isRootLoad = true;
+
 window.onload = function() {
     //browser.storage.local.clear();
     browser.storage.local.get(['structure', 'settings']).then(function(results) {
         onStorageCheckedOut(results);
-        buildPage(rootFolder);
+        if (isRootLoad) {
+            buildPage(rootFolder);
+        }
     }, onPromiseFailed);
     /*browser.storage.local.get().then(function(all) { //DEBUG
         console.log("Stored data: ");
@@ -955,6 +968,7 @@ browser.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             
             let folder = msg.folder || getFolderByPath(msg.path);
             currPath = msg.path;
+            isRootLoad = false;
             buildPage(folder);
             break;
         default:

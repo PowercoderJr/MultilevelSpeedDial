@@ -189,7 +189,7 @@ function destroyUI() {
  */
 function setListeners() {
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keypress", onKeyPress);
+    //window.addEventListener("keypress", onKeyPress);
     window.addEventListener("keyup", onKeyUp);
 
     closeBtn.onclick = function(event) {        
@@ -203,11 +203,13 @@ function setListeners() {
  */
 function unsetListeners() {
     window.removeEventListener("keydown", onKeyDown);
-    window.removeEventListener("keypress", onKeyPress);
+    //window.removeEventListener("keypress", onKeyPress);
     window.removeEventListener("keyup", onKeyUp);
 }
 
 function onKeyDown(event) {
+    //console.log(event)
+    //console.log(inputMode)
     if (event.key === "Control" && !inputMode) {
         browser.storage.local.get('structure').
                 then(onStructureLoaded, onStructureLoadFailed);
@@ -218,9 +220,9 @@ function onKeyDown(event) {
     } else if (event.key === "Shift" && inputMode) {
         isNewTabNeeded = true;
     }
-}
 
-function onKeyPress(event) {
+    /****************************onKeyPress****************************/
+    //console.log('Cancelable?', event.cancelable)
     if (inputMode) {
         if (event.key === "Backspace" && pathString.length > 0) {
             pathString = pathString.substring(0, pathString.length - 1);
@@ -261,6 +263,7 @@ function onKeyPress(event) {
                             buildUI();
                         }
                         if (!isPreviewShown) {
+                            //console.log("Okaaaay")
                             switchNavUI(true);
                         }
                         pathString = newPathString;
@@ -277,7 +280,69 @@ function onKeyPress(event) {
     if (isPreviewShown) {
         event.preventDefault();
     }
+    /*Конец onKeyPress*/
 }
+
+/*function onKeyPress(event) {
+    console.log('Cancelable?', event.cancelable)
+    if (inputMode) {
+        if (event.key === "Backspace" && pathString.length > 0) {
+            pathString = pathString.substring(0, pathString.length - 1);
+            addressLabel.textContent = pathString;
+            if (pathString.length == 0) {
+                switchNavUI(false);
+            }
+        } else {
+            if ((event.key === "+" || event.key === "-") && isPreviewShown) {
+                if (pathString[pathString.length - 1] === '/') {
+                    pathString = pathString + "1";
+                } else {
+                    let slashIndex = pathString.lastIndexOf('/');
+                    let pathTail = pathString.substring(0, slashIndex + 1);
+                    let targetNumber = +pathString.substring(slashIndex + 1);
+                    if (event.key === "+" && targetNumber < 999) {
+                        pathString = pathTail + (targetNumber + 1);
+                    } else if (event.key === "-" && targetNumber > 1) {
+                        pathString = pathTail + (targetNumber - 1);
+                    }
+                }
+            } else {
+                const digitRegExp = /^(Digit|Numpad|)(\d)$/;
+                let appendix;
+                if (digitRegExp.test(event.code)) {
+                    appendix = event.code.replace(digitRegExp, "$2")
+                } else if (event.key === '/' || event.key === ' ') {
+                    appendix = '/';
+                } else {
+                    appendix = null;
+                }
+
+                if (appendix !== null) {
+                    let newPathString = pathString + appendix;
+                    const pathRegExp = /^([1-9]\d{0,2}\/)*([1-9]\d{0,2}\/?)$/;
+                    if (pathRegExp.test(newPathString)) {
+                        if (!hasUiBeenInited) {
+                            buildUI();
+                        }
+                        if (!isPreviewShown) {
+                            console.log("Okaaaay")
+                            switchNavUI(true);
+                        }
+                        pathString = newPathString;
+                        addressLabel.textContent = newPathString;
+                    }
+                }
+            }
+        }
+        addressLabel.textContent = pathString;
+        target = getElementByPath(pathString);
+        fillPreview(target);
+    }
+
+    if (isPreviewShown) {
+        event.preventDefault();
+    }
+}*/
 
 function onKeyUp(event) {
     if (event.key === "Control" && inputMode) {

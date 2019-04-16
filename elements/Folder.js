@@ -100,6 +100,7 @@ Folder.prototype.getInnerHtml = function () {
     let filler = document.createElement("img");
     filler.className = "elementButton";
     filler.style.width = "var(--iconSize)";
+    filler.src = "data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
     filler.style.cursor = "initial";
     header.insertBefore(filler, riBtn);
 
