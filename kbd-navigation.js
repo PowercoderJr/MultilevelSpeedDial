@@ -160,7 +160,7 @@ function buildUI() {
     cssLink.setAttribute("href",
             browser.extension.getURL("kbd-navigation.css"));
     document.head.appendChild(cssLink);*/
-
+    closeBtn.src = "data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
     previewRect.appendChild(closeBtn);
     previewRect.appendChild(addressLabel);
     previewRect.appendChild(miniature);
