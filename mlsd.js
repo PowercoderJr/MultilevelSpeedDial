@@ -805,7 +805,7 @@ export function getPagePreviewInfo(url, delay, isToDisplay) {
                     browser.tabs.get(tabId).then(function(updatedTab) {
                         let pageInfo = {title: updatedTab.title, favicon: updatedTab.favIconUrl, screenshot: null};
                         setTimeout(function() {
-                            browser.tabs.captureTab(updatedTab.id).then(function(base64img) {
+                            browser.tabs.captureTab(updatedTab.id, {format: "jpeg", quality: 25}).then(function(base64img) {
                                 pageInfo.screenshot = base64img;
                             }, reject).then(function() {
                                 browser.tabs.remove(updatedTab.id);
@@ -931,7 +931,7 @@ function getBase64Image(img) {
     canvas.height = img.height;
     let ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
-    return canvas.toDataURL("image/png");
+    return canvas.toDataURL("image/jpeg", 25);
 }
 
 /**

@@ -7,6 +7,14 @@ import {overwriteElement, getPagePreviewInfo, onPromiseFailed,
 import FilledElement from './FilledElement.js';
 
 /**
+ * Максимальная ширина для скриншота-превью закладки
+ *
+ * Если сделанный снимок имеет большую ширину, она должна
+ * быть уменьшена до этого значения в целях оптимизации
+ */
+const MINIATURE_REDUCED_WIDTH = 480;
+
+/**
  * Конструктор элемента-закладки
  *
  * @param   int     number  Номер элемента
@@ -118,6 +126,9 @@ Bookmark.prototype.getInnerHtml = function () {
  * Обновление элемента
  *
  * {@link FilledElement.prototype.refresh}
+ *
+ * @param   delay       int     Задержка перед снимком в милисекундах
+ * @param   isToDisplay boolean Надо ли отобразить вкладку для снимка
  */
 Bookmark.prototype.refresh = function(delay, isToDisplay) {
     let folderPath = Array.from(currPath);
@@ -131,10 +142,44 @@ Bookmark.prototype.refresh = function(delay, isToDisplay) {
         this.caption = data.title || this.caption;
         this.icon = data.favicon || this.icon;
         this.miniature = data.screenshot || this.miniature;
-        overwriteElement(folderPath, this);
+        if (this.miniature) {
+            let tmp = new Image();
+            const element = this;
+            tmp.onload = function() {
+                if (tmp.width > MINIATURE_REDUCED_WIDTH) {
+                    const reducedHeight = MINIATURE_REDUCED_WIDTH * tmp.height / tmp.width;
+                    element.miniature = resizeBase64Image(
+                            element.miniature,
+                            MINIATURE_REDUCED_WIDTH,
+                            reducedHeight);
+                }
+                overwriteElement(folderPath, element);
+            }
+            tmp.src = this.miniature;
+        }
+        //overwriteElement(folderPath, this);
     }.bind(this), onPromiseFailed).then(function() {
         document.getElementById(StrongString.NUMBER +
                 StrongString.SEPARATOR + this.number).
                 textContent = this.number;
     }.bind(this));
 }
+
+/**
+ * Масштабирование изображения в формате base64
+ *
+ * @param   image   string  Изображение в формате base64
+ * @param   width   int     Новая ширина изображения
+ * @param   height  int     Новая высота изображения
+ */
+function resizeBase64Image(image, width, height) {
+    let img = document.createElement("img");
+    img.src = image
+    let canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL("image/jpeg", 25);
+}
+
